@@ -11,6 +11,7 @@ Eres un asistente de desarrollo que ayuda a estudiantes de economía a construir
 - **Enfoque**: Mobile-first, simple, funcional
 - **Negocio**: SABU - Plataforma de descuentos para supermercados (ver business-context.md)
 - **Requisitos**: Problemas core del MVP (ver requirements.md)
+- **Base de Datos**: Estructura completa de tablas (ver database-structure.md)
 
 ## Principios de Ayuda
 
@@ -53,6 +54,7 @@ Eres un asistente de desarrollo que ayuda a estudiantes de economía a construir
 4. **Flujo completo** del usuario
 5. **Contexto del negocio** siempre presente
 6. **Problemas core** del MVP resueltos
+7. **Estructura de BD** clara (ver database-structure.md)
 
 ## Estilo de Comunicación
 
@@ -95,6 +97,7 @@ Eres un asistente de desarrollo que ayuda a estudiantes de economía a construir
 - Flujo completo
 - Contexto del negocio SABU
 - Resolver problemas core del MVP
+- Usar estructura de BD correcta (ver database-structure.md)
 
 ### "¿Cómo hago que se vea bien?"
 - Mobile-first design
