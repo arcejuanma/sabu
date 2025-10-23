@@ -212,6 +212,80 @@
 - **Tarjetas** recomendadas
 - **Promociones** activas
 
+## 🔐 Autenticación y Seguridad
+
+### **Autenticación de Usuarios**
+- **Supabase Auth** (email/password)
+- **No SSO** externo (Google, Facebook, etc.)
+- **Registro** con datos básicos requeridos
+
+### **Medios de Pago**
+- **No guardar datos** de tarjetas
+- **Solo tipo y banco** para elegibilidad de promociones
+- **Validación** de elegibilidad por promoción
+
+### **Validaciones de Datos**
+- **Email** válido
+- **Teléfono** argentino
+- **Dirección** completa
+- **Coordenadas** válidas
+
+## 📍 Geolocalización
+
+### **Radio de Búsqueda**
+- **5km** de radio desde domicilio del usuario
+- **Cálculo simple** de distancias (no Google Maps)
+- **Fallback**: No preocuparse si no hay supermercados cercanos
+
+### **Sucursales Cercanas**
+- **Filtrar** supermercados por radio
+- **Ordenar** por distancia
+- **Mostrar** solo los más cercanos
+
+## ⚙️ Proceso Batch
+
+### **Configuración**
+- **Endpoint público** para disparar
+- **Logs** de procesamiento
+- **No timeout** específico
+- **No retry** automático
+- **No fallback** si falla
+
+### **Logs de Procesamiento**
+- **Usuarios procesados**
+- **Carritos evaluados**
+- **Notificaciones enviadas**
+- **Errores** encontrados
+- **Tiempo** de procesamiento
+
+## 📧 Notificaciones
+
+### **Templates de Email**
+- **Guardar** en backend
+- **Variables** dinámicas (usuario, productos, ahorro)
+- **Formato** HTML básico
+- **Personalización** por usuario
+
+### **Contenido de Templates**
+- **Saludo** personalizado
+- **Productos** con mejor precio
+- **Supermercados** cercanos
+- **Ahorro** potencial
+- **Tarjetas** recomendadas
+- **Promociones** activas
+
+## 🏢 Backoffice
+
+### **Administración de Datos**
+- **Admin** carga todos los datos
+- **No validaciones** automáticas
+- **No dashboard** de monitoreo
+- **Carga manual** de:
+  - Productos por supermercado
+  - Promociones bancarias
+  - Beneficios por supermercado
+  - Sucursales
+
 ## 🚫 Limitaciones del MVP
 
 ### **No Incluir**
@@ -220,12 +294,21 @@
 - **Geolocalización** avanzada
 - **APIs de bancos** (carga manual)
 - **APIs de supermercados** (carga manual)
+- **SSO** externo
+- **Datos de tarjetas** completos
+- **Validaciones** automáticas
+- **Dashboard** de monitoreo
+- **Rate limiting**
+- **Cache** de precios
+- **Límites** de productos/carritos
 
 ### **Incluir**
 - **Carga manual** de productos y precios
 - **Carga manual** de promociones bancarias
 - **Backoffice** para administrar datos
 - **Notificaciones** básicas (email)
+- **Templates** de email
+- **Logs** de procesamiento
 
 ## 🎯 Objetivos del MVP
 
