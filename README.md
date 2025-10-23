@@ -6,91 +6,38 @@ Construir tu idea de negocio como MVP funcional para presentar a inversores.
 ## 📊 Estructura de Base de Datos
 
 ```mermaid
-erDiagram
-    USUARIOS ||--o{ CARRITOS_X_USUARIO : "tiene"
-    USUARIOS ||--o{ MEDIOS_DE_PAGO_X_USUARIO : "tiene"
-    USUARIOS ||--o{ HISTORIAL_COMPRAS : "realiza"
-    USUARIOS ||--o{ NOTIFICACIONES : "recibe"
+graph TD
+    A[👤 Usuario] --> B[🛒 Lista de Compras]
+    A --> C[💳 Tarjetas y Billeteras]
+    A --> D[📱 Notificaciones]
+    A --> E[📊 Historial de Ahorros]
     
-    CARRITOS_X_USUARIO ||--o{ PRODUCTOS_X_CARRITO : "contiene"
-    CARRITOS_X_USUARIO ||--o{ HISTORIAL_COMPRAS : "genera"
+    B --> F[🛍️ Productos en la Lista]
+    B --> G[⏰ Frecuencia de Compra]
     
-    PRODUCTOS ||--o{ PRODUCTOS_X_CARRITO : "incluido_en"
-    PRODUCTOS ||--o{ PRODUCTOS_X_SUPERMERCADO : "vendido_en"
-    PRODUCTOS ||--o{ BENEFICIOS_X_PRODUCTO : "tiene_beneficio"
-    PRODUCTOS }o--|| CATEGORIAS_PRODUCTOS : "pertenece_a"
+    F --> H[🏪 Supermercados]
+    F --> I[💰 Precios]
+    F --> J[🏷️ Descuentos]
     
-    SUPERMERCADOS ||--o{ SUCURSALES : "tiene"
-    SUPERMERCADOS ||--o{ PRODUCTOS_X_SUPERMERCADO : "vende"
-    SUPERMERCADOS ||--o{ BENEFICIOS_X_MEDIO_DE_PAGO : "tiene_beneficio"
-    SUPERMERCADOS ||--o{ BENEFICIOS_X_PRODUCTO : "tiene_beneficio"
+    H --> K[📍 Sucursales Cercanas]
+    H --> L[🎯 Promociones del Super]
     
-    MEDIOS_DE_PAGO ||--o{ MEDIOS_DE_PAGO_X_USUARIO : "asignado_a"
-    MEDIOS_DE_PAGO ||--o{ BENEFICIOS_X_MEDIO_DE_PAGO : "tiene_beneficio"
+    C --> M[🏦 Banco]
+    C --> N[💎 Tipo de Tarjeta]
+    C --> O[🎁 Beneficios Bancarios]
     
-    SEGMENTOS ||--o{ SEGMENTOS_X_MEDIO_DE_PAGO : "aplica_a"
-    SEGMENTOS ||--o{ MEDIOS_DE_PAGO_X_USUARIO : "especifica"
-    SEGMENTOS ||--o{ BENEFICIOS_X_MEDIO_DE_PAGO : "especifica"
+    J --> P[📅 Válido hasta]
+    J --> Q[💵 Descuento %]
+    J --> R[🔢 Monto máximo]
     
-    BENEFICIOS ||--o{ BENEFICIOS_X_MEDIO_DE_PAGO : "aplica_a"
-    BENEFICIOS ||--o{ BENEFICIOS_X_PRODUCTO : "aplica_a"
+    O --> S[👥 Segmento VIP]
+    O --> T[💳 Tarjeta Gold/Platinum]
     
-    HISTORIAL_COMPRAS }o--|| SUCURSALES : "comprado_en"
-    
-    USUARIOS {
-        uuid id PK
-        string nombre
-        string telefono
-        string email
-        string calle
-        string altura
-        string codigo_postal
-        string ciudad
-        decimal lat
-        decimal lng
-    }
-    
-    CARRITOS_X_USUARIO {
-        uuid id PK
-        uuid usuario_id FK
-        string nombre
-        int frecuencia_dias
-        timestamp proxima_notificacion
-        timestamp ultima_compra
-        string estado
-    }
-    
-    PRODUCTOS {
-        uuid id PK
-        string nombre
-        text descripcion
-        uuid categoria_id FK
-        string marca
-    }
-    
-    SUPERMERCADOS {
-        uuid id PK
-        string nombre
-        boolean activo
-    }
-    
-    MEDIOS_DE_PAGO {
-        uuid id PK
-        string tipo
-        string banco
-        string nombre
-    }
-    
-    BENEFICIOS {
-        uuid id PK
-        string nombre
-        string tipo
-        decimal valor
-        decimal monto_maximo
-        date fecha_inicio
-        date fecha_fin
-        int[] dias_vigencia
-    }
+    style A fill:#e1f5fe
+    style B fill:#f3e5f5
+    style C fill:#e8f5e8
+    style D fill:#fff3e0
+    style E fill:#fce4ec
 ```
 
 ## 🚀 Setup Rápido
