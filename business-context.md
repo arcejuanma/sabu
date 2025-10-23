@@ -105,6 +105,11 @@
 - **Construcción de marca**: Con propósito claro
 - **Mercado extenso**: Alto potencial de crecimiento
 
+## 🥊 Competencia
+- **Apps de control de finanzas**: Como Gasti (control de gastos)
+- **Diferenciación**: SABU se enfoca específicamente en supermercados y descuentos, no en control general de finanzas
+- **Ventaja**: Centralización de promociones vs. apps dispersas de bancos
+
 ## 📱 Funcionalidades Core
 
 ### Para Usuarios
@@ -119,6 +124,40 @@
 2. **Analytics de efectividad**
 3. **Segmentación de usuarios**
 4. **Reportes de conversión**
+
+## 🏪 Supermercados Objetivo
+- **Disco**
+- **Carrefour**
+- **Jumbo**
+- **Coto**
+- **Día**
+- **Chango Más**
+
+**Nota**: En MVP, los productos se cargarán manualmente en Supabase por supermercado, precio y promociones.
+
+## 💳 Bancos y Tarjetas Prioritarios
+- **Visa** (todas las variantes)
+- **Mastercard** (todas las variantes)
+- **AMEX** (American Express)
+- **Santander** (cuenta sueldo, black, etc.)
+- **Galicia** (cuenta sueldo, black, etc.)
+
+**Segmentos bancarios**: Cada banco tiene diferentes segmentos (cuenta sueldo, black, premium) que determinan acceso a promociones específicas.
+
+## 📊 Estructura de Promociones
+Las promociones tienen:
+- **Día** de vigencia
+- **Fecha inicio**
+- **Fecha fin**
+- **Monto máximo** de descuento
+- **Segmento bancario** específico
+
+## 🚫 Limitaciones del MVP
+- **No integración** con APIs de bancos o supermercados
+- **No geolocalización** para supermercados cercanos
+- **No billeteras digitales** (Mercado Pago, Ualá)
+- **No notificaciones push**
+- **Comunicación**: Email o WhatsApp para MVP
 
 ## 🎯 Objetivos de Negocio
 
