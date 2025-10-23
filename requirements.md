@@ -51,7 +51,12 @@
   "nombre": "string",
   "telefono": "string",
   "email": "string",
-  "direccion": "string",
+  "direccion": {
+    "calle": "string",
+    "altura": "string",
+    "codigo_postal": "string",
+    "ciudad": "string"
+  },
   "created_at": "timestamp"
 }
 ```
@@ -63,7 +68,9 @@
   "user_id": "uuid",
   "nombre": "string",
   "frecuencia_dias": "number",
-  "estado": "activo|comprado|pausado",
+  "proxima_notificacion": "timestamp",
+  "ultima_compra": "timestamp",
+  "estado": "activo|pausado",
   "created_at": "timestamp"
 }
 ```
@@ -74,8 +81,7 @@
   "id": "uuid",
   "carrito_id": "uuid",
   "producto_id": "uuid",
-  "cantidad": "number",
-  "frecuencia_dias": "number"
+  "cantidad": "number"
 }
 ```
 
@@ -92,21 +98,71 @@
 }
 ```
 
-### **Promociones**
+### **Productos por Supermercado**
+```json
+{
+  "id": "uuid",
+  "producto_id": "uuid",
+  "supermercado": "string",
+  "precio": "number",
+  "promocion_activa": "boolean",
+  "tipo_promocion": "2do_al_70%|descuento_porcentaje|descuento_monto",
+  "valor_promocion": "number",
+  "fecha_inicio_promocion": "date",
+  "fecha_fin_promocion": "date",
+  "updated_at": "timestamp"
+}
+```
+
+### **Beneficios por Supermercado**
 ```json
 {
   "id": "uuid",
   "supermercado": "string",
+  "tipo": "descuento_porcentaje|2do_unidad|descuento_monto",
+  "valor": "number",
   "producto_id": "uuid",
-  "tipo_tarjeta": "string",
+  "fecha_inicio": "date",
+  "fecha_fin": "date",
+  "activo": "boolean"
+}
+```
+
+### **Promociones Bancarias**
+```json
+{
+  "id": "uuid",
+  "supermercado": "string",
   "banco": "string",
   "segmento": "string",
+  "tipo_tarjeta": "string",
   "descuento_porcentaje": "number",
   "descuento_monto": "number",
   "monto_maximo": "number",
   "fecha_inicio": "date",
   "fecha_fin": "date",
-  "dias_vigencia": "array"
+  "dias_vigencia": "array",
+  "activo": "boolean"
+}
+```
+
+### **Sucursales de Supermercados**
+```json
+{
+  "id": "uuid",
+  "supermercado": "string",
+  "nombre": "string",
+  "direccion": {
+    "calle": "string",
+    "altura": "string",
+    "codigo_postal": "string",
+    "ciudad": "string"
+  },
+  "coordenadas": {
+    "lat": "number",
+    "lng": "number"
+  },
+  "activo": "boolean"
 }
 ```
 
@@ -133,17 +189,28 @@
 ### **2. Proceso Interno**
 1. **Obtener usuarios** activos
 2. **Obtener carritos** activos de cada usuario
-3. **Obtener productos** de cada carrito
-4. **Buscar precios** en supermercados
-5. **Aplicar promociones** bancarias
-6. **Calcular ahorro** potencial
-7. **Generar notificaciones** si hay ahorro
-8. **Marcar como enviada**
+3. **Verificar proxima_notificacion** de cada carrito
+4. **Obtener productos** de cada carrito
+5. **Buscar precios** en supermercados cercanos (geolocalización)
+6. **Aplicar promociones** del supermercado
+7. **Aplicar promociones** bancarias
+8. **Calcular ahorro** potencial
+9. **Generar notificaciones** si hay ahorro
+10. **Marcar como enviada**
 
-### **3. Notificaciones**
-- **Email**: Con mejores ofertas
-- **WhatsApp**: Futuro
-- **Contenido**: Productos, supermercados, ahorro, tarjetas recomendadas
+### **3. Lógica de Notificaciones**
+- **Verificar proxima_notificacion** del carrito
+- **Calcular distancia** a supermercados
+- **Aplicar promociones** por día de la semana
+- **Generar contenido** personalizado
+- **Actualizar proxima_notificacion** basado en frecuencia_dias
+
+### **4. Contenido de Notificaciones**
+- **Productos** con mejor precio
+- **Supermercados** cercanos
+- **Ahorro** potencial
+- **Tarjetas** recomendadas
+- **Promociones** activas
 
 ## 🚫 Limitaciones del MVP
 
