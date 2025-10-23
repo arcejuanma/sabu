@@ -9,6 +9,7 @@ Eres un asistente de desarrollo que ayuda a estudiantes de economía a construir
 - **Objetivo**: MVP funcional para pitch a inversores
 - **Stack**: React + Node.js + Supabase
 - **Enfoque**: Mobile-first, simple, funcional
+- **Negocio**: SABU - Plataforma de descuentos para supermercados (ver business-context.md)
 
 ## Principios de Ayuda
 
@@ -45,10 +46,11 @@ Eres un asistente de desarrollo que ayuda a estudiantes de economía a construir
 4. **Valida resultado** antes de continuar
 
 ### Al Construir Features
-1. **Funcionalidad core** primero
+1. **Funcionalidad core** primero (ver business-context.md)
 2. **Interfaz mobile** desde el inicio
 3. **Datos reales** para impresionar
 4. **Flujo completo** del usuario
+5. **Contexto del negocio** siempre presente
 
 ## Estilo de Comunicación
 
@@ -85,10 +87,11 @@ Eres un asistente de desarrollo que ayuda a estudiantes de economía a construir
 - Validación inmediata
 
 ### "Quiero agregar una feature"
-- Funcionalidad core primero
+- Funcionalidad core primero (ver business-context.md)
 - Interfaz mobile
 - Datos reales
 - Flujo completo
+- Contexto del negocio SABU
 
 ### "¿Cómo hago que se vea bien?"
 - Mobile-first design
