@@ -1,0 +1,145 @@
+# SABU - Reglas para Agentes de Cursor
+
+## Contexto del Proyecto
+Este es un proyecto para estudiantes de economía que quieren construir su idea de negocio como MVP funcional. El objetivo es vibe coding sin conocimientos previos y presentar a inversores en 3 semanas.
+
+## Stack Tecnológico
+- **Frontend**: React + Vite
+- **Backend**: Node.js + Express  
+- **Base de Datos**: Supabase (PostgreSQL)
+- **Deployment**: Vercel (Frontend) + Railway (Backend)
+
+## Principios de Desarrollo
+
+### 1. Vibe Coding
+- Código que funciona inmediatamente
+- Una función = una responsabilidad específica
+- Máximo 10-15 líneas por función
+- Divide problemas grandes en funciones pequeñas
+
+### 2. MVP para Inversores
+- Funcionalidad core primero
+- Interfaz mobile impresionante
+- Datos reales y convincentes
+- Flujo de usuario claro
+
+### 3. Mobile-First
+- Todo el frontend optimizado para móvil
+- Interfaz táctil intuitiva
+- Responsive design desde el inicio
+- Performance en dispositivos móviles
+
+## Estructura del Proyecto
+
+```
+SABU/
+├── frontend/          # React app
+│   ├── src/
+│   │   ├── components/  # Componentes reutilizables
+│   │   ├── pages/            # Páginas de la app
+│   │   ├── services/         # API calls
+│   │   └── utils/            # Funciones auxiliares
+├── backend/           # Node.js API
+│   ├── src/
+│   │   ├── routes/           # Endpoints
+│   │   ├── controllers/       # Lógica de negocio
+│   │   └── services/         # Servicios externos
+└── supabase/          # Database config
+```
+
+## Reglas Específicas
+
+### Frontend (React)
+- Usar componentes funcionales con hooks
+- Props claras y descriptivas
+- No más de 3 niveles de anidación
+- CSS inline para estilos específicos
+- Usar variables CSS del sistema
+
+### Backend (Node.js)
+- Patrón MVC simple
+- Middleware para validaciones
+- Error handling consistente
+- Logs descriptivos
+- Una responsabilidad por endpoint
+
+### Base de Datos (Supabase)
+- Tablas simples y descriptivas
+- RLS habilitado por defecto
+- Políticas de seguridad claras
+- Migraciones versionadas
+
+## Restricciones
+
+### NO Hacer
+- No TypeScript inicialmente
+- No state management complejo (Context API suficiente)
+- No testing complejo (opcional para MVP)
+- No optimizaciones prematuras
+- No documentación excesiva
+
+### SÍ Hacer
+- Código limpio y legible
+- Comentarios para lógica compleja
+- Variables de entorno para configuración
+- Error handling básico
+- Responsive design
+
+## Flujo de Trabajo
+
+### 1. Desarrollo
+- Crear ramas por feature
+- Commits descriptivos
+- Push frecuente
+- Code review entre compañeros
+
+### 2. Testing
+- Probar localmente antes de commit
+- Verificar en navegador
+- Probar endpoints con Postman
+- Verificar en Supabase dashboard
+
+### 3. Deploy
+- Frontend → Vercel
+- Backend → Railway
+- Variables de entorno configuradas
+- Health checks funcionando
+
+## Comandos Útiles
+
+### Desarrollo
+```bash
+# Frontend
+cd frontend && npm run dev
+
+# Backend  
+cd backend && npm run dev
+
+# Instalar dependencias
+npm install
+```
+
+### Git
+```bash
+# Crear feature
+git checkout -b feature/nombre-feature
+
+# Commit descriptivo
+git commit -m "feat: agregar nueva funcionalidad"
+
+# Push
+git push origin feature/nombre-feature
+```
+
+## Recursos
+- [React Docs](https://react.dev/)
+- [Express Docs](https://expressjs.com/)
+- [Supabase Docs](https://supabase.com/docs)
+- [Vercel Docs](https://vercel.com/docs)
+- [Railway Docs](https://docs.railway.app/)
+
+## Notas Importantes
+- Este es un MVP para inversores, no para aprender programación
+- Enfocarse en vibe coding, no en conceptos técnicos
+- Interfaz mobile que impresione
+- Los estudiantes deben poder ejecutar el proyecto inmediatamente después de clonar
