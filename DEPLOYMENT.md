@@ -9,8 +9,6 @@ Ve a tu repo en GitHub → Settings → Secrets and variables → Actions
 - `VERCEL_TOKEN`: Token de Vercel
 - `VERCEL_ORG_ID`: ID de organización
 - `VERCEL_PROJECT_ID`: ID del proyecto
-- `RAILWAY_TOKEN`: Token de Railway
-- `RAILWAY_SERVICE_ID`: ID del servicio
 
 ### 2. Push a main
 ```bash
@@ -22,7 +20,7 @@ git push origin main
 ### 3. Verificar deployment
 - GitHub Actions ejecutará automáticamente
 - Frontend se deployará en Vercel
-- Backend se deployará en Railway
+- Backend se deployará en Render (automático)
 
 ## Opción 2: Deployment Manual
 
@@ -34,18 +32,16 @@ vercel login
 vercel --prod
 ```
 
-### Backend (Railway)
+### Backend (Render)
 ```bash
-cd backend
-npm install -g @railway/cli
-railway login
-railway up
+# Render se conecta automáticamente a GitHub
+# Solo necesitas configurar en el dashboard de Render
 ```
 
 ## URLs de Producción
 - **Frontend**: https://tu-app.vercel.app
-- **Backend**: https://tu-app.railway.app
-- **Health Check**: https://tu-app.railway.app/api/health
+- **Backend**: https://tu-app.onrender.com
+- **Health Check**: https://tu-app.onrender.com/api/health
 
 ## Variables de Entorno en Producción
 
@@ -54,7 +50,7 @@ railway up
 - `VITE_SUPABASE_ANON_KEY`: Key anónima
 - `VITE_API_URL`: URL del backend
 
-### Railway (Backend)
+### Render (Backend)
 - `SUPABASE_URL`: URL de Supabase
 - `SUPABASE_SERVICE_ROLE_KEY`: Service role key
 - `PORT`: 4000
@@ -68,5 +64,5 @@ railway up
 ## Troubleshooting
 - Verificar que todos los secrets estén configurados
 - Revisar logs en GitHub Actions
-- Verificar variables de entorno en Vercel/Railway
+- Verificar variables de entorno en Vercel/Render
 - Probar endpoints manualmente

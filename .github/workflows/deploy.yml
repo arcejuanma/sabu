@@ -53,9 +53,7 @@ jobs:
           cd backend
           npm ci
 
-      - name: Deploy to Railway
-        uses: railwayapp/railway-deploy@v1
-        with:
-          railway-token: ${{ secrets.RAILWAY_TOKEN }}
-          service: ${{ secrets.RAILWAY_SERVICE_ID }}
-          working-directory: ./backend
+      - name: Deploy to Render
+        run: |
+          echo "Backend will be deployed automatically by Render when pushed to main"
+          echo "Make sure to configure Render webhook in your Render dashboard"

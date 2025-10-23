@@ -48,4 +48,4 @@ Construir tu idea de negocio como MVP funcional para presentar a inversores.
 - **Frontend**: React + Vite
 - **Backend**: Node.js + Express
 - **Database**: Supabase
-- **Deploy**: Vercel + Railway
+- **Deploy**: Vercel + Render (100% GRATIS)

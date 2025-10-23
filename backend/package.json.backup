@@ -2,7 +2,6 @@
   "name": "sabu-backend",
   "version": "1.0.0",
   "description": "SABU Backend API",
-  "type": "module",
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
@@ -10,10 +9,5 @@
   },
   "engines": {
     "node": "18.x"
-  },
-  "dependencies": {
-    "express": "^4.18.0",
-    "cors": "^2.8.5",
-    "@supabase/supabase-js": "^2.0.0"
   }
 }
