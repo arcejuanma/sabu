@@ -1,12 +1,22 @@
-import React from 'react'
+import { useAuth } from './hooks/useAuth'
+import Login from './components/Login'
+import Dashboard from './components/Dashboard'
 
 function App() {
-  return (
-    <div>
-      <h1>Hello World</h1>
-      <p>React app funcionando</p>
-    </div>
-  )
+  const { user, loading } = useAuth()
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando SABU...</p>
+        </div>
+      </div>
+    )
+  }
+
+  return user ? <Dashboard /> : <Login />
 }
 
 export default App
