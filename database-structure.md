@@ -73,7 +73,7 @@ CREATE TABLE productos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   nombre VARCHAR(255) NOT NULL,
   descripcion TEXT,
-  categoria VARCHAR(100),
+  categoria_id UUID REFERENCES categorias_productos(id),
   marca VARCHAR(100),
   activo BOOLEAN DEFAULT true,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -207,6 +207,32 @@ CREATE TABLE notificaciones (
 );
 ```
 
+### **16. Historial de Compras**
+```sql
+CREATE TABLE historial_compras (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  usuario_id UUID REFERENCES usuarios(id),
+  carrito_id UUID REFERENCES carritos_x_usuario(id),
+  supermercado_id UUID REFERENCES supermercados(id),
+  sucursal_id UUID REFERENCES sucursales(id),
+  total_ahorro DECIMAL(10, 2),
+  total_gastado DECIMAL(10, 2),
+  fecha_compra TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+### **17. Categorías de Productos**
+```sql
+CREATE TABLE categorias_productos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  nombre VARCHAR(100) NOT NULL,
+  descripcion TEXT,
+  activo BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
 ## 🔗 Relaciones Principales
 
 ### **Usuarios → MediosDePago**
@@ -217,9 +243,17 @@ CREATE TABLE notificaciones (
 - Un usuario puede tener múltiples carritos
 - Cada carrito tiene una frecuencia de compra
 
+### **Usuarios → Historial de Compras**
+- Un usuario puede tener múltiples compras
+- Cada compra tiene tracking de ahorro
+
 ### **Carritos → Productos**
 - Un carrito puede tener múltiples productos
 - Cada producto tiene una cantidad
+
+### **Productos → Categorías**
+- Un producto pertenece a una categoría
+- Una categoría puede tener múltiples productos
 
 ### **Productos → Supermercados**
 - Un producto puede estar en múltiples supermercados
@@ -247,6 +281,10 @@ CREATE INDEX idx_beneficios_fechas ON beneficios(fecha_inicio, fecha_fin);
 CREATE INDEX idx_beneficios_activo ON beneficios(activo);
 CREATE INDEX idx_sucursales_supermercado ON sucursales(supermercado_id);
 CREATE INDEX idx_sucursales_activo ON sucursales(activo);
+CREATE INDEX idx_historial_compras_usuario ON historial_compras(usuario_id);
+CREATE INDEX idx_historial_compras_fecha ON historial_compras(fecha_compra);
+CREATE INDEX idx_categorias_activo ON categorias_productos(activo);
+CREATE INDEX idx_productos_categoria ON productos(categoria_id);
 ```
 
 ## 🔒 Row Level Security (RLS)
@@ -258,6 +296,7 @@ ALTER TABLE carritos_x_usuario ENABLE ROW LEVEL SECURITY;
 ALTER TABLE productos_x_carrito ENABLE ROW LEVEL SECURITY;
 ALTER TABLE medios_de_pago_x_usuario ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notificaciones ENABLE ROW LEVEL SECURITY;
+ALTER TABLE historial_compras ENABLE ROW LEVEL SECURITY;
 
 -- Políticas de seguridad
 CREATE POLICY "Users can view own data" ON usuarios FOR SELECT USING (auth.uid() = id);
@@ -269,6 +308,8 @@ CREATE POLICY "Users can manage own carritos" ON carritos_x_usuario FOR ALL USIN
 CREATE POLICY "Users can view own productos in carrito" ON productos_x_carrito FOR SELECT USING (
   carrito_id IN (SELECT id FROM carritos_x_usuario WHERE usuario_id = auth.uid())
 );
+
+CREATE POLICY "Users can view own historial" ON historial_compras FOR SELECT USING (auth.uid() = usuario_id);
 ```
 
 ## 🎯 Consideraciones de Diseño
