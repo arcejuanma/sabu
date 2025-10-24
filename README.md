@@ -12,33 +12,40 @@ graph TD
     A --> D[📱 Notificaciones]
     A --> E[📊 Historial de Ahorros]
     A --> F[🎫 Cupos Mensuales]
+    A --> G[🏪 Supermercados Preferidos]
     
-    B --> G[🛍️ Productos en la Lista]
-    B --> H[⏰ Frecuencia de Compra]
+    B --> H[🛍️ Productos en la Lista]
+    B --> I[⏰ Frecuencia de Compra]
+    B --> J[🔄 Criterios de Sustitución]
     
-    G --> I[🏪 Supermercados]
-    G --> J[💰 Precios]
-    G --> K[🏷️ Descuentos]
+    H --> K[🏪 Supermercados]
+    H --> L[💰 Precios]
+    H --> M[🏷️ Descuentos]
     
-    I --> L[📍 Sucursales Cercanas]
-    I --> M[🎯 Promociones del Super]
+    K --> N[🎯 Promociones del Super]
+    K --> O[📊 Beneficios Unitarios]
+    K --> P[📊 Beneficios por Cantidad]
     
-    C --> N[🏦 Banco]
-    C --> O[💎 Tipo de Tarjeta]
-    C --> P[🎁 Beneficios Bancarios]
+    C --> Q[🏦 Banco]
+    C --> R[💎 Tipo de Tarjeta]
+    C --> S[🎁 Beneficios Bancarios]
     
-    K --> Q[📅 Válido hasta]
-    K --> R[💵 Descuento %]
-    K --> S[🔢 Monto máximo]
+    M --> T[📅 Válido hasta]
+    M --> U[💵 Descuento %]
+    M --> V[🔢 Monto máximo]
     
-    P --> T[👥 Segmento VIP]
-    P --> U[💳 Tarjeta Gold/Platinum]
-    P --> V[📅 Solo miércoles]
-    P --> W[💰 Hasta $20k/mes]
+    S --> W[👥 Segmento VIP]
+    S --> X[💳 Tarjeta Gold/Platinum]
+    S --> Y[📅 Solo miércoles]
+    S --> Z[💰 Hasta $20k/mes]
     
-    F --> X[💳 Cupo Bancario]
-    F --> Y[🏪 Cupo Super]
-    F --> Z[📊 Tracking Mensual]
+    F --> AA[💳 Cupo Bancario]
+    F --> BB[📊 Tracking Mensual]
+    
+    J --> CC[🔒 Exacto]
+    J --> DD[⚖️ Calidad Similar]
+    J --> EE[💰 Precio Significativo]
+    J --> FF[🏷️ Solo Precio]
     
     style A fill:#e1f5fe
     style B fill:#f3e5f5
@@ -46,6 +53,8 @@ graph TD
     style D fill:#fff3e0
     style E fill:#fce4ec
     style F fill:#f0f4ff
+    style G fill:#e8f5e8
+    style J fill:#f3e5f5
 ```
 
 ## 🚀 Setup Rápido
@@ -98,5 +107,9 @@ npm run dev
 ## 📚 Documentación
 - **Business Context**: `business-context.md`
 - **Requirements**: `requirements.md`
-- **Database Structure**: `database-structure.md`
+- **Database Structure**: `supabase/schema.sql`
+- **Modelo Simplificado**: `MODELO_SIMPLIFICADO.md`
+- **Criterios de Sustitución**: `CRITERIOS_SUSTITUCION.md`
+- **Beneficios Híbridos**: `BENEFICIOS_HIBRIDOS.md`
+- **Magic Link Setup**: `MAGIC_LINK_SETUP.md`
 - **Deployment Guide**: `DEPLOYMENT.md`

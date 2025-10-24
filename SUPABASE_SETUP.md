@@ -40,6 +40,7 @@ SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 1. Ve a **SQL Editor** en Supabase
 2. Copia y pega el contenido de `supabase/schema.sql`
 3. Ejecuta el script completo
+4. Verifica que aparezca el mensaje: "SABU Database V4 - Modelo Simplificado creado exitosamente!"
 
 ## 4. Probar la Autenticación
 
