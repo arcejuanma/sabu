@@ -17,12 +17,12 @@ export default function Onboarding() {
   const [step, setStep] = useState(1) // 1: Datos básicos, 2: Supermercados
 
   const supermercadosDisponibles = [
-    { id: 'disco', nombre: 'Disco', icon: '🛒' },
-    { id: 'carrefour', nombre: 'Carrefour', icon: '🏪' },
-    { id: 'jumbo', nombre: 'Jumbo', icon: '🛍️' },
-    { id: 'coto', nombre: 'Coto', icon: '🏬' },
-    { id: 'dia', nombre: 'Día', icon: '🛒' },
-    { id: 'chango-mas', nombre: 'Chango Más', icon: '🛒' }
+    { id: 'Disco', nombre: 'Disco', icon: '🛒' },
+    { id: 'Carrefour', nombre: 'Carrefour', icon: '🏪' },
+    { id: 'Jumbo', nombre: 'Jumbo', icon: '🛍️' },
+    { id: 'Coto', nombre: 'Coto', icon: '🏬' },
+    { id: 'Día', nombre: 'Día', icon: '🛒' },
+    { id: 'Chango Más', nombre: 'Chango Más', icon: '🛒' }
   ]
 
   const handleInputChange = (e) => {
@@ -84,6 +84,9 @@ export default function Onboarding() {
         ...formData,
         telefono: getTelefonoCompleto()
       }
+      
+      console.log('Datos completos a enviar:', datosCompletos)
+      console.log('Supermercados seleccionados:', formData.supermercados)
       
       await completeOnboarding(datosCompletos)
       // El hook manejará la redirección automáticamente

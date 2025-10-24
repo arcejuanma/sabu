@@ -34,15 +34,21 @@ export function useOnboarding() {
         setNeedsOnboarding(true)
       } else {
         // Verificar si tiene supermercados preferidos
+        console.log('Verificando supermercados preferidos para usuario:', user.id)
         const { data: supermercados, error: superError } = await supabase
           .from('supermercados_preferidos_usuario')
           .select('id')
           .eq('usuario_id', user.id)
           .eq('activo', true)
 
+        console.log('Supermercados preferidos encontrados:', supermercados)
+        console.log('Error en consulta:', superError)
+
         if (superError || !supermercados || supermercados.length === 0) {
+          console.log('Usuario necesita onboarding - sin supermercados preferidos')
           setNeedsOnboarding(true)
         } else {
+          console.log('Usuario completó onboarding - tiene supermercados preferidos')
           setNeedsOnboarding(false)
         }
       }
@@ -74,12 +80,18 @@ export function useOnboarding() {
       if (userError) throw userError
 
       // Obtener IDs reales de los supermercados
+      console.log('Buscando supermercados:', userData.supermercados)
       const { data: supermercados, error: supermercadosError } = await supabase
         .from('supermercados')
         .select('id, nombre')
         .in('nombre', userData.supermercados)
 
-      if (supermercadosError) throw supermercadosError
+      if (supermercadosError) {
+        console.error('Error obteniendo supermercados:', supermercadosError)
+        throw supermercadosError
+      }
+
+      console.log('Supermercados encontrados:', supermercados)
 
       // Crear supermercados preferidos con IDs reales
       const supermercadosData = supermercados.map(supermercado => ({
@@ -88,11 +100,19 @@ export function useOnboarding() {
         activo: true
       }))
 
-      const { error: superError } = await supabase
+      console.log('Datos a insertar:', supermercadosData)
+
+      const { data: insertedData, error: superError } = await supabase
         .from('supermercados_preferidos_usuario')
         .insert(supermercadosData)
+        .select()
 
-      if (superError) throw superError
+      if (superError) {
+        console.error('Error insertando supermercados preferidos:', superError)
+        throw superError
+      }
+
+      console.log('Supermercados preferidos insertados:', insertedData)
 
       // Marcar onboarding como completado y recargar estado
       setNeedsOnboarding(false)
