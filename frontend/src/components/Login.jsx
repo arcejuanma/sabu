@@ -6,6 +6,7 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [message, setMessage] = useState('')
+  const [linkSent, setLinkSent] = useState(false)
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -14,7 +15,7 @@ export default function Login() {
     
     try {
       await signInWithMagicLink(email)
-      setMessage('¡Revisá tu email! Te enviamos un link para ingresar.')
+      setLinkSent(true)
     } catch (error) {
       setMessage('Error al enviar el email. Intentá nuevamente.')
     } finally {
@@ -28,6 +29,65 @@ export default function Login() {
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Cargando...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (linkSent) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-100">
+              <span className="text-3xl">📧</span>
+            </div>
+            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+              ¡Revisá tu email!
+            </h2>
+            <p className="mt-2 text-lg text-gray-600">
+              Te enviamos un link de acceso a <strong>{email}</strong>
+            </p>
+          </div>
+          
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="text-center">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">
+                ¿Qué hacer ahora?
+              </h3>
+              <div className="space-y-3 text-sm text-gray-600">
+                <div className="flex items-center">
+                  <span className="text-green-600 mr-2">1.</span>
+                  <span>Revisá tu bandeja de entrada</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="text-green-600 mr-2">2.</span>
+                  <span>Buscá el email de SABU</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="text-green-600 mr-2">3.</span>
+                  <span>Hacé clic en "Acceder a SABU"</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="text-green-600 mr-2">4.</span>
+                  <span>¡Listo! Ya estás dentro</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <button
+              onClick={() => {
+                setLinkSent(false)
+                setEmail('')
+                setMessage('')
+              }}
+              className="text-green-600 hover:text-green-500 text-sm font-medium"
+            >
+              ← Enviar a otro email
+            </button>
+          </div>
         </div>
       </div>
     )
