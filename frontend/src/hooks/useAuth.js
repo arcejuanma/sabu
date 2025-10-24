@@ -23,14 +23,17 @@ export function useAuth() {
     return () => subscription.unsubscribe()
   }, [])
 
-  const signInWithGoogle = async () => {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
+  const signInWithMagicLink = async (email) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email,
       options: {
-        redirectTo: `${window.location.origin}/dashboard`
+        emailRedirectTo: `${window.location.origin}/dashboard`
       }
     })
-    if (error) console.error('Error:', error)
+    if (error) {
+      console.error('Error:', error)
+      throw error
+    }
   }
 
   const signOut = async () => {
@@ -41,7 +44,7 @@ export function useAuth() {
   return {
     user,
     loading,
-    signInWithGoogle,
+    signInWithMagicLink,
     signOut
   }
 }
