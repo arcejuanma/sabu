@@ -467,7 +467,6 @@ ALTER TABLE productos_x_carrito ENABLE ROW LEVEL SECURITY;
 ALTER TABLE criterios_sustitucion ENABLE ROW LEVEL SECURITY;
 ALTER TABLE productos_similares ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sugerencias_sustitucion ENABLE ROW LEVEL SECURITY;
-ALTER TABLE historial_sugerencias_aceptadas ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notificaciones ENABLE ROW LEVEL SECURITY;
 ALTER TABLE historial_compras ENABLE ROW LEVEL SECURITY;
 ALTER TABLE cupos_mensuales_usuario ENABLE ROW LEVEL SECURITY;
@@ -600,12 +599,6 @@ CREATE POLICY "Users can view own substitution suggestions" ON sugerencias_susti
 CREATE POLICY "Users can insert own substitution suggestions" ON sugerencias_sustitucion
   FOR INSERT WITH CHECK (auth.uid() = usuario_id);
 
--- Políticas para HISTORIAL_SUGERENCIAS_ACEPTADAS
-CREATE POLICY "Users can view own accepted suggestions" ON historial_sugerencias_aceptadas
-  FOR SELECT USING (auth.uid() = usuario_id);
-
-CREATE POLICY "Users can insert own accepted suggestions" ON historial_sugerencias_aceptadas
-  FOR INSERT WITH CHECK (auth.uid() = usuario_id);
 
 -- Mensaje de confirmación
 SELECT 'SABU Database V4 - Modelo Simplificado (sin geolocalización) creado exitosamente!' as status;
