@@ -1,3 +1,4 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
 import { useOnboarding } from './hooks/useOnboarding'
 import Login from './components/Login'
@@ -19,15 +20,37 @@ function App() {
     )
   }
 
-  if (!user) {
-    return <Login />
-  }
-
-  if (needsOnboarding) {
-    return <Onboarding />
-  }
-
-  return <Dashboard />
+  return (
+    <Router>
+      <Routes>
+        <Route 
+          path="/" 
+          element={
+            !user ? <Login /> : 
+            needsOnboarding ? <Onboarding /> : 
+            <Navigate to="/dashboard" replace />
+          } 
+        />
+        <Route 
+          path="/dashboard" 
+          element={
+            !user ? <Navigate to="/" replace /> :
+            needsOnboarding ? <Navigate to="/onboarding" replace /> :
+            <Dashboard />
+          } 
+        />
+        <Route 
+          path="/onboarding" 
+          element={
+            !user ? <Navigate to="/" replace /> :
+            !needsOnboarding ? <Navigate to="/dashboard" replace /> :
+            <Onboarding />
+          } 
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
+  )
 }
 
 export default App
