@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useOnboarding } from '../hooks/useOnboarding'
+import { supabase } from '../lib/supabase'
 
 export default function Onboarding() {
   const { user } = useAuth()
@@ -15,15 +16,64 @@ export default function Onboarding() {
   })
   const [isLoading, setIsLoading] = useState(false)
   const [step, setStep] = useState(1) // 1: Datos básicos, 2: Supermercados
+  const [supermercadosDisponibles, setSupermercadosDisponibles] = useState([])
+  const [loadingSupermercados, setLoadingSupermercados] = useState(true)
 
-  const supermercadosDisponibles = [
-    { id: 'Disco', nombre: 'Disco', icon: '🛒' },
-    { id: 'Carrefour', nombre: 'Carrefour', icon: '🏪' },
-    { id: 'Jumbo', nombre: 'Jumbo', icon: '🛍️' },
-    { id: 'Coto', nombre: 'Coto', icon: '🏬' },
-    { id: 'Día', nombre: 'Día', icon: '🛒' },
-    { id: 'Chango Más', nombre: 'Chango Más', icon: '🛒' }
-  ]
+  // Cargar supermercados desde la base de datos
+  useEffect(() => {
+    const fetchSupermercados = async () => {
+      console.log('🔄 Iniciando carga de supermercados...')
+      try {
+        console.log('📡 Haciendo consulta a Supabase...')
+        const { data: supermercados, error } = await supabase
+          .from('supermercados')
+          .select('id, nombre')
+          .eq('activo', true)
+          .order('nombre')
+
+        console.log('📊 Respuesta de Supabase:', { supermercados, error })
+
+        if (error) {
+          console.error('❌ Error cargando supermercados:', error)
+          return
+        }
+
+        if (!supermercados || supermercados.length === 0) {
+          console.warn('⚠️ No se encontraron supermercados en la base de datos')
+          return
+        }
+
+        // Agregar iconos a los supermercados
+        const supermercadosConIconos = supermercados.map(supermercado => ({
+          ...supermercado,
+          icon: getIconForSupermercado(supermercado.nombre)
+        }))
+
+        console.log('✅ Supermercados procesados:', supermercadosConIconos)
+        setSupermercadosDisponibles(supermercadosConIconos)
+      } catch (error) {
+        console.error('💥 Error en fetchSupermercados:', error)
+      } finally {
+        console.log('🏁 Finalizando carga de supermercados')
+        setLoadingSupermercados(false)
+      }
+    }
+
+    console.log('🚀 Ejecutando useEffect para cargar supermercados')
+    fetchSupermercados()
+  }, [])
+
+  const getIconForSupermercado = (nombre) => {
+    const iconos = {
+      'Disco': '🛒',
+      'Carrefour': '🏪',
+      'Jumbo': '🛍️',
+      'Coto': '🏬',
+      'Día': '🛒',
+      'Chango Más': '🛒'
+    }
+    return iconos[nombre] || '🛒'
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -64,6 +114,7 @@ export default function Onboarding() {
         ? prev.supermercados.filter(id => id !== supermercadoId)
         : [...prev.supermercados, supermercadoId]
     }))
+    console.log('Supermercados seleccionados:', formData.supermercados)
   }
 
   const handleNext = () => {
@@ -225,36 +276,57 @@ export default function Onboarding() {
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="space-y-4">
-            {supermercadosDisponibles.map((supermercado) => (
-              <div
-                key={supermercado.id}
-                className={`relative flex items-center p-4 border rounded-lg cursor-pointer transition-colors ${
-                  formData.supermercados.includes(supermercado.id)
-                    ? 'border-green-500 bg-green-50'
-                    : 'border-gray-300 hover:border-gray-400'
-                }`}
-                onClick={() => handleSupermercadoToggle(supermercado.id)}
+          {loadingSupermercados ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+              <span className="ml-2 text-gray-600">Cargando supermercados...</span>
+            </div>
+          ) : supermercadosDisponibles.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="text-gray-500 mb-4">
+                <div className="text-4xl mb-2">⚠️</div>
+                <p>No se pudieron cargar los supermercados</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
               >
-                <div className="flex items-center">
-                  <div className="text-2xl mr-3">{supermercado.icon}</div>
-                  <div>
-                    <div className="text-sm font-medium text-gray-900">
-                      {supermercado.nombre}
+                Reintentar
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {supermercadosDisponibles.map((supermercado) => (
+                <div
+                  key={supermercado.id}
+                  className={`relative flex items-center p-4 border rounded-lg cursor-pointer transition-colors ${
+                    formData.supermercados.includes(supermercado.id)
+                      ? 'border-green-500 bg-green-50'
+                      : 'border-gray-300 hover:border-gray-400'
+                  }`}
+                  onClick={() => handleSupermercadoToggle(supermercado.id)}
+                >
+                  <div className="flex items-center">
+                    <div className="text-2xl mr-3">{supermercado.icon}</div>
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {supermercado.nombre}
+                      </div>
                     </div>
                   </div>
+                  <div className="ml-auto">
+                    <input
+                      type="checkbox"
+                      checked={formData.supermercados.includes(supermercado.id)}
+                      onChange={() => handleSupermercadoToggle(supermercado.id)}
+                      className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                    />
+                  </div>
                 </div>
-                <div className="ml-auto">
-                  <input
-                    type="checkbox"
-                    checked={formData.supermercados.includes(supermercado.id)}
-                    onChange={() => handleSupermercadoToggle(supermercado.id)}
-                    className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
 
           {formData.supermercados.length === 0 && (
             <div className="mt-4 text-center">

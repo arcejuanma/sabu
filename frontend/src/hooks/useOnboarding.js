@@ -79,24 +79,13 @@ export function useOnboarding() {
 
       if (userError) throw userError
 
-      // Obtener IDs reales de los supermercados
-      console.log('Buscando supermercados:', userData.supermercados)
-      const { data: supermercados, error: supermercadosError } = await supabase
-        .from('supermercados')
-        .select('id, nombre')
-        .in('nombre', userData.supermercados)
+      // Los supermercados ya vienen con IDs reales desde el frontend
+      console.log('Supermercados seleccionados (IDs reales):', userData.supermercados)
 
-      if (supermercadosError) {
-        console.error('Error obteniendo supermercados:', supermercadosError)
-        throw supermercadosError
-      }
-
-      console.log('Supermercados encontrados:', supermercados)
-
-      // Crear supermercados preferidos con IDs reales
-      const supermercadosData = supermercados.map(supermercado => ({
+      // Crear supermercados preferidos directamente con los IDs
+      const supermercadosData = userData.supermercados.map(supermercadoId => ({
         usuario_id: user.id,
-        supermercado_id: supermercado.id,
+        supermercado_id: supermercadoId,
         activo: true
       }))
 
