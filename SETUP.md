@@ -223,9 +223,9 @@ npm install
 
 - **Business Context**: `business-context.md`
 - **Requirements**: `requirements.md`
-- **Modelo Final**: `MODELO_FINAL.md`
+- **Modelo Base de Datos**: `MODELO_BASE_DE_DATOS.md`
 - **Criterios de Sustitución**: `CRITERIOS_SUSTITUCION.md`
-- **Beneficios Híbridos**: `BENEFICIOS_HIBRIDOS.md`
+- **Beneficios**: `Beneficios.md`
 
 ## 🚀 Próximos Pasos
 

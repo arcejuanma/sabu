@@ -3,6 +3,14 @@
 ## Contexto del Proyecto
 Este es un proyecto para estudiantes de economía que quieren construir su idea de negocio como MVP funcional. El objetivo es vibe coding sin conocimientos previos y presentar a inversores en 3 semanas.
 
+## Documentación de Referencia
+- **Business Context**: `business-context.md` - Idea de negocio SABU
+- **Requirements**: `requirements.md` - Problemas core del MVP
+- **Modelo BD**: `MODELO_BASE_DE_DATOS.md` - Estructura de base de datos
+- **Beneficios**: `Beneficios.md` - Sistema híbrido de descuentos
+- **Criterios**: `CRITERIOS_SUSTITUCION.md` - Flexibilidad por producto
+- **Setup**: `SETUP.md` - Guía completa para estudiantes
+
 ## Stack Tecnológico
 - **Frontend**: React + Vite
 - **Backend**: Node.js + Express  

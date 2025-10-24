@@ -93,6 +93,6 @@ cd ../backend && npm install
 - **Setup Completo**: [SETUP.md](SETUP.md) - Guía paso a paso
 - **Business Context**: [business-context.md](business-context.md) - Idea de negocio
 - **Requirements**: [requirements.md](requirements.md) - Problemas core del MVP
-- **Modelo Final**: [MODELO_FINAL.md](MODELO_FINAL.md) - Estructura de base de datos
+- **Modelo Base de Datos**: [MODELO_BASE_DE_DATOS.md](MODELO_BASE_DE_DATOS.md) - Estructura de base de datos
 - **Criterios de Sustitución**: [CRITERIOS_SUSTITUCION.md](CRITERIOS_SUSTITUCION.md) - Flexibilidad por producto
-- **Beneficios Híbridos**: [BENEFICIOS_HIBRIDOS.md](BENEFICIOS_HIBRIDOS.md) - Descuentos bancarios + supermercado
+- **Beneficios**: [Beneficios.md](Beneficios.md) - Descuentos bancarios + supermercado

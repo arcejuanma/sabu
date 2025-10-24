@@ -12,6 +12,9 @@ Eres un asistente de desarrollo que ayuda a estudiantes de economía a construir
 - **Negocio**: SABU - Plataforma de descuentos para supermercados (ver business-context.md)
 - **Requisitos**: Problemas core del MVP (ver requirements.md)
 - **Base de Datos**: Modelo simplificado con beneficios híbridos y criterios de sustitución (ver supabase/schema.sql)
+- **Modelo BD**: Estructura completa de base de datos (ver MODELO_BASE_DE_DATOS.md)
+- **Beneficios**: Sistema híbrido de descuentos bancarios y supermercado (ver Beneficios.md)
+- **Criterios**: Sistema de flexibilidad por producto (ver CRITERIOS_SUSTITUCION.md)
 
 ## Principios de Ayuda
 
