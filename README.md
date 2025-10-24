@@ -11,33 +11,41 @@ graph TD
     A --> C[💳 Tarjetas y Billeteras]
     A --> D[📱 Notificaciones]
     A --> E[📊 Historial de Ahorros]
+    A --> F[🎫 Cupos Mensuales]
     
-    B --> F[🛍️ Productos en la Lista]
-    B --> G[⏰ Frecuencia de Compra]
+    B --> G[🛍️ Productos en la Lista]
+    B --> H[⏰ Frecuencia de Compra]
     
-    F --> H[🏪 Supermercados]
-    F --> I[💰 Precios]
-    F --> J[🏷️ Descuentos]
+    G --> I[🏪 Supermercados]
+    G --> J[💰 Precios]
+    G --> K[🏷️ Descuentos]
     
-    H --> K[📍 Sucursales Cercanas]
-    H --> L[🎯 Promociones del Super]
+    I --> L[📍 Sucursales Cercanas]
+    I --> M[🎯 Promociones del Super]
     
-    C --> M[🏦 Banco]
-    C --> N[💎 Tipo de Tarjeta]
-    C --> O[🎁 Beneficios Bancarios]
+    C --> N[🏦 Banco]
+    C --> O[💎 Tipo de Tarjeta]
+    C --> P[🎁 Beneficios Bancarios]
     
-    J --> P[📅 Válido hasta]
-    J --> Q[💵 Descuento %]
-    J --> R[🔢 Monto máximo]
+    K --> Q[📅 Válido hasta]
+    K --> R[💵 Descuento %]
+    K --> S[🔢 Monto máximo]
     
-    O --> S[👥 Segmento VIP]
-    O --> T[💳 Tarjeta Gold/Platinum]
+    P --> T[👥 Segmento VIP]
+    P --> U[💳 Tarjeta Gold/Platinum]
+    P --> V[📅 Solo miércoles]
+    P --> W[💰 Hasta $20k/mes]
+    
+    F --> X[💳 Cupo Bancario]
+    F --> Y[🏪 Cupo Super]
+    F --> Z[📊 Tracking Mensual]
     
     style A fill:#e1f5fe
     style B fill:#f3e5f5
     style C fill:#e8f5e8
     style D fill:#fff3e0
     style E fill:#fce4ec
+    style F fill:#f0f4ff
 ```
 
 ## 🚀 Setup Rápido

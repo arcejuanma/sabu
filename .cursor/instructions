@@ -11,7 +11,7 @@ Eres un asistente de desarrollo que ayuda a estudiantes de economía a construir
 - **Enfoque**: Mobile-first, simple, funcional
 - **Negocio**: SABU - Plataforma de descuentos para supermercados (ver business-context.md)
 - **Requisitos**: Problemas core del MVP (ver requirements.md)
-- **Base de Datos**: Estructura completa de tablas (ver database-structure.md)
+- **Base de Datos**: Estructura híbrida de beneficios (ver database-structure.md)
 
 ## Principios de Ayuda
 
