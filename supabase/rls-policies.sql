@@ -21,7 +21,7 @@ ALTER TABLE productos_similares ENABLE ROW LEVEL SECURITY;
 ALTER TABLE sugerencias_sustitucion ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notificaciones ENABLE ROW LEVEL SECURITY;
 ALTER TABLE historial_compras ENABLE ROW LEVEL SECURITY;
-ALTER TABLE cupos_mensuales_usuario ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cupos_usuario ENABLE ROW LEVEL SECURITY;
 ALTER TABLE supermercados_preferidos_usuario ENABLE ROW LEVEL SECURITY;
 
 -- 2. Políticas para USUARIOS
@@ -174,14 +174,14 @@ CREATE POLICY "Users can view own purchase history" ON historial_compras
 CREATE POLICY "Users can insert own purchase history" ON historial_compras
   FOR INSERT WITH CHECK (auth.uid() = usuario_id);
 
--- 22. Políticas para CUPOS_MENSUALES_USUARIO
-CREATE POLICY "Users can view own monthly quotas" ON cupos_mensuales_usuario
+-- 22. Políticas para CUPOS_USUARIO
+CREATE POLICY "Users can view own monthly quotas" ON cupos_usuario
   FOR SELECT USING (auth.uid() = usuario_id);
 
-CREATE POLICY "Users can insert own monthly quotas" ON cupos_mensuales_usuario
+CREATE POLICY "Users can insert own monthly quotas" ON cupos_usuario
   FOR INSERT WITH CHECK (auth.uid() = usuario_id);
 
-CREATE POLICY "Users can update own monthly quotas" ON cupos_mensuales_usuario
+CREATE POLICY "Users can update own monthly quotas" ON cupos_usuario
   FOR UPDATE USING (auth.uid() = usuario_id);
 
 -- 23. Políticas para SUPERMERCADOS_PREFERIDOS_USUARIO
