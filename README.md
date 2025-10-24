@@ -59,31 +59,22 @@ graph TD
 
 ## 🚀 Setup Rápido
 
-### 1. Clonar y instalar
+**¿Primera vez?** Sigue la guía completa en [SETUP.md](SETUP.md)
+
 ```bash
+# 1. Clonar y instalar
 git clone <tu-repo-url>
 cd SABU
 
-# Frontend
-cd frontend
-npm install
+# 2. Frontend
+cd frontend && npm install
 
-# Backend
-cd backend
-npm install
-```
+# 3. Backend  
+cd ../backend && npm install
 
-### 2. Ejecutar en desarrollo
-```bash
-# Terminal 1 - Frontend
-cd frontend
-npm run dev
-# → http://localhost:3000
-
-# Terminal 2 - Backend
-cd backend
-npm run dev
-# → http://localhost:4000
+# 4. Ejecutar
+# Terminal 1: cd frontend && npm run dev
+# Terminal 2: cd backend && npm run dev
 ```
 
 ## 📱 URLs
@@ -91,25 +82,17 @@ npm run dev
 - **Backend**: http://localhost:4000
 - **Health Check**: http://localhost:4000/api/health
 
-## 📋 Próximos Pasos
-1. Configurar Supabase
-2. Agregar tu idea de negocio
-3. Crear interfaz mobile
-4. Deploy a producción
-5. Pitch a inversores
-
 ## 🛠️ Stack
-- **Frontend**: React + Vite
+- **Frontend**: React + Vite + Tailwind CSS
 - **Backend**: Node.js + Express
-- **Database**: Supabase
+- **Database**: Supabase (PostgreSQL)
+- **Auth**: Magic Link (email sin contraseña)
 - **Deploy**: Vercel + Render (100% GRATIS)
 
 ## 📚 Documentación
-- **Business Context**: `business-context.md`
-- **Requirements**: `requirements.md`
-- **Database Structure**: `supabase/schema.sql`
-- **Modelo Simplificado**: `MODELO_SIMPLIFICADO.md`
-- **Criterios de Sustitución**: `CRITERIOS_SUSTITUCION.md`
-- **Beneficios Híbridos**: `BENEFICIOS_HIBRIDOS.md`
-- **Magic Link Setup**: `MAGIC_LINK_SETUP.md`
-- **Deployment Guide**: `DEPLOYMENT.md`
+- **Setup Completo**: [SETUP.md](SETUP.md) - Guía paso a paso
+- **Business Context**: [business-context.md](business-context.md) - Idea de negocio
+- **Requirements**: [requirements.md](requirements.md) - Problemas core del MVP
+- **Modelo Final**: [MODELO_FINAL.md](MODELO_FINAL.md) - Estructura de base de datos
+- **Criterios de Sustitución**: [CRITERIOS_SUSTITUCION.md](CRITERIOS_SUSTITUCION.md) - Flexibilidad por producto
+- **Beneficios Híbridos**: [BENEFICIOS_HIBRIDOS.md](BENEFICIOS_HIBRIDOS.md) - Descuentos bancarios + supermercado
