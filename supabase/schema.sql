@@ -447,5 +447,165 @@ INSERT INTO beneficios_super_cantidad (nombre, supermercado_id, regla_cantidad, 
  (SELECT id FROM categorias_productos WHERE nombre = 'Limpieza'),
  '2024-01-01', '2024-12-31');
 
+-- PASO 3: Configurar Row Level Security (RLS)
+
+-- Habilitar RLS en todas las tablas
+ALTER TABLE usuarios ENABLE ROW LEVEL SECURITY;
+ALTER TABLE medios_de_pago ENABLE ROW LEVEL SECURITY;
+ALTER TABLE segmentos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE segmentos_x_medio_de_pago ENABLE ROW LEVEL SECURITY;
+ALTER TABLE medios_de_pago_x_usuario ENABLE ROW LEVEL SECURITY;
+ALTER TABLE categorias_productos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE productos ENABLE ROW LEVEL SECURITY;
+ALTER TABLE supermercados ENABLE ROW LEVEL SECURITY;
+ALTER TABLE productos_x_supermercado ENABLE ROW LEVEL SECURITY;
+ALTER TABLE beneficios_bancarios ENABLE ROW LEVEL SECURITY;
+ALTER TABLE beneficios_super_unitarios ENABLE ROW LEVEL SECURITY;
+ALTER TABLE beneficios_super_cantidad ENABLE ROW LEVEL SECURITY;
+ALTER TABLE carritos_x_usuario ENABLE ROW LEVEL SECURITY;
+ALTER TABLE productos_x_carrito ENABLE ROW LEVEL SECURITY;
+ALTER TABLE criterios_sustitucion ENABLE ROW LEVEL SECURITY;
+ALTER TABLE productos_similares ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sugerencias_sustitucion ENABLE ROW LEVEL SECURITY;
+ALTER TABLE historial_sugerencias_aceptadas ENABLE ROW LEVEL SECURITY;
+ALTER TABLE notificaciones ENABLE ROW LEVEL SECURITY;
+ALTER TABLE historial_compras ENABLE ROW LEVEL SECURITY;
+ALTER TABLE cupos_mensuales_usuario ENABLE ROW LEVEL SECURITY;
+ALTER TABLE supermercados_preferidos_usuario ENABLE ROW LEVEL SECURITY;
+
+-- Políticas para USUARIOS
+CREATE POLICY "Users can view own profile" ON usuarios
+  FOR SELECT USING (auth.uid() = id);
+
+CREATE POLICY "Users can insert own profile" ON usuarios
+  FOR INSERT WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Users can update own profile" ON usuarios
+  FOR UPDATE USING (auth.uid() = id);
+
+-- Políticas para MEDIOS_DE_PAGO_X_USUARIO
+CREATE POLICY "Users can view own payment methods" ON medios_de_pago_x_usuario
+  FOR SELECT USING (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can insert own payment methods" ON medios_de_pago_x_usuario
+  FOR INSERT WITH CHECK (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can update own payment methods" ON medios_de_pago_x_usuario
+  FOR UPDATE USING (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can delete own payment methods" ON medios_de_pago_x_usuario
+  FOR DELETE USING (auth.uid() = usuario_id);
+
+-- Políticas para SUPERMERCADOS_PREFERIDOS_USUARIO
+CREATE POLICY "Users can view own preferred supermarkets" ON supermercados_preferidos_usuario
+  FOR SELECT USING (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can insert own preferred supermarkets" ON supermercados_preferidos_usuario
+  FOR INSERT WITH CHECK (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can update own preferred supermarkets" ON supermercados_preferidos_usuario
+  FOR UPDATE USING (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can delete own preferred supermarkets" ON supermercados_preferidos_usuario
+  FOR DELETE USING (auth.uid() = usuario_id);
+
+-- Políticas para CARRITOS_X_USUARIO
+CREATE POLICY "Users can view own carts" ON carritos_x_usuario
+  FOR SELECT USING (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can insert own carts" ON carritos_x_usuario
+  FOR INSERT WITH CHECK (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can update own carts" ON carritos_x_usuario
+  FOR UPDATE USING (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can delete own carts" ON carritos_x_usuario
+  FOR DELETE USING (auth.uid() = usuario_id);
+
+-- Políticas para PRODUCTOS_X_CARRITO
+CREATE POLICY "Users can view own cart products" ON productos_x_carrito
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM carritos_x_usuario 
+      WHERE carritos_x_usuario.id = productos_x_carrito.carrito_id 
+      AND carritos_x_usuario.usuario_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Users can insert own cart products" ON productos_x_carrito
+  FOR INSERT WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM carritos_x_usuario 
+      WHERE carritos_x_usuario.id = productos_x_carrito.carrito_id 
+      AND carritos_x_usuario.usuario_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Users can update own cart products" ON productos_x_carrito
+  FOR UPDATE USING (
+    EXISTS (
+      SELECT 1 FROM carritos_x_usuario 
+      WHERE carritos_x_usuario.id = productos_x_carrito.carrito_id 
+      AND carritos_x_usuario.usuario_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Users can delete own cart products" ON productos_x_carrito
+  FOR DELETE USING (
+    EXISTS (
+      SELECT 1 FROM carritos_x_usuario 
+      WHERE carritos_x_usuario.id = productos_x_carrito.carrito_id 
+      AND carritos_x_usuario.usuario_id = auth.uid()
+    )
+  );
+
+-- Políticas para NOTIFICACIONES
+CREATE POLICY "Users can view own notifications" ON notificaciones
+  FOR SELECT USING (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can update own notifications" ON notificaciones
+  FOR UPDATE USING (auth.uid() = usuario_id);
+
+-- Políticas para HISTORIAL_COMPRAS
+CREATE POLICY "Users can view own purchase history" ON historial_compras
+  FOR SELECT USING (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can insert own purchase history" ON historial_compras
+  FOR INSERT WITH CHECK (auth.uid() = usuario_id);
+
+-- Políticas para CUPOS_MENSUALES_USUARIO
+CREATE POLICY "Users can view own monthly quotas" ON cupos_mensuales_usuario
+  FOR SELECT USING (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can insert own monthly quotas" ON cupos_mensuales_usuario
+  FOR INSERT WITH CHECK (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can update own monthly quotas" ON cupos_mensuales_usuario
+  FOR UPDATE USING (auth.uid() = usuario_id);
+
+-- Políticas para CRITERIOS_SUSTITUCION
+CREATE POLICY "Users can view own substitution criteria" ON criterios_sustitucion
+  FOR SELECT USING (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can insert own substitution criteria" ON criterios_sustitucion
+  FOR INSERT WITH CHECK (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can update own substitution criteria" ON criterios_sustitucion
+  FOR UPDATE USING (auth.uid() = usuario_id);
+
+-- Políticas para SUGERENCIAS_SUSTITUCION
+CREATE POLICY "Users can view own substitution suggestions" ON sugerencias_sustitucion
+  FOR SELECT USING (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can insert own substitution suggestions" ON sugerencias_sustitucion
+  FOR INSERT WITH CHECK (auth.uid() = usuario_id);
+
+-- Políticas para HISTORIAL_SUGERENCIAS_ACEPTADAS
+CREATE POLICY "Users can view own accepted suggestions" ON historial_sugerencias_aceptadas
+  FOR SELECT USING (auth.uid() = usuario_id);
+
+CREATE POLICY "Users can insert own accepted suggestions" ON historial_sugerencias_aceptadas
+  FOR INSERT WITH CHECK (auth.uid() = usuario_id);
+
 -- Mensaje de confirmación
 SELECT 'SABU Database V4 - Modelo Simplificado (sin geolocalización) creado exitosamente!' as status;
