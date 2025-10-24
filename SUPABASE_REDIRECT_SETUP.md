@@ -22,7 +22,7 @@ https://tu-app.vercel.app
 ### 3. Configurar Redirect URLs
 En **Redirect URLs**, agrega:
 ```
-https://tu-app.vercel.app/dashboard
+https://tu-app.vercel.app/
 https://tu-app.vercel.app
 ```
 
@@ -35,7 +35,7 @@ const signInWithMagicLink = async (email) => {
   const { error } = await supabase.auth.signInWithOtp({
     email: email,
     options: {
-      emailRedirectTo: `${window.location.origin}/dashboard`
+      emailRedirectTo: `${window.location.origin}/`
     }
   })
   // ...
@@ -53,7 +53,7 @@ https://sabu-app.vercel.app
 
 **Redirect URLs:**
 ```
-https://sabu-app.vercel.app/dashboard
+https://sabu-app.vercel.app/
 https://sabu-app.vercel.app
 ```
 
