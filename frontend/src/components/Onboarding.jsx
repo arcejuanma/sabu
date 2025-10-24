@@ -8,7 +8,9 @@ export default function Onboarding() {
   const [formData, setFormData] = useState({
     nombre: '',
     apellido: '',
-    telefono: '',
+    codigoPais: '+54',
+    codigoArea: '',
+    numero: '',
     supermercados: []
   })
   const [isLoading, setIsLoading] = useState(false)
@@ -31,6 +33,30 @@ export default function Onboarding() {
     }))
   }
 
+  const handleCodigoAreaChange = (e) => {
+    const value = e.target.value.replace(/\D/g, '') // Solo números
+    if (value.length <= 4) {
+      setFormData(prev => ({
+        ...prev,
+        codigoArea: value
+      }))
+    }
+  }
+
+  const handleNumeroChange = (e) => {
+    const value = e.target.value.replace(/\D/g, '') // Solo números
+    if (value.length <= 8) {
+      setFormData(prev => ({
+        ...prev,
+        numero: value
+      }))
+    }
+  }
+
+  const getTelefonoCompleto = () => {
+    return `${formData.codigoPais} ${formData.codigoArea} ${formData.numero}`.trim()
+  }
+
   const handleSupermercadoToggle = (supermercadoId) => {
     setFormData(prev => ({
       ...prev,
@@ -42,7 +68,7 @@ export default function Onboarding() {
 
   const handleNext = () => {
     if (step === 1) {
-      if (formData.nombre && formData.apellido && formData.telefono) {
+      if (formData.nombre && formData.apellido && formData.codigoArea && formData.numero) {
         setStep(2)
       }
     }
@@ -53,7 +79,13 @@ export default function Onboarding() {
     setIsLoading(true)
     
     try {
-      await completeOnboarding(formData)
+      // Crear objeto con teléfono completo
+      const datosCompletos = {
+        ...formData,
+        telefono: getTelefonoCompleto()
+      }
+      
+      await completeOnboarding(datosCompletos)
       // El hook manejará la redirección automáticamente
       console.log('Onboarding completado exitosamente')
       
@@ -120,19 +152,41 @@ export default function Onboarding() {
               </div>
 
               <div>
-                <label htmlFor="telefono" className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Teléfono
                 </label>
-                <input
-                  id="telefono"
-                  name="telefono"
-                  type="tel"
-                  required
-                  value={formData.telefono}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                  placeholder="+54 9 11 1234-5678"
-                />
+                <div className="flex space-x-2">
+                  <div className="w-20">
+                    <input
+                      type="text"
+                      value={formData.codigoPais}
+                      onChange={(e) => setFormData(prev => ({ ...prev, codigoPais: e.target.value }))}
+                      className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 text-center"
+                      placeholder="+54"
+                    />
+                  </div>
+                  <div className="w-24">
+                    <input
+                      type="text"
+                      value={formData.codigoArea}
+                      onChange={handleCodigoAreaChange}
+                      className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 text-center"
+                      placeholder="11"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <input
+                      type="text"
+                      value={formData.numero}
+                      onChange={handleNumeroChange}
+                      className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 text-center"
+                      placeholder="1234-5678"
+                    />
+                  </div>
+                </div>
+                <p className="mt-1 text-xs text-gray-500">
+                  Ejemplo: +54 11 1234-5678
+                </p>
               </div>
             </div>
 
@@ -140,7 +194,7 @@ export default function Onboarding() {
               <button
                 type="button"
                 onClick={handleNext}
-                disabled={!formData.nombre || !formData.apellido || !formData.telefono}
+                disabled={!formData.nombre || !formData.apellido || !formData.codigoArea || !formData.numero}
                 className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continuar
