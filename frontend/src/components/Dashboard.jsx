@@ -18,6 +18,7 @@ export default function Dashboard() {
         .select(`
           id,
           nombre,
+          apellido,
           telefono,
           supermercados_preferidos_usuario (
             supermercado_id,
@@ -55,7 +56,9 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              ¡Hola, {userData?.nombre || 'Usuario'}!
+              ¡Hola, {userData?.nombre && userData?.apellido 
+                ? `${userData.nombre} ${userData.apellido}` 
+                : 'Usuario'}!
             </h1>
             <p className="text-sm text-gray-600">
               {userData?.telefono && `📱 ${userData.telefono}`}

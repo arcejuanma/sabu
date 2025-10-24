@@ -38,7 +38,8 @@ DROP TABLE IF EXISTS usuarios CASCADE;
 -- 1. Usuarios (SIMPLIFICADO - sin geolocalización)
 CREATE TABLE usuarios (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  nombre VARCHAR(255) NOT NULL,
+  nombre VARCHAR(100) NOT NULL,
+  apellido VARCHAR(100) NOT NULL,
   telefono VARCHAR(20) NOT NULL,
   email VARCHAR(255) UNIQUE NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),

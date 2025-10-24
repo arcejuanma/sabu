@@ -22,14 +22,14 @@ export function useOnboarding() {
       // Verificar si el usuario tiene datos básicos
       const { data: usuario, error } = await supabase
         .from('usuarios')
-        .select('id, nombre, telefono')
+        .select('id, nombre, apellido, telefono')
         .eq('id', user.id)
         .single()
 
       if (error || !usuario) {
         // Usuario no existe en la tabla usuarios
         setNeedsOnboarding(true)
-      } else if (!usuario.nombre || !usuario.telefono) {
+      } else if (!usuario.nombre || !usuario.apellido || !usuario.telefono) {
         // Usuario existe pero le faltan datos básicos
         setNeedsOnboarding(true)
       } else {
@@ -66,6 +66,7 @@ export function useOnboarding() {
         .upsert({
           id: user.id,
           nombre: userData.nombre,
+          apellido: userData.apellido,
           telefono: userData.telefono,
           email: user.email
         })

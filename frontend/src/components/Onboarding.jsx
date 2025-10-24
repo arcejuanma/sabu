@@ -7,6 +7,7 @@ export default function Onboarding() {
   const { completeOnboarding } = useOnboarding()
   const [formData, setFormData] = useState({
     nombre: '',
+    apellido: '',
     telefono: '',
     supermercados: []
   })
@@ -41,7 +42,7 @@ export default function Onboarding() {
 
   const handleNext = () => {
     if (step === 1) {
-      if (formData.nombre && formData.telefono) {
+      if (formData.nombre && formData.apellido && formData.telefono) {
         setStep(2)
       }
     }
@@ -85,20 +86,37 @@ export default function Onboarding() {
 
           <form onSubmit={(e) => e.preventDefault()}>
             <div className="space-y-6">
-              <div>
-                <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
-                  Nombre completo
-                </label>
-                <input
-                  id="nombre"
-                  name="nombre"
-                  type="text"
-                  required
-                  value={formData.nombre}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
-                  placeholder="Tu nombre completo"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
+                    Nombre
+                  </label>
+                  <input
+                    id="nombre"
+                    name="nombre"
+                    type="text"
+                    required
+                    value={formData.nombre}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                    placeholder="Tu nombre"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="apellido" className="block text-sm font-medium text-gray-700 mb-2">
+                    Apellido
+                  </label>
+                  <input
+                    id="apellido"
+                    name="apellido"
+                    type="text"
+                    required
+                    value={formData.apellido}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                    placeholder="Tu apellido"
+                  />
+                </div>
               </div>
 
               <div>
@@ -122,7 +140,7 @@ export default function Onboarding() {
               <button
                 type="button"
                 onClick={handleNext}
-                disabled={!formData.nombre || !formData.telefono}
+                disabled={!formData.nombre || !formData.apellido || !formData.telefono}
                 className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continuar
