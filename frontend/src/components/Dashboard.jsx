@@ -8,11 +8,20 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetchUserData()
-  }, [])
+    if (user) {
+      fetchUserData()
+    }
+  }, [user])
 
   const fetchUserData = async () => {
+    if (!user) {
+      console.log('No user found, skipping fetchUserData')
+      setLoading(false)
+      return
+    }
+
     try {
+      console.log('Fetching user data for:', user.id)
       const { data: usuario, error } = await supabase
         .from('usuarios')
         .select(`
@@ -30,7 +39,12 @@ export default function Dashboard() {
         .eq('id', user.id)
         .single()
 
-      if (error) throw error
+      if (error) {
+        console.error('Error in Supabase query:', error)
+        throw error
+      }
+
+      console.log('User data fetched:', usuario)
       setUserData(usuario)
     } catch (error) {
       console.error('Error fetching user data:', error)
