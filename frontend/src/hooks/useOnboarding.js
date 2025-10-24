@@ -73,10 +73,18 @@ export function useOnboarding() {
 
       if (userError) throw userError
 
-      // Crear supermercados preferidos
-      const supermercadosData = userData.supermercados.map(supermercadoId => ({
+      // Obtener IDs reales de los supermercados
+      const { data: supermercados, error: supermercadosError } = await supabase
+        .from('supermercados')
+        .select('id, nombre')
+        .in('nombre', userData.supermercados)
+
+      if (supermercadosError) throw supermercadosError
+
+      // Crear supermercados preferidos con IDs reales
+      const supermercadosData = supermercados.map(supermercado => ({
         usuario_id: user.id,
-        supermercado_id: supermercadoId,
+        supermercado_id: supermercado.id,
         activo: true
       }))
 
