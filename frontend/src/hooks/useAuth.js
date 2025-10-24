@@ -24,10 +24,18 @@ export function useAuth() {
   }, [])
 
   const signInWithMagicLink = async (email) => {
+    // Detectar si estamos en desarrollo local
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+    const redirectUrl = isLocal 
+      ? 'http://localhost:3000/' 
+      : `${window.location.origin}/`
+    
+    console.log('Magic Link redirect URL:', redirectUrl)
+    
     const { error } = await supabase.auth.signInWithOtp({
       email: email,
       options: {
-        emailRedirectTo: `${window.location.origin}/`
+        emailRedirectTo: redirectUrl
       }
     })
     if (error) {

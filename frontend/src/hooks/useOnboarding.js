@@ -10,14 +10,18 @@ export function useOnboarding() {
   }, [])
 
   const checkOnboardingStatus = async () => {
+    setLoading(true)
     try {
       const { data: { user } } = await supabase.auth.getUser()
       
       if (!user) {
+        console.log('No user found, setting needsOnboarding to false')
         setNeedsOnboarding(false)
         setLoading(false)
         return
       }
+
+      console.log('Checking onboarding status for user:', user.id)
 
       // Verificar si el usuario tiene datos básicos
       const { data: usuario, error } = await supabase
@@ -26,35 +30,51 @@ export function useOnboarding() {
         .eq('id', user.id)
         .single()
 
-      if (error || !usuario) {
-        // Usuario no existe en la tabla usuarios
+      if (error) {
+        console.log('Error fetching user data:', error)
         setNeedsOnboarding(true)
-      } else if (!usuario.nombre || !usuario.apellido || !usuario.telefono) {
-        // Usuario existe pero le faltan datos básicos
+        setLoading(false)
+        return
+      }
+
+      if (!usuario) {
+        console.log('User not found in usuarios table')
+        setNeedsOnboarding(true)
+        setLoading(false)
+        return
+      }
+
+      if (!usuario.nombre || !usuario.apellido || !usuario.telefono) {
+        console.log('User missing basic data')
+        setNeedsOnboarding(true)
+        setLoading(false)
+        return
+      }
+
+      // Verificar si tiene supermercados preferidos
+      console.log('Verificando supermercados preferidos para usuario:', user.id)
+      const { data: supermercados, error: superError } = await supabase
+        .from('supermercados_preferidos_usuario')
+        .select('id')
+        .eq('usuario_id', user.id)
+        .eq('activo', true)
+
+      console.log('Supermercados preferidos encontrados:', supermercados)
+      console.log('Error en consulta:', superError)
+
+      if (superError) {
+        console.log('Error fetching supermercados:', superError)
+        setNeedsOnboarding(true)
+      } else if (!supermercados || supermercados.length === 0) {
+        console.log('Usuario necesita onboarding - sin supermercados preferidos')
         setNeedsOnboarding(true)
       } else {
-        // Verificar si tiene supermercados preferidos
-        console.log('Verificando supermercados preferidos para usuario:', user.id)
-        const { data: supermercados, error: superError } = await supabase
-          .from('supermercados_preferidos_usuario')
-          .select('id')
-          .eq('usuario_id', user.id)
-          .eq('activo', true)
-
-        console.log('Supermercados preferidos encontrados:', supermercados)
-        console.log('Error en consulta:', superError)
-
-        if (superError || !supermercados || supermercados.length === 0) {
-          console.log('Usuario necesita onboarding - sin supermercados preferidos')
-          setNeedsOnboarding(true)
-        } else {
-          console.log('Usuario completó onboarding - tiene supermercados preferidos')
-          setNeedsOnboarding(false)
-        }
+        console.log('Usuario completó onboarding - tiene supermercados preferidos')
+        setNeedsOnboarding(false)
       }
     } catch (error) {
       console.error('Error checking onboarding status:', error)
-      setNeedsOnboarding(false)
+      setNeedsOnboarding(true)
     } finally {
       setLoading(false)
     }

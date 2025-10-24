@@ -9,6 +9,7 @@ function App() {
   const { user, loading: authLoading } = useAuth()
   const { needsOnboarding, loading: onboardingLoading } = useOnboarding()
 
+  // Mostrar loading mientras se cargan los datos
   if (authLoading || onboardingLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -20,33 +21,32 @@ function App() {
     )
   }
 
+  // Función para determinar qué componente mostrar
+  const getComponentForRoute = (path) => {
+    // Si no hay usuario, mostrar Login
+    if (!user) {
+      return path === '/' ? <Login /> : <Navigate to="/" replace />
+    }
+
+    // Si hay usuario pero necesita onboarding
+    if (needsOnboarding) {
+      return path === '/onboarding' ? <Onboarding /> : <Navigate to="/onboarding" replace />
+    }
+
+    // Si el usuario está completo, mostrar Dashboard o redirigir
+    if (path === '/dashboard') {
+      return <Dashboard />
+    }
+    
+    return <Navigate to="/dashboard" replace />
+  }
+
   return (
     <Router>
       <Routes>
-        <Route 
-          path="/" 
-          element={
-            !user ? <Login /> : 
-            needsOnboarding ? <Onboarding /> : 
-            <Navigate to="/dashboard" replace />
-          } 
-        />
-        <Route 
-          path="/dashboard" 
-          element={
-            !user ? <Navigate to="/" replace /> :
-            needsOnboarding ? <Navigate to="/onboarding" replace /> :
-            <Dashboard />
-          } 
-        />
-        <Route 
-          path="/onboarding" 
-          element={
-            !user ? <Navigate to="/" replace /> :
-            !needsOnboarding ? <Navigate to="/dashboard" replace /> :
-            <Onboarding />
-          } 
-        />
+        <Route path="/" element={getComponentForRoute('/')} />
+        <Route path="/dashboard" element={getComponentForRoute('/dashboard')} />
+        <Route path="/onboarding" element={getComponentForRoute('/onboarding')} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

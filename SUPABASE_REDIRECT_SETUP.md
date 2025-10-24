@@ -24,6 +24,8 @@ En **Redirect URLs**, agrega:
 ```
 https://tu-app.vercel.app/
 https://tu-app.vercel.app
+http://localhost:3000/
+http://localhost:3000
 ```
 
 ### 4. Configurar en el código (opcional)
@@ -32,10 +34,16 @@ También puedes actualizar el código para usar el dominio correcto:
 ```javascript
 // En frontend/src/hooks/useAuth.js
 const signInWithMagicLink = async (email) => {
+  // Detectar si estamos en desarrollo local
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  const redirectUrl = isLocal 
+    ? 'http://localhost:3000/' 
+    : `${window.location.origin}/`
+  
   const { error } = await supabase.auth.signInWithOtp({
     email: email,
     options: {
-      emailRedirectTo: `${window.location.origin}/`
+      emailRedirectTo: redirectUrl
     }
   })
   // ...
@@ -55,6 +63,8 @@ https://sabu-app.vercel.app
 ```
 https://sabu-app.vercel.app/
 https://sabu-app.vercel.app
+http://localhost:3000/
+http://localhost:3000
 ```
 
 ## Verificación
