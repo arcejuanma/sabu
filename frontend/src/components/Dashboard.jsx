@@ -1,71 +1,104 @@
+import { useState, useEffect } from 'react'
 import { useAuth } from '../hooks/useAuth'
+import { supabase } from '../lib/supabase'
 
 export default function Dashboard() {
   const { user, signOut } = useAuth()
+  const [userData, setUserData] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    fetchUserData()
+  }, [])
+
+  const fetchUserData = async () => {
+    try {
+      const { data: usuario, error } = await supabase
+        .from('usuarios')
+        .select(`
+          id,
+          nombre,
+          telefono,
+          supermercados_preferidos_usuario (
+            supermercado_id,
+            supermercados (
+              nombre
+            )
+          )
+        `)
+        .eq('id', user.id)
+        .single()
+
+      if (error) throw error
+      setUserData(usuario)
+    } catch (error) {
+      console.error('Error fetching user data:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Cargando tu perfil...</p>
+        </div>
+      </div>
+    )
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+    <div className="min-h-screen bg-gray-100">
       <header className="bg-white shadow">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-6">
-            <div className="flex items-center">
-              <span className="text-2xl mr-2">💰</span>
-              <h1 className="text-2xl font-bold text-gray-900">SABU</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <div className="text-sm text-gray-700">
-                Hola, {user?.user_metadata?.full_name || user?.email}
-              </div>
-              <button
-                onClick={signOut}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-md text-sm font-medium transition-colors"
-              >
-                Cerrar Sesión
-              </button>
-            </div>
+        <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900">
+              ¡Hola, {userData?.nombre || 'Usuario'}!
+            </h1>
+            <p className="text-sm text-gray-600">
+              {userData?.telefono && `📱 ${userData.telefono}`}
+            </p>
           </div>
+          <button
+            onClick={signOut}
+            className="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+          >
+            Cerrar Sesión
+          </button>
         </div>
       </header>
+      
+      <main>
+        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+          <div className="px-4 py-8 sm:px-0">
+            <div className="bg-white rounded-lg shadow p-6 mb-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                🏪 Tus Supermercados Preferidos
+              </h2>
+              {userData?.supermercados_preferidos_usuario?.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {userData.supermercados_preferidos_usuario.map((pref, index) => (
+                    <span
+                      key={index}
+                      className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800"
+                    >
+                      {pref.supermercados.nombre}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500">No hay supermercados configurados</p>
+              )}
+            </div>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        <div className="px-4 py-6 sm:px-0">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              ¡Bienvenido a SABU! 🎉
-            </h2>
-            <p className="text-lg text-gray-600 mb-8">
-              Empezá a ahorrar en tus compras del supermercado
-            </p>
-            
-            {/* Quick Actions */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <div className="text-3xl mb-4">🛒</div>
-                <h3 className="text-xl font-semibold mb-2">Crear Lista</h3>
-                <p className="text-gray-600">Agregá los productos que comprás habitualmente</p>
-                <button className="mt-4 w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition-colors">
-                  Nueva Lista
-                </button>
-              </div>
-              
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <div className="text-3xl mb-4">💳</div>
-                <h3 className="text-xl font-semibold mb-2">Mis Tarjetas</h3>
-                <p className="text-gray-600">Configurá tus medios de pago</p>
-                <button className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
-                  Agregar Tarjeta
-                </button>
-              </div>
-              
-              <div className="bg-white p-6 rounded-lg shadow-md">
-                <div className="text-3xl mb-4">📱</div>
-                <h3 className="text-xl font-semibold mb-2">Notificaciones</h3>
-                <p className="text-gray-600">Recibí alertas de mejores precios</p>
-                <button className="mt-4 w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 transition-colors">
-                  Ver Alertas
-                </button>
+            <div className="border-4 border-dashed border-gray-200 rounded-lg h-96 flex items-center justify-center">
+              <div className="text-center">
+                <p className="text-gray-500 text-lg mb-4">Tu Dashboard de SABU</p>
+                <p className="text-gray-400 text-sm">
+                  Aquí verás tus carritos, ofertas y ahorros
+                </p>
               </div>
             </div>
           </div>

@@ -1,11 +1,14 @@
 import { useAuth } from './hooks/useAuth'
+import { useOnboarding } from './hooks/useOnboarding'
 import Login from './components/Login'
 import Dashboard from './components/Dashboard'
+import Onboarding from './components/Onboarding'
 
 function App() {
-  const { user, loading } = useAuth()
+  const { user, loading: authLoading } = useAuth()
+  const { needsOnboarding, loading: onboardingLoading } = useOnboarding()
 
-  if (loading) {
+  if (authLoading || onboardingLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -16,7 +19,15 @@ function App() {
     )
   }
 
-  return user ? <Dashboard /> : <Login />
+  if (!user) {
+    return <Login />
+  }
+
+  if (needsOnboarding) {
+    return <Onboarding />
+  }
+
+  return <Dashboard />
 }
 
 export default App
