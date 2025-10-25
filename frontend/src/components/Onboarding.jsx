@@ -12,10 +12,13 @@ export default function Onboarding() {
     codigoPais: '+54',
     codigoArea: '',
     numero: '',
+    direccion: '',
+    altura: '',
+    codigoPostal: '',
     supermercados: []
   })
   const [isLoading, setIsLoading] = useState(false)
-  const [step, setStep] = useState(1) // 1: Datos básicos, 2: Supermercados
+  const [step, setStep] = useState(1) // 1: Datos básicos, 2: Dirección, 3: Supermercados
   const [supermercadosDisponibles, setSupermercadosDisponibles] = useState([])
   const [loadingSupermercados, setLoadingSupermercados] = useState(true)
 
@@ -121,6 +124,10 @@ export default function Onboarding() {
     if (step === 1) {
       if (formData.nombre && formData.apellido && formData.codigoArea && formData.numero) {
         setStep(2)
+      }
+    } else if (step === 2) {
+      if (formData.direccion && formData.altura && formData.codigoPostal) {
+        setStep(3)
       }
     }
   }
@@ -260,6 +267,110 @@ export default function Onboarding() {
     )
   }
 
+  if (step === 2) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md mx-auto">
+          <div className="text-center mb-8">
+            <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-100">
+              <span className="text-3xl">📍</span>
+            </div>
+            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+              ¿Dónde vivís?
+            </h2>
+            <p className="mt-2 text-lg text-gray-600">
+              Necesitamos tu dirección para encontrar supermercados cercanos
+            </p>
+          </div>
+
+          <form onSubmit={(e) => e.preventDefault()}>
+            <div className="space-y-6">
+              <div>
+                <label htmlFor="direccion" className="block text-sm font-medium text-gray-700 mb-2">
+                  Dirección
+                </label>
+                <input
+                  id="direccion"
+                  name="direccion"
+                  type="text"
+                  required
+                  value={formData.direccion}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                  placeholder="Ej: Av. Corrientes"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="altura" className="block text-sm font-medium text-gray-700 mb-2">
+                    Altura
+                  </label>
+                  <input
+                    id="altura"
+                    name="altura"
+                    type="text"
+                    required
+                    value={formData.altura}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                    placeholder="1234"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="codigoPostal" className="block text-sm font-medium text-gray-700 mb-2">
+                    Código Postal
+                  </label>
+                  <input
+                    id="codigoPostal"
+                    name="codigoPostal"
+                    type="text"
+                    required
+                    value={formData.codigoPostal}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                    placeholder="C1043"
+                  />
+                </div>
+              </div>
+
+              <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <span className="text-blue-400">ℹ️</span>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-blue-700">
+                      Esta información nos ayuda a encontrar supermercados cercanos y ofertas relevantes para tu zona.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 flex space-x-4">
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="flex-1 py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              >
+                Atrás
+              </button>
+              <button
+                type="button"
+                onClick={handleNext}
+                disabled={!formData.direccion || !formData.altura || !formData.codigoPostal}
+                className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Continuar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto">
@@ -339,7 +450,7 @@ export default function Onboarding() {
           <div className="mt-8 flex space-x-4">
             <button
               type="button"
-              onClick={() => setStep(1)}
+              onClick={() => setStep(2)}
               className="flex-1 py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
             >
               Atrás

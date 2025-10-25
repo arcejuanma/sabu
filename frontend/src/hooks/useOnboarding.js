@@ -26,7 +26,7 @@ export function useOnboarding() {
       // Verificar si el usuario tiene datos básicos
       const { data: usuario, error } = await supabase
         .from('usuarios')
-        .select('id, nombre, apellido, telefono')
+        .select('id, nombre, apellido, telefono, direccion, altura, codigo_postal')
         .eq('id', user.id)
         .single()
 
@@ -44,8 +44,8 @@ export function useOnboarding() {
         return
       }
 
-      if (!usuario.nombre || !usuario.apellido || !usuario.telefono) {
-        console.log('User missing basic data')
+      if (!usuario.nombre || !usuario.apellido || !usuario.telefono || !usuario.direccion || !usuario.altura || !usuario.codigo_postal) {
+        console.log('User missing basic data or address information')
         setNeedsOnboarding(true)
         setLoading(false)
         return
@@ -94,6 +94,9 @@ export function useOnboarding() {
           nombre: userData.nombre,
           apellido: userData.apellido,
           telefono: userData.telefono,
+          direccion: userData.direccion,
+          altura: userData.altura,
+          codigo_postal: userData.codigoPostal,
           email: user.email
         })
 

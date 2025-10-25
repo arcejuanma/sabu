@@ -29,6 +29,9 @@ export default function Dashboard() {
           nombre,
           apellido,
           telefono,
+          direccion,
+          altura,
+          codigo_postal,
           supermercados_preferidos_usuario (
             supermercado_id,
             supermercados (
@@ -70,13 +73,18 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              ¡Hola, {userData?.nombre && userData?.apellido 
-                ? `${userData.nombre} ${userData.apellido}` 
+              ¡Hola, {userData?.nombre 
+                ? `${userData.nombre} ` 
                 : 'Usuario'}!
             </h1>
             <p className="text-sm text-gray-600">
               {userData?.telefono && `📱 ${userData.telefono}`}
             </p>
+            {userData?.direccion && userData?.altura && userData?.codigo_postal && (
+              <p className="text-sm text-gray-600">
+                📍 {userData.direccion} {userData.altura}, {userData.codigo_postal}
+              </p>
+            )}
           </div>
           <button
             onClick={signOut}
