@@ -10,9 +10,9 @@ export default function Carritos() {
   const [loading, setLoading] = useState(true)
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingCarrito, setEditingCarrito] = useState(null)
-  const [editForm, setEditForm] = useState({ nombre: '', frecuencia_dias: 7 })
+  const [editForm, setEditForm] = useState({ nombre: '' })
   const [showNewCarritoModal, setShowNewCarritoModal] = useState(false)
-  const [newCarritoForm, setNewCarritoForm] = useState({ nombre: '', frecuencia_dias: 7 })
+  const [newCarritoForm, setNewCarritoForm] = useState({ nombre: '' })
   const [selectedCategoria, setSelectedCategoria] = useState(null)
   const [selectedProductos, setSelectedProductos] = useState([])
   const [showPreciosModal, setShowPreciosModal] = useState(false)
@@ -177,8 +177,7 @@ export default function Carritos() {
         .from('carritos_x_usuario')
         .insert({
           usuario_id: user.id,
-          nombre: newCarritoForm.nombre,
-          frecuencia_dias: newCarritoForm.frecuencia_dias
+          nombre: newCarritoForm.nombre
         })
         .select()
 
@@ -197,7 +196,7 @@ export default function Carritos() {
       if (productosError) throw productosError
 
       setShowNewCarritoModal(false)
-      setNewCarritoForm({ nombre: '', frecuencia_dias: 7 })
+      setNewCarritoForm({ nombre: '' })
       setSelectedCategoria(null)
       setSelectedProductos([])
       fetchCarritos()
@@ -209,7 +208,7 @@ export default function Carritos() {
 
   const handleEditCarrito = (carrito) => {
     setEditingCarrito(carrito)
-    setEditForm({ nombre: carrito.nombre, frecuencia_dias: carrito.frecuencia_dias })
+    setEditForm({ nombre: carrito.nombre })
     
     // Cargar los productos del carrito en selectedProductos
     const productosDelCarrito = carrito.productos_x_carrito?.map(pc => ({
@@ -225,12 +224,11 @@ export default function Carritos() {
 
   const handleUpdateCarrito = async () => {
     try {
-      // Actualizar nombre y frecuencia del carrito
+      // Actualizar nombre del carrito
       const { error: carritoError } = await supabase
         .from('carritos_x_usuario')
         .update({
-          nombre: editForm.nombre,
-          frecuencia_dias: editForm.frecuencia_dias
+          nombre: editForm.nombre
         })
         .eq('id', editingCarrito.id)
 
@@ -435,10 +433,7 @@ export default function Carritos() {
               <div className="flex justify-between items-start mb-2">
                 <div className="flex-1">
                   <h3 className="text-lg font-semibold">{carrito.nombre}</h3>
-                  <p className="text-sm text-gray-500">
-                    Frecuencia: cada {carrito.frecuencia_dias} días
-                  </p>
-                  <p className="text-sm text-gray-700 mt-2">
+                  <p className="text-sm text-gray-700">
                     {carrito.productos_x_carrito?.length || 0} productos
                   </p>
                 </div>
@@ -479,33 +474,18 @@ export default function Carritos() {
             <h3 className="text-xl font-bold mb-4">Editar Carrito</h3>
             
             {/* Formulario básico */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nombre del Carrito
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={editForm.nombre}
-                  onChange={(e) => setEditForm({ ...editForm, nombre: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="Ej: Compra Semanal"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Frecuencia (días)
-                </label>
-                <input
-                  type="number"
-                  required
-                  min="1"
-                  value={editForm.frecuencia_dias}
-                  onChange={(e) => setEditForm({ ...editForm, frecuencia_dias: parseInt(e.target.value) })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-              </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nombre del Carrito
+              </label>
+              <input
+                type="text"
+                required
+                value={editForm.nombre}
+                onChange={(e) => setEditForm({ ...editForm, nombre: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder="Ej: Compra Semanal"
+              />
             </div>
 
             {/* Selección de productos */}
@@ -659,33 +639,18 @@ export default function Carritos() {
             <h3 className="text-xl font-bold mb-4">Nuevo Carrito de Compra</h3>
             
             {/* Formulario básico */}
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nombre del Carrito
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={newCarritoForm.nombre}
-                  onChange={(e) => setNewCarritoForm({ ...newCarritoForm, nombre: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="Ej: Compra Semanal"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Frecuencia (días)
-                </label>
-                <input
-                  type="number"
-                  required
-                  min="1"
-                  value={newCarritoForm.frecuencia_dias}
-                  onChange={(e) => setNewCarritoForm({ ...newCarritoForm, frecuencia_dias: parseInt(e.target.value) })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                />
-              </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nombre del Carrito
+              </label>
+              <input
+                type="text"
+                required
+                value={newCarritoForm.nombre}
+                onChange={(e) => setNewCarritoForm({ ...newCarritoForm, nombre: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                placeholder="Ej: Compra Semanal"
+              />
             </div>
 
             {/* Selección de productos */}
@@ -825,7 +790,7 @@ export default function Carritos() {
                 <button
                   onClick={() => {
                     setShowNewCarritoModal(false)
-                    setNewCarritoForm({ nombre: '', frecuencia_dias: 7 })
+                    setNewCarritoForm({ nombre: '' })
                     setSelectedCategoria(null)
                     setSelectedProductos([])
                   }}
