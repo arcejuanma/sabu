@@ -12,8 +12,13 @@ export default function MiCuenta({ onClose }) {
     direccion: '',
     altura: '',
     codigoPostal: '',
-    supermercados: []
+    supermercados: [],
+    mediosPago: []
   })
+  const [mediosPagoDisponibles, setMediosPagoDisponibles] = useState([])
+  const [bancosDisponibles, setBancosDisponibles] = useState([])
+  const [selectedBanco, setSelectedBanco] = useState(null)
+  const [loadingMediosPago, setLoadingMediosPago] = useState(false)
 
   useEffect(() => {
     const loadData = async () => {
@@ -26,7 +31,7 @@ export default function MiCuenta({ onClose }) {
           return
         }
         
-        await Promise.all([fetchUserData(), fetchSupermercados()])
+        await Promise.all([fetchUserData(), fetchSupermercados(), fetchMediosPago()])
       } catch (error) {
         console.error('Error loading data:', error)
       } finally {
@@ -68,7 +73,8 @@ export default function MiCuenta({ onClose }) {
         direccion: userData?.direccion || '',
         altura: userData?.altura || '',
         codigoPostal: userData?.codigo_postal || '',
-        supermercados: []
+        supermercados: [],
+        mediosPago: []
       })
 
       // Obtener supermercados preferidos
@@ -112,6 +118,66 @@ export default function MiCuenta({ onClose }) {
     }
   }
 
+  const fetchMediosPago = async () => {
+    try {
+      setLoadingMediosPago(true)
+      
+      console.log('🔄 Fetching medios de pago...')
+      
+      // Cargar medios de pago disponibles
+      const { data: medios, error } = await supabase
+        .from('medios_de_pago')
+        .select('id, nombre, banco, tipo')
+        .eq('activo', true)
+        .order('banco, nombre')
+
+      console.log('📊 Medios de pago query result:', { medios, error })
+
+      if (error) {
+        console.error('❌ Error fetching medios de pago:', error)
+        throw error
+      }
+
+      if (!medios || medios.length === 0) {
+        console.warn('⚠️ No se encontraron medios de pago en la base de datos')
+        setMediosPagoDisponibles([])
+        setBancosDisponibles([])
+        return
+      }
+
+      console.log('✅ Medios de pago encontrados:', medios.length)
+
+      // Extraer bancos únicos
+      const bancos = [...new Set(medios.map(m => m.banco))].sort()
+      setBancosDisponibles(bancos)
+      setMediosPagoDisponibles(medios)
+
+      console.log('🏦 Bancos encontrados:', bancos)
+
+      // Cargar medios de pago del usuario
+      if (user && user.id) {
+        const { data: prefs, error: prefsError } = await supabase
+          .from('medios_de_pago_x_usuario')
+          .select('medio_de_pago_id')
+          .eq('usuario_id', user.id)
+          .eq('activo', true)
+
+        if (prefsError) {
+          console.error('❌ Error fetching preferred payment methods:', prefsError)
+        } else if (prefs) {
+          setFormData(prev => ({
+            ...prev,
+            mediosPago: prefs.map(p => p.medio_de_pago_id)
+          }))
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching medios de pago:', error)
+    } finally {
+      setLoadingMediosPago(false)
+    }
+  }
+
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({
@@ -126,6 +192,15 @@ export default function MiCuenta({ onClose }) {
       supermercados: prev.supermercados.includes(supermercadoId)
         ? prev.supermercados.filter(id => id !== supermercadoId)
         : [...prev.supermercados, supermercadoId]
+    }))
+  }
+
+  const handleMedioPagoToggle = (medioPagoId) => {
+    setFormData(prev => ({
+      ...prev,
+      mediosPago: prev.mediosPago.includes(medioPagoId)
+        ? prev.mediosPago.filter(id => id !== medioPagoId)
+        : [...prev.mediosPago, medioPagoId]
     }))
   }
 
@@ -202,6 +277,53 @@ export default function MiCuenta({ onClose }) {
               .from('supermercados_preferidos_usuario')
               .update({ activo: false })
               .eq('id', pref.id)
+          }
+        }
+      }
+
+      // Procesar medios de pago
+      const { data: currentMedios } = await supabase
+        .from('medios_de_pago_x_usuario')
+        .select('id, medio_de_pago_id, activo')
+        .eq('usuario_id', user.id)
+
+      // Procesar cada medio de pago seleccionado
+      if (formData.mediosPago.length > 0) {
+        for (const medioPagoId of formData.mediosPago) {
+          const { data: existing } = await supabase
+            .from('medios_de_pago_x_usuario')
+            .select('id, activo')
+            .eq('usuario_id', user.id)
+            .eq('medio_de_pago_id', medioPagoId)
+            .maybeSingle()
+
+          if (existing) {
+            if (!existing.activo) {
+              await supabase
+                .from('medios_de_pago_x_usuario')
+                .update({ activo: true })
+                .eq('id', existing.id)
+            }
+          } else {
+            await supabase
+              .from('medios_de_pago_x_usuario')
+              .insert({
+                usuario_id: user.id,
+                medio_de_pago_id: medioPagoId,
+                activo: true
+              })
+          }
+        }
+      }
+
+      // Desactivar los medios de pago que ya no están en la lista
+      if (currentMedios && currentMedios.length > 0) {
+        for (const medio of currentMedios) {
+          if (!formData.mediosPago.includes(medio.medio_de_pago_id)) {
+            await supabase
+              .from('medios_de_pago_x_usuario')
+              .update({ activo: false })
+              .eq('id', medio.id)
           }
         }
       }
@@ -337,6 +459,44 @@ export default function MiCuenta({ onClose }) {
                 </label>
               ))}
             </div>
+          </div>
+
+          {/* Medios de Pago */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Medios de Pago
+            </label>
+            {loadingMediosPago ? (
+              <div className="flex items-center justify-center py-4">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
+                <span className="ml-2 text-sm text-gray-600">Cargando...</span>
+              </div>
+            ) : bancosDisponibles.length === 0 ? (
+              <p className="text-sm text-gray-500">No hay medios de pago disponibles</p>
+            ) : (
+              <div className="space-y-4">
+                {bancosDisponibles.map((banco) => (
+                  <div key={banco}>
+                    <h3 className="text-xs font-semibold text-gray-700 mb-2">{banco}</h3>
+                    <div className="space-y-2">
+                      {mediosPagoDisponibles
+                        .filter(medio => medio.banco === banco)
+                        .map((medio) => (
+                          <label key={medio.id} className="flex items-center space-x-2 cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={formData.mediosPago.includes(medio.id)}
+                              onChange={() => handleMedioPagoToggle(medio.id)}
+                              className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                            />
+                            <span className="text-sm text-gray-700">{medio.nombre}</span>
+                          </label>
+                        ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Botones */}

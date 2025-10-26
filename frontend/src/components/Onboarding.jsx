@@ -15,14 +15,18 @@ export default function Onboarding() {
     direccion: '',
     altura: '',
     codigoPostal: '',
-    supermercados: []
+    supermercados: [],
+    mediosPago: []
   })
   const [isLoading, setIsLoading] = useState(false)
-  const [step, setStep] = useState(1) // 1: Datos básicos, 2: Dirección, 3: Supermercados
+  const [step, setStep] = useState(1) // 1: Datos básicos, 2: Dirección, 3: Supermercados, 4: Medios de pago
   const [supermercadosDisponibles, setSupermercadosDisponibles] = useState([])
   const [loadingSupermercados, setLoadingSupermercados] = useState(true)
+  const [mediosPagoDisponibles, setMediosPagoDisponibles] = useState([])
+  const [bancosDisponibles, setBancosDisponibles] = useState([])
+  const [loadingMediosPago, setLoadingMediosPago] = useState(true)
 
-  // Cargar supermercados desde la base de datos
+  // Cargar supermercados y medios de pago desde la base de datos
   useEffect(() => {
     const fetchSupermercados = async () => {
       console.log('🔄 Iniciando carga de supermercados...')
@@ -62,8 +66,39 @@ export default function Onboarding() {
       }
     }
 
-    console.log('🚀 Ejecutando useEffect para cargar supermercados')
+    const fetchMediosPago = async () => {
+      console.log('🔄 Iniciando carga de medios de pago...')
+      try {
+        const { data: medios, error } = await supabase
+          .from('medios_de_pago')
+          .select('id, nombre, banco, tipo')
+          .eq('activo', true)
+          .order('banco, nombre')
+
+        if (error) {
+          console.error('❌ Error cargando medios de pago:', error)
+          return
+        }
+
+        if (!medios || medios.length === 0) {
+          console.warn('⚠️ No se encontraron medios de pago')
+          return
+        }
+
+        // Extraer bancos únicos
+        const bancos = [...new Set(medios.map(m => m.banco))].sort()
+        setBancosDisponibles(bancos)
+        setMediosPagoDisponibles(medios)
+      } catch (error) {
+        console.error('💥 Error en fetchMediosPago:', error)
+      } finally {
+        setLoadingMediosPago(false)
+      }
+    }
+
+    console.log('🚀 Ejecutando useEffect para cargar datos')
     fetchSupermercados()
+    fetchMediosPago()
   }, [])
 
   const getIconForSupermercado = (nombre) => {
@@ -121,6 +156,15 @@ export default function Onboarding() {
     console.log('Supermercados seleccionados:', formData.supermercados)
   }
 
+  const handleMedioPagoToggle = (medioPagoId) => {
+    setFormData(prev => ({
+      ...prev,
+      mediosPago: prev.mediosPago.includes(medioPagoId)
+        ? prev.mediosPago.filter(id => id !== medioPagoId)
+        : [...prev.mediosPago, medioPagoId]
+    }))
+  }
+
   const handleNext = () => {
     if (step === 1) {
       if (formData.nombre && formData.apellido && formData.codigoArea && formData.numero) {
@@ -129,6 +173,10 @@ export default function Onboarding() {
     } else if (step === 2) {
       if (formData.direccion && formData.altura && formData.codigoPostal) {
         setStep(3)
+      }
+    } else if (step === 3) {
+      if (formData.supermercados.length > 0) {
+        setStep(4)
       }
     }
   }
@@ -372,22 +420,24 @@ export default function Onboarding() {
     )
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md mx-auto">
-        <div className="text-center mb-8">
-          <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-100">
-            <span className="text-3xl">🏪</span>
+  // Paso 3: Supermercados
+  if (step === 3) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md mx-auto">
+          <div className="text-center mb-8">
+            <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-100">
+              <span className="text-3xl">🏪</span>
+            </div>
+            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+              ¿Dónde comprás?
+            </h2>
+            <p className="mt-2 text-lg text-gray-600">
+              Seleccioná los supermercados donde querés que busquemos ofertas
+            </p>
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            ¿Dónde comprás?
-          </h2>
-          <p className="mt-2 text-lg text-gray-600">
-            Seleccioná los supermercados donde querés que busquemos ofertas
-          </p>
-        </div>
 
-        <form onSubmit={handleSubmit}>
+          <div>
           {loadingSupermercados ? (
             <div className="flex items-center justify-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
@@ -457,8 +507,109 @@ export default function Onboarding() {
               Atrás
             </button>
             <button
+              type="button"
+              onClick={handleNext}
+              disabled={formData.supermercados.length === 0}
+              className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Continuar
+            </button>
+          </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // Paso 4: Medios de pago
+  return (
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md mx-auto">
+        <div className="text-center mb-8">
+          <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-100">
+            <span className="text-3xl">💳</span>
+          </div>
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            Tus medios de pago
+          </h2>
+          <p className="mt-2 text-lg text-gray-600">
+            Seleccioná los medios de pago que usás para optimizar tus compras
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          {loadingMediosPago ? (
+            <div className="flex items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+              <span className="ml-2 text-gray-600">Cargando medios de pago...</span>
+            </div>
+          ) : bancosDisponibles.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="text-gray-500 mb-4">
+                <div className="text-4xl mb-2">⚠️</div>
+                <p>No se pudieron cargar los medios de pago</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+              >
+                Reintentar
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {bancosDisponibles.map((banco) => (
+                <div key={banco}>
+                  <h3 className="text-sm font-semibold text-gray-700 mb-3">{banco}</h3>
+                  <div className="space-y-2">
+                    {mediosPagoDisponibles
+                      .filter(medio => medio.banco === banco)
+                      .map((medio) => (
+                        <label
+                          key={medio.id}
+                          className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
+                            formData.mediosPago.includes(medio.id)
+                              ? 'border-green-500 bg-green-50'
+                              : 'border-gray-300 hover:border-gray-400'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={formData.mediosPago.includes(medio.id)}
+                            onChange={() => handleMedioPagoToggle(medio.id)}
+                            className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                          />
+                          <span className="ml-3 text-sm font-medium text-gray-900">
+                            {medio.nombre}
+                          </span>
+                        </label>
+                      ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {formData.mediosPago.length === 0 && (
+            <div className="mt-4 text-center">
+              <p className="text-sm text-gray-500">
+                Seleccioná al menos un medio de pago
+              </p>
+            </div>
+          )}
+
+          <div className="mt-8 flex space-x-4">
+            <button
+              type="button"
+              onClick={() => setStep(3)}
+              className="flex-1 py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            >
+              Atrás
+            </button>
+            <button
               type="submit"
-              disabled={formData.supermercados.length === 0 || isLoading}
+              disabled={formData.mediosPago.length === 0 || isLoading}
               className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (

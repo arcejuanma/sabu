@@ -126,6 +126,30 @@ export function useOnboarding() {
 
       console.log('Supermercados preferidos insertados:', insertedData)
 
+      // Guardar medios de pago
+      if (userData.mediosPago && userData.mediosPago.length > 0) {
+        console.log('Medios de pago seleccionados (IDs reales):', userData.mediosPago)
+
+        const mediosPagoData = userData.mediosPago.map(medioPagoId => ({
+          usuario_id: user.id,
+          medio_de_pago_id: medioPagoId,
+          activo: true
+        }))
+
+        console.log('Datos a insertar medios de pago:', mediosPagoData)
+
+        const { error: mediosError } = await supabase
+          .from('medios_de_pago_x_usuario')
+          .insert(mediosPagoData)
+
+        if (mediosError) {
+          console.error('Error insertando medios de pago:', mediosError)
+          throw mediosError
+        }
+
+        console.log('Medios de pago insertados exitosamente')
+      }
+
       // Marcar onboarding como completado y recargar estado
       setNeedsOnboarding(false)
       await checkOnboardingStatus()

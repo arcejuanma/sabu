@@ -25,6 +25,7 @@ export default function Dashboard() {
 
     try {
       console.log('Fetching user data for:', user.id)
+      // Fetch user basic data
       const { data: usuario, error } = await supabase
         .from('usuarios')
         .select(`
@@ -34,21 +35,51 @@ export default function Dashboard() {
           telefono,
           direccion,
           altura,
-          codigo_postal,
-          supermercados_preferidos_usuario!inner (
-            supermercado_id,
-            supermercados (
-              nombre
-            )
-          )
+          codigo_postal
         `)
         .eq('id', user.id)
-        .eq('supermercados_preferidos_usuario.activo', true)
         .single()
 
       if (error) {
-        console.error('Error in Supabase query:', error)
+        console.error('Error fetching user data:', error)
         throw error
+      }
+
+      // Fetch supermercados preferidos
+      const { data: supermercados, error: superError } = await supabase
+        .from('supermercados_preferidos_usuario')
+        .select(`
+          supermercado_id,
+          supermercados (
+            nombre
+          )
+        `)
+        .eq('usuario_id', user.id)
+        .eq('activo', true)
+
+      if (superError) {
+        console.error('Error fetching supermercados:', superError)
+      } else {
+        usuario.supermercados_preferidos_usuario = supermercados
+      }
+
+      // Fetch medios de pago
+      const { data: mediosPago, error: mediosError } = await supabase
+        .from('medios_de_pago_x_usuario')
+        .select(`
+          medio_de_pago_id,
+          medios_de_pago (
+            nombre,
+            banco
+          )
+        `)
+        .eq('usuario_id', user.id)
+        .eq('activo', true)
+
+      if (mediosError) {
+        console.error('Error fetching medios de pago:', mediosError)
+      } else {
+        usuario.medios_de_pago_x_usuario = mediosPago || []
       }
 
       console.log('User data fetched:', usuario)
@@ -127,6 +158,41 @@ export default function Dashboard() {
                 </div>
               ) : (
                 <p className="text-gray-500">No hay supermercados configurados</p>
+              )}
+            </div>
+
+            <div className="bg-white rounded-lg shadow p-6 mb-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                💳 Tus Medios de Pago
+              </h2>
+              {userData?.medios_de_pago_x_usuario?.length > 0 ? (
+                <div className="space-y-3">
+                  {/* Agrupar por banco */}
+                  {Object.entries(
+                    userData.medios_de_pago_x_usuario.reduce((acc, mp) => {
+                      const banco = mp.medios_de_pago.banco
+                      if (!acc[banco]) acc[banco] = []
+                      acc[banco].push(mp.medios_de_pago)
+                      return acc
+                    }, {})
+                  ).map(([banco, medios]) => (
+                    <div key={banco} className="pb-3 border-b border-gray-200 last:border-b-0 last:pb-0">
+                      <p className="text-sm font-semibold text-gray-700 mb-2">{banco}</p>
+                      <div className="flex flex-wrap gap-2">
+                        {medios.map((medio, idx) => (
+                          <span
+                            key={idx}
+                            className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+                          >
+                            {medio.nombre}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500">No hay medios de pago configurados</p>
               )}
             </div>
 
