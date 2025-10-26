@@ -111,6 +111,7 @@ export default function Onboarding() {
   }
 
   const handleSupermercadoToggle = (supermercadoId) => {
+    // No permitir duplicados - si ya está seleccionado, quitarlo
     setFormData(prev => ({
       ...prev,
       supermercados: prev.supermercados.includes(supermercadoId)

@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
+import Carritos from './Carritos'
+import MiCuenta from './MiCuenta'
 
 export default function Dashboard() {
   const { user, signOut } = useAuth()
   const [userData, setUserData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [showMiCuenta, setShowMiCuenta] = useState(false)
 
   useEffect(() => {
     if (user) {
@@ -32,7 +35,7 @@ export default function Dashboard() {
           direccion,
           altura,
           codigo_postal,
-          supermercados_preferidos_usuario (
+          supermercados_preferidos_usuario!inner (
             supermercado_id,
             supermercados (
               nombre
@@ -40,6 +43,7 @@ export default function Dashboard() {
           )
         `)
         .eq('id', user.id)
+        .eq('supermercados_preferidos_usuario.activo', true)
         .single()
 
       if (error) {
@@ -86,12 +90,20 @@ export default function Dashboard() {
               </p>
             )}
           </div>
-          <button
-            onClick={signOut}
-            className="ml-4 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
-            Cerrar Sesión
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowMiCuenta(true)}
+              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+            >
+              Mi Cuenta
+            </button>
+            <button
+              onClick={signOut}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              Cerrar Sesión
+            </button>
+          </div>
         </div>
       </header>
       
@@ -118,17 +130,12 @@ export default function Dashboard() {
               )}
             </div>
 
-            <div className="border-4 border-dashed border-gray-200 rounded-lg h-96 flex items-center justify-center">
-              <div className="text-center">
-                <p className="text-gray-500 text-lg mb-4">Tu Dashboard de SABU</p>
-                <p className="text-gray-400 text-sm">
-                  Aquí verás tus carritos, ofertas y ahorros
-                </p>
-              </div>
-            </div>
+            <Carritos />
           </div>
         </div>
       </main>
+
+      {showMiCuenta && <MiCuenta onClose={() => setShowMiCuenta(false)} />}
     </div>
   )
 }
