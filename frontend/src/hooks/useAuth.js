@@ -24,11 +24,8 @@ export function useAuth() {
   }, [])
 
   const signInWithMagicLink = async (email) => {
-    // Detectar si estamos en desarrollo local
-    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
-    const redirectUrl = isLocal 
-      ? 'http://localhost:3000/' 
-      : `${window.location.origin}/`
+    // Usar la URL actual del navegador como redirect
+    const redirectUrl = window.location.origin
     
     console.log('Magic Link redirect URL:', redirectUrl)
     
