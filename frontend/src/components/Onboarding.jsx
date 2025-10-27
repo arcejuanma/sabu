@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { useOnboarding } from '../hooks/useOnboarding'
 import { supabase } from '../lib/supabase'
+import Logo from './Logo'
 
 export default function Onboarding() {
   const { user } = useAuth()
@@ -215,8 +216,8 @@ export default function Onboarding() {
       <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8">
-            <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-100">
-              <span className="text-3xl">👋</span>
+            <div className="mx-auto flex items-center justify-center">
+              <Logo size={64} />
             </div>
             <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
               ¡Bienvenido a SABU!
@@ -240,7 +241,7 @@ export default function Onboarding() {
                     required
                     value={formData.nombre}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                    className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sabu-primary focus:border-green-500"
                     placeholder="Tu nombre"
                   />
                 </div>
@@ -255,7 +256,7 @@ export default function Onboarding() {
                     required
                     value={formData.apellido}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                    className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sabu-primary focus:border-green-500"
                     placeholder="Tu apellido"
                   />
                 </div>
@@ -271,7 +272,7 @@ export default function Onboarding() {
                       type="text"
                       value={formData.codigoPais}
                       onChange={(e) => setFormData(prev => ({ ...prev, codigoPais: e.target.value }))}
-                      className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 text-center"
+                      className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sabu-primary focus:border-green-500 text-center"
                       placeholder="+54"
                     />
                   </div>
@@ -280,7 +281,7 @@ export default function Onboarding() {
                       type="text"
                       value={formData.codigoArea}
                       onChange={handleCodigoAreaChange}
-                      className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 text-center"
+                      className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sabu-primary focus:border-green-500 text-center"
                       placeholder="11"
                     />
                   </div>
@@ -289,7 +290,7 @@ export default function Onboarding() {
                       type="text"
                       value={formData.numero}
                       onChange={handleNumeroChange}
-                      className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 text-center"
+                      className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sabu-primary focus:border-green-500 text-center"
                       placeholder="1234-5678"
                     />
                   </div>
@@ -305,7 +306,7 @@ export default function Onboarding() {
                 type="button"
                 onClick={handleNext}
                 disabled={!formData.nombre || !formData.apellido || !formData.codigoArea || !formData.numero}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sabu-primary hover:bg-sabu-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continuar
               </button>
@@ -345,7 +346,7 @@ export default function Onboarding() {
                   required
                   value={formData.direccion}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                  className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sabu-primary focus:border-green-500"
                   placeholder="Ej: Av. Corrientes"
                 />
               </div>
@@ -362,7 +363,7 @@ export default function Onboarding() {
                     required
                     value={formData.altura}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                    className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sabu-primary focus:border-green-500"
                     placeholder="1234"
                   />
                 </div>
@@ -377,7 +378,7 @@ export default function Onboarding() {
                     required
                     value={formData.codigoPostal}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"
+                    className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sabu-primary focus:border-green-500"
                     placeholder="C1043"
                   />
                 </div>
@@ -401,7 +402,7 @@ export default function Onboarding() {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="flex-1 py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="flex-1 py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary"
               >
                 Atrás
               </button>
@@ -409,7 +410,7 @@ export default function Onboarding() {
                 type="button"
                 onClick={handleNext}
                 disabled={!formData.direccion || !formData.altura || !formData.codigoPostal}
-                className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sabu-primary hover:bg-sabu-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Continuar
               </button>
@@ -440,7 +441,7 @@ export default function Onboarding() {
           <div>
           {loadingSupermercados ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sabu-primary"></div>
               <span className="ml-2 text-gray-600">Cargando supermercados...</span>
             </div>
           ) : supermercadosDisponibles.length === 0 ? (
@@ -452,7 +453,7 @@ export default function Onboarding() {
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                className="px-4 py-2 bg-sabu-primary text-white rounded-md hover:bg-sabu-primary-dark"
               >
                 Reintentar
               </button>
@@ -482,7 +483,7 @@ export default function Onboarding() {
                       type="checkbox"
                       checked={formData.supermercados.includes(supermercado.id)}
                       onChange={() => handleSupermercadoToggle(supermercado.id)}
-                      className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                      className="h-4 w-4 text-sabu-primary focus:ring-sabu-primary border-gray-300 rounded"
                     />
                   </div>
                 </div>
@@ -502,7 +503,7 @@ export default function Onboarding() {
             <button
               type="button"
               onClick={() => setStep(2)}
-              className="flex-1 py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              className="flex-1 py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary"
             >
               Atrás
             </button>
@@ -510,7 +511,7 @@ export default function Onboarding() {
               type="button"
               onClick={handleNext}
               disabled={formData.supermercados.length === 0}
-              className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sabu-primary hover:bg-sabu-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Continuar
             </button>
@@ -540,7 +541,7 @@ export default function Onboarding() {
         <form onSubmit={handleSubmit}>
           {loadingMediosPago ? (
             <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sabu-primary"></div>
               <span className="ml-2 text-gray-600">Cargando medios de pago...</span>
             </div>
           ) : bancosDisponibles.length === 0 ? (
@@ -552,7 +553,7 @@ export default function Onboarding() {
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
+                className="px-4 py-2 bg-sabu-primary text-white rounded-md hover:bg-sabu-primary-dark"
               >
                 Reintentar
               </button>
@@ -578,7 +579,7 @@ export default function Onboarding() {
                             type="checkbox"
                             checked={formData.mediosPago.includes(medio.id)}
                             onChange={() => handleMedioPagoToggle(medio.id)}
-                            className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                            className="w-4 h-4 text-sabu-primary border-gray-300 rounded focus:ring-sabu-primary"
                           />
                           <span className="ml-3 text-sm font-medium text-gray-900">
                             {medio.nombre}
@@ -603,14 +604,14 @@ export default function Onboarding() {
             <button
               type="button"
               onClick={() => setStep(3)}
-              className="flex-1 py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              className="flex-1 py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary"
             >
               Atrás
             </button>
             <button
               type="submit"
               disabled={formData.mediosPago.length === 0 || isLoading}
-              className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sabu-primary hover:bg-sabu-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <div className="flex items-center">

@@ -1,3 +1,77 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* SABU Color Palette */
+@layer utilities {
+  /* Primary colors - Green */
+  .bg-sabu-primary {
+    background-color: #00BF63;
+  }
+  
+  .bg-sabu-primary-dark {
+    background-color: #00A052;
+  }
+  
+  .hover\:bg-sabu-primary:hover {
+    background-color: #00A052;
+  }
+  
+  .text-sabu-primary {
+    color: #00BF63;
+  }
+  
+  .border-sabu-primary {
+    border-color: #00BF63;
+  }
+  
+  .focus\:ring-sabu-primary:focus {
+    --tw-ring-color: #00BF63;
+  }
+  
+  /* Secondary colors - Dark Blue */
+  .bg-sabu-secondary {
+    background-color: #0D146B;
+  }
+  
+  .text-sabu-secondary {
+    color: #0D146B;
+  }
+  
+  .border-sabu-secondary {
+    border-color: #0D146B;
+  }
+  
+  /* Accent colors */
+  .bg-green-100 {
+    background-color: #d1f5e3;
+  }
+  
+  .text-green-800 {
+    color: #155724;
+  }
+  
+  .text-green-600 {
+    color: #00BF63;
+  }
+  
+  .text-green-700 {
+    color: #00A052;
+  }
+  
+  .bg-green-50 {
+    background-color: #f0fdf7;
+  }
+  
+  .border-green-200 {
+    border-color: #b8f3d6;
+  }
+  
+  .text-blue-100 {
+    background-color: #d4e9f7;
+  }
+  
+  .text-blue-800 {
+    color: #1e4a7c;
+  }
+}

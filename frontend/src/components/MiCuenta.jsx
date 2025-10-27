@@ -347,7 +347,7 @@ export default function MiCuenta({ onClose }) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
         <div className="bg-white rounded-lg p-6">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sabu-primary mx-auto"></div>
           <p className="mt-4 text-center text-gray-600">Cargando datos...</p>
         </div>
       </div>
@@ -384,7 +384,7 @@ export default function MiCuenta({ onClose }) {
               onClick={() => setActiveTab('datos')}
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'datos'
-                  ? 'border-green-500 text-green-600'
+                  ? 'border-green-500 text-sabu-primary'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
@@ -395,7 +395,7 @@ export default function MiCuenta({ onClose }) {
               onClick={() => setActiveTab('supermercados')}
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'supermercados'
-                  ? 'border-green-500 text-green-600'
+                  ? 'border-green-500 text-sabu-primary'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
@@ -406,7 +406,7 @@ export default function MiCuenta({ onClose }) {
               onClick={() => setActiveTab('medios')}
               className={`py-4 px-1 border-b-2 font-medium text-sm ${
                 activeTab === 'medios'
-                  ? 'border-green-500 text-green-600'
+                  ? 'border-green-500 text-sabu-primary'
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
@@ -429,7 +429,7 @@ export default function MiCuenta({ onClose }) {
                   value={formData.telefono}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sabu-primary"
                   placeholder="+54 11 1234-5678"
                 />
               </div>
@@ -444,7 +444,7 @@ export default function MiCuenta({ onClose }) {
                   value={formData.direccion}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sabu-primary"
                   placeholder="Calle"
                 />
               </div>
@@ -460,7 +460,7 @@ export default function MiCuenta({ onClose }) {
                     value={formData.altura}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sabu-primary"
                     placeholder="1234"
                   />
                 </div>
@@ -475,7 +475,7 @@ export default function MiCuenta({ onClose }) {
                     value={formData.codigoPostal}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sabu-primary"
                     placeholder="C1234ABC"
                   />
                 </div>
@@ -496,7 +496,7 @@ export default function MiCuenta({ onClose }) {
                       type="checkbox"
                       checked={formData.supermercados.includes(supermercado.id)}
                       onChange={() => handleSupermercadoToggle(supermercado.id)}
-                      className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                      className="w-4 h-4 text-sabu-primary border-gray-300 rounded focus:ring-sabu-primary"
                     />
                     <span className="text-sm text-gray-700">{supermercado.nombre}</span>
                   </label>
@@ -513,7 +513,7 @@ export default function MiCuenta({ onClose }) {
               </p>
               {loadingMediosPago ? (
                 <div className="flex items-center justify-center py-4">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-sabu-primary"></div>
                   <span className="ml-2 text-sm text-gray-600">Cargando...</span>
                 </div>
               ) : bancosDisponibles.length === 0 ? (
@@ -532,7 +532,7 @@ export default function MiCuenta({ onClose }) {
                                 type="checkbox"
                                 checked={formData.mediosPago.includes(medio.id)}
                                 onChange={() => handleMedioPagoToggle(medio.id)}
-                                className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                                className="w-4 h-4 text-sabu-primary border-gray-300 rounded focus:ring-sabu-primary"
                               />
                               <span className="text-sm text-gray-700">{medio.nombre}</span>
                             </label>
@@ -552,7 +552,7 @@ export default function MiCuenta({ onClose }) {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="flex-1 bg-sabu-primary text-white px-4 py-2 rounded-md hover:bg-sabu-primary-dark disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
               {loading ? 'Guardando...' : 'Guardar Cambios'}
             </button>

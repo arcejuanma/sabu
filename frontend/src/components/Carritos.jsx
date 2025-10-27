@@ -405,7 +405,7 @@ export default function Carritos() {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sabu-primary"></div>
       </div>
     )
   }
@@ -416,7 +416,7 @@ export default function Carritos() {
         <h2 className="text-2xl font-bold text-gray-900">Mis Carritos de Compra</h2>
         <button 
           onClick={() => setShowNewCarritoModal(true)}
-          className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700"
+          className="bg-sabu-primary text-white px-4 py-2 rounded-md hover:bg-sabu-primary-dark"
         >
           ➕ Nuevo Carrito
         </button>
@@ -441,7 +441,7 @@ export default function Carritos() {
                 <div className="flex flex-col gap-2 items-center">
                   <button
                     onClick={() => handleRealizarCompra(carrito)}
-                    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm font-medium"
+                    className="bg-sabu-primary text-white px-4 py-2 rounded-md hover:bg-sabu-primary-dark text-sm font-medium"
                   >
                     Calcular Compra Óptima
                   </button>
@@ -484,7 +484,7 @@ export default function Carritos() {
                 required
                 value={editForm.nombre}
                 onChange={(e) => setEditForm({ ...editForm, nombre: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sabu-primary"
                 placeholder="Ej: Compra Semanal"
               />
             </div>
@@ -501,7 +501,7 @@ export default function Carritos() {
                       onClick={() => setSelectedCategoria(categoria.id)}
                       className={`w-full text-left p-3 rounded-md transition-colors ${
                         selectedCategoria === categoria.id
-                          ? 'bg-green-600 text-white'
+                          ? 'bg-sabu-primary text-white'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
@@ -529,7 +529,7 @@ export default function Carritos() {
                               onClick={() => handleToggleProducto(producto)}
                               className={`w-full text-left p-3 rounded-md border-2 transition-colors ${
                                 isSelected
-                                  ? 'border-green-600 bg-green-50'
+                                  ? 'border-sabu-primary bg-green-50'
                                   : 'border-gray-200 hover:border-green-300'
                               }`}
                             >
@@ -579,7 +579,7 @@ export default function Carritos() {
                                   step="1"
                                   value={p.cantidad || 1}
                                   onChange={(e) => handleChangeCantidad(p.id, parseFloat(e.target.value) || 0)}
-                                  className="w-14 px-2 py-1 text-center text-xs border-x border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                  className="w-14 px-2 py-1 text-center text-xs border-x border-gray-300 focus:outline-none focus:ring-2 focus:ring-sabu-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 />
                                 <button
                                   type="button"
@@ -612,7 +612,7 @@ export default function Carritos() {
                 <button
                   onClick={handleUpdateCarrito}
                   disabled={selectedProductos.length === 0}
-                  className="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  className="flex-1 bg-sabu-primary text-white px-4 py-2 rounded-md hover:bg-sabu-primary-dark disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   Guardar Cambios
                 </button>
@@ -649,7 +649,7 @@ export default function Carritos() {
                 required
                 value={newCarritoForm.nombre}
                 onChange={(e) => setNewCarritoForm({ ...newCarritoForm, nombre: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sabu-primary"
                 placeholder="Ej: Compra Semanal"
               />
             </div>
@@ -671,7 +671,7 @@ export default function Carritos() {
                         onClick={() => setSelectedCategoria(categoria.id)}
                         className={`w-full text-left p-3 rounded-md transition-colors ${
                           selectedCategoria === categoria.id
-                            ? 'bg-green-600 text-white'
+                            ? 'bg-sabu-primary text-white'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         }`}
                       >
@@ -701,7 +701,7 @@ export default function Carritos() {
                               onClick={() => handleToggleProducto(producto)}
                               className={`w-full text-left p-3 rounded-md border-2 transition-colors ${
                                 isSelected
-                                  ? 'border-green-600 bg-green-50'
+                                  ? 'border-sabu-primary bg-green-50'
                                   : 'border-gray-200 hover:border-green-300'
                               }`}
                             >
@@ -751,7 +751,7 @@ export default function Carritos() {
                                   step="1"
                                   value={p.cantidad || 1}
                                   onChange={(e) => handleChangeCantidad(p.id, parseFloat(e.target.value) || 0)}
-                                  className="w-14 px-2 py-1 text-center text-xs border-x border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                  className="w-14 px-2 py-1 text-center text-xs border-x border-gray-300 focus:outline-none focus:ring-2 focus:ring-sabu-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 />
                                 <button
                                   type="button"
@@ -784,7 +784,7 @@ export default function Carritos() {
                 <button
                   onClick={handleCreateCarrito}
                   disabled={selectedProductos.length === 0}
-                  className="flex-1 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  className="flex-1 bg-sabu-primary text-white px-4 py-2 rounded-md hover:bg-sabu-primary-dark disabled:bg-gray-300 disabled:cursor-not-allowed"
                 >
                   Crear Carrito
                 </button>
@@ -813,7 +813,7 @@ export default function Carritos() {
             
             {calculatingPrices ? (
               <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sabu-primary"></div>
               </div>
             ) : preciosPorSupermercado.length === 0 ? (
               <div className="text-center py-12">
@@ -832,11 +832,11 @@ export default function Carritos() {
                       <div className="flex justify-between items-center mb-3">
                         <h4 className="text-lg font-semibold">{item.supermercado}</h4>
                         <div className="text-right">
-                          <span className="text-2xl font-bold text-green-600">
+                          <span className="text-2xl font-bold text-sabu-primary">
                             ${formatPrice(item.total)}
                           </span>
                           {index === 0 && (
-                            <div className="text-xs text-green-600 font-semibold mt-1">⭐ MEJOR PRECIO</div>
+                            <div className="text-xs text-sabu-primary font-semibold mt-1">⭐ MEJOR PRECIO</div>
                           )}
                         </div>
                       </div>

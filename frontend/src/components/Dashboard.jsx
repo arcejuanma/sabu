@@ -3,6 +3,7 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
 import Carritos from './Carritos'
 import MiCuenta from './MiCuenta'
+import Logo from './Logo'
 
 export default function Dashboard() {
   const { user, signOut } = useAuth()
@@ -95,7 +96,7 @@ export default function Dashboard() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sabu-primary mx-auto"></div>
           <p className="mt-4 text-gray-600">Cargando tu perfil...</p>
         </div>
       </div>
@@ -106,25 +107,28 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-100">
       <header className="bg-white shadow">
         <div className="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              ¡Hola, {userData?.nombre 
-                ? `${userData.nombre} ` 
-                : 'Usuario'}!
-            </h1>
-            <p className="text-sm text-gray-600">
-              {userData?.telefono && `📱 ${userData.telefono}`}
-            </p>
-            {userData?.direccion && userData?.altura && userData?.codigo_postal && (
+          <div className="flex items-center gap-3">
+            <Logo size={48} />
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                ¡Hola, {userData?.nombre 
+                  ? `${userData.nombre} ` 
+                  : 'Usuario'}!
+              </h1>
               <p className="text-sm text-gray-600">
-                📍 {userData.direccion} {userData.altura}, {userData.codigo_postal}
+                {userData?.telefono && `📱 ${userData.telefono}`}
               </p>
-            )}
+              {userData?.direccion && userData?.altura && userData?.codigo_postal && (
+                <p className="text-sm text-gray-600">
+                  📍 {userData.direccion} {userData.altura}, {userData.codigo_postal}
+                </p>
+              )}
+            </div>
           </div>
           <div className="flex gap-3">
             <button
               onClick={() => setShowMiCuenta(true)}
-              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+              className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary"
             >
               Mi Cuenta
             </button>
