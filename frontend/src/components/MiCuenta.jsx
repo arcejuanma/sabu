@@ -6,6 +6,7 @@ export default function MiCuenta({ onClose }) {
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [initialLoading, setInitialLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState('datos') // 'datos', 'supermercados', 'medios'
   const [supermercadosDisponibles, setSupermercadosDisponibles] = useState([])
   const [formData, setFormData] = useState({
     telefono: '',
@@ -17,7 +18,6 @@ export default function MiCuenta({ onClose }) {
   })
   const [mediosPagoDisponibles, setMediosPagoDisponibles] = useState([])
   const [bancosDisponibles, setBancosDisponibles] = useState([])
-  const [selectedBanco, setSelectedBanco] = useState(null)
   const [loadingMediosPago, setLoadingMediosPago] = useState(false)
 
   useEffect(() => {
@@ -373,133 +373,181 @@ export default function MiCuenta({ onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         <h2 className="text-2xl font-bold mb-4">Mi Cuenta</h2>
 
-        <form onSubmit={handleSubmit}>
-          {/* Teléfono */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Teléfono
-            </label>
-            <input
-              type="tel"
-              name="telefono"
-              value={formData.telefono}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="+54 11 1234-5678"
-            />
-          </div>
+        {/* Tabs */}
+        <div className="border-b border-gray-200 mb-4">
+          <nav className="-mb-px flex space-x-8">
+            <button
+              type="button"
+              onClick={() => setActiveTab('datos')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'datos'
+                  ? 'border-green-500 text-green-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              👤 Datos Personales
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('supermercados')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'supermercados'
+                  ? 'border-green-500 text-green-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              🏪 Supermercados
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('medios')}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'medios'
+                  ? 'border-green-500 text-green-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              💳 Medios de Pago
+            </button>
+          </nav>
+        </div>
 
-          {/* Dirección */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Dirección
-            </label>
-            <input
-              type="text"
-              name="direccion"
-              value={formData.direccion}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="Calle"
-            />
-          </div>
-
-          {/* Altura */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Altura
-            </label>
-            <input
-              type="text"
-              name="altura"
-              value={formData.altura}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="1234"
-            />
-          </div>
-
-          {/* Código Postal */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Código Postal
-            </label>
-            <input
-              type="text"
-              name="codigoPostal"
-              value={formData.codigoPostal}
-              onChange={handleInputChange}
-              required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-              placeholder="C1234ABC"
-            />
-          </div>
-
-          {/* Supermercados Preferidos */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Supermercados Preferidos
-            </label>
-            <div className="space-y-2">
-              {supermercadosDisponibles.map((supermercado) => (
-                <label key={supermercado.id} className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formData.supermercados.includes(supermercado.id)}
-                    onChange={() => handleSupermercadoToggle(supermercado.id)}
-                    className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                  />
-                  <span className="text-sm text-gray-700">{supermercado.nombre}</span>
+        <div className="flex-1 overflow-y-auto">
+          {/* Tab: Datos Personales */}
+          {activeTab === 'datos' && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Teléfono
                 </label>
-              ))}
-            </div>
-          </div>
-
-          {/* Medios de Pago */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Medios de Pago
-            </label>
-            {loadingMediosPago ? (
-              <div className="flex items-center justify-center py-4">
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
-                <span className="ml-2 text-sm text-gray-600">Cargando...</span>
+                <input
+                  type="tel"
+                  name="telefono"
+                  value={formData.telefono}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="+54 11 1234-5678"
+                />
               </div>
-            ) : bancosDisponibles.length === 0 ? (
-              <p className="text-sm text-gray-500">No hay medios de pago disponibles</p>
-            ) : (
-              <div className="space-y-4">
-                {bancosDisponibles.map((banco) => (
-                  <div key={banco}>
-                    <h3 className="text-xs font-semibold text-gray-700 mb-2">{banco}</h3>
-                    <div className="space-y-2">
-                      {mediosPagoDisponibles
-                        .filter(medio => medio.banco === banco)
-                        .map((medio) => (
-                          <label key={medio.id} className="flex items-center space-x-2 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={formData.mediosPago.includes(medio.id)}
-                              onChange={() => handleMedioPagoToggle(medio.id)}
-                              className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
-                            />
-                            <span className="text-sm text-gray-700">{medio.nombre}</span>
-                          </label>
-                        ))}
-                    </div>
-                  </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Dirección
+                </label>
+                <input
+                  type="text"
+                  name="direccion"
+                  value={formData.direccion}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                  placeholder="Calle"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Altura
+                  </label>
+                  <input
+                    type="text"
+                    name="altura"
+                    value={formData.altura}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="1234"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Código Postal
+                  </label>
+                  <input
+                    type="text"
+                    name="codigoPostal"
+                    value={formData.codigoPostal}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+                    placeholder="C1234ABC"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Tab: Supermercados */}
+          {activeTab === 'supermercados' && (
+            <div>
+              <p className="text-sm text-gray-600 mb-4">
+                Seleccioná los supermercados donde querés que busquemos ofertas
+              </p>
+              <div className="space-y-2">
+                {supermercadosDisponibles.map((supermercado) => (
+                  <label key={supermercado.id} className="flex items-center space-x-2 cursor-pointer p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                    <input
+                      type="checkbox"
+                      checked={formData.supermercados.includes(supermercado.id)}
+                      onChange={() => handleSupermercadoToggle(supermercado.id)}
+                      className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                    />
+                    <span className="text-sm text-gray-700">{supermercado.nombre}</span>
+                  </label>
                 ))}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
-          {/* Botones */}
+          {/* Tab: Medios de Pago */}
+          {activeTab === 'medios' && (
+            <div>
+              <p className="text-sm text-gray-600 mb-4">
+                Seleccioná los medios de pago que usás para optimizar tus compras
+              </p>
+              {loadingMediosPago ? (
+                <div className="flex items-center justify-center py-4">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600"></div>
+                  <span className="ml-2 text-sm text-gray-600">Cargando...</span>
+                </div>
+              ) : bancosDisponibles.length === 0 ? (
+                <p className="text-sm text-gray-500">No hay medios de pago disponibles</p>
+              ) : (
+                <div className="space-y-4">
+                  {bancosDisponibles.map((banco) => (
+                    <div key={banco}>
+                      <h3 className="text-sm font-semibold text-gray-700 mb-2">{banco}</h3>
+                      <div className="space-y-2">
+                        {mediosPagoDisponibles
+                          .filter(medio => medio.banco === banco)
+                          .map((medio) => (
+                            <label key={medio.id} className="flex items-center space-x-2 cursor-pointer p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                              <input
+                                type="checkbox"
+                                checked={formData.mediosPago.includes(medio.id)}
+                                onChange={() => handleMedioPagoToggle(medio.id)}
+                                className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                              />
+                              <span className="text-sm text-gray-700">{medio.nombre}</span>
+                            </label>
+                          ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Botones */}
+        <form onSubmit={handleSubmit} className="mt-6 pt-4 border-t">
           <div className="flex gap-3">
             <button
               type="submit"

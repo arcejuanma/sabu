@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
+import { formatPrice } from '../utils/formatters'
 
 export default function Carritos() {
   const { user } = useAuth()
@@ -832,7 +833,7 @@ export default function Carritos() {
                         <h4 className="text-lg font-semibold">{item.supermercado}</h4>
                         <div className="text-right">
                           <span className="text-2xl font-bold text-green-600">
-                            ${item.total.toFixed(2)}
+                            ${formatPrice(item.total)}
                           </span>
                           {index === 0 && (
                             <div className="text-xs text-green-600 font-semibold mt-1">⭐ MEJOR PRECIO</div>
@@ -847,7 +848,7 @@ export default function Carritos() {
                               {prod.nombre} x{prod.cantidad}
                             </span>
                             <span className="font-medium">
-                              ${prod.subtotal.toFixed(2)}
+                              ${formatPrice(prod.subtotal)}
                             </span>
                           </div>
                         ))}
