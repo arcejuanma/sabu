@@ -138,6 +138,23 @@ export default function Carritos() {
     })
   }
 
+  const handleAddProducto = (producto) => {
+    setSelectedProductos(prev => {
+      const exists = prev.find(p => p.id === producto.id)
+      if (exists) {
+        // Si ya existe, incrementar cantidad
+        return prev.map(p => 
+          p.id === producto.id 
+            ? { ...p, cantidad: Math.min((p.cantidad || 1) + 1, 99) }
+            : p
+        )
+      } else {
+        // Si no existe, agregarlo
+        return [...prev, { ...producto, cantidad: 1 }]
+      }
+    })
+  }
+
   const handleChangeCantidad = (productoId, cantidad) => {
     // Validar que la cantidad esté entre 0 y 99, y tenga máximo 1 decimal
     if (cantidad === '' || cantidad < 0) {
@@ -225,12 +242,29 @@ export default function Carritos() {
     setEditForm({ nombre: carrito.nombre })
     
     // Cargar los productos del carrito en selectedProductos
-    const productosDelCarrito = carrito.productos_x_carrito?.map(pc => ({
-      id: pc.productos.id,
-      nombre: pc.productos.nombre,
-      categoria_id: pc.productos.categoria_id,
-      cantidad: pc.cantidad || 1
-    })) || []
+    // Agrupar productos duplicados y sumar cantidades
+    const productosMap = new Map()
+    
+    carrito.productos_x_carrito?.forEach(pc => {
+      const productoId = pc.productos.id
+      if (productosMap.has(productoId)) {
+        // Si ya existe, sumar la cantidad
+        const existente = productosMap.get(productoId)
+        existente.cantidad += pc.cantidad || 1
+        productosMap.set(productoId, existente)
+      } else {
+        // Si no existe, agregarlo
+        productosMap.set(productoId, {
+          id: pc.productos.id,
+          nombre: pc.productos.nombre,
+          categoria_id: pc.productos.categoria_id,
+          cantidad: pc.cantidad || 1
+        })
+      }
+    })
+    
+    const productosDelCarrito = Array.from(productosMap.values())
+    console.log('📦 Productos del carrito (agrupados):', productosDelCarrito)
     
     setSelectedProductos(productosDelCarrito)
     setShowEditModal(true)
@@ -410,31 +444,74 @@ export default function Carritos() {
         const total = parseFloat(resumenSuper.precio_total) || 0
         console.log(`💰 Total ${supermercado.nombre}: $${total}`)
 
-        // Obtener detalle solo si es necesario (bajo demanda)
+        // OPTIMIZACIÓN: Calcular TODOS los descuentos unitarios de una vez
         let productosPrecios = []
+        let totalConDescuentosUnitarios = 0
         
-        // UNA SOLA QUERY para obtener el detalle del supermercado
-        const { data: detalleData, error: detalleError } = await supabase
-          .from('vista_detalle_carrito_supermercado')
-          .select('*')
-          .eq('carrito_id', carrito.id)
-          .eq('supermercado_id', supermercado.id)
+        console.log(`🔍 Calculando TODOS los descuentos unitarios para ${supermercado.nombre}...`)
+        
+        // UNA SOLA QUERY para calcular todos los descuentos unitarios del carrito
+        const { data: descuentosData, error: descuentosError } = await supabase.rpc('calcular_descuentos_unitarios_carrito', {
+          p_carrito_id: carrito.id,
+          p_supermercado_id: supermercado.id
+        });
 
-        if (!detalleError && detalleData) {
-          productosPrecios = detalleData.map(producto => ({
-            nombre: producto.producto_nombre,
-            cantidad: producto.cantidad,
-            precio: parseFloat(producto.precio) || 0,
-            subtotal: parseFloat(producto.subtotal) || 0,
-            descuentoAplicado: 0, // Por ahora sin descuentos en la vista
-            promocionAplicada: null,
-            estado: producto.estado_producto
-          }))
+        if (!descuentosError && descuentosData) {
+          console.log(`✅ Descuentos calculados para ${descuentosData.length} productos`)
+          
+          productosPrecios = descuentosData.map(producto => {
+            const precioBase = parseFloat(producto.precio_base) || 0
+            const descuentoAplicado = parseFloat(producto.descuento_aplicado) || 0
+            const subtotal = parseFloat(producto.subtotal_final) || 0
+            
+            if (descuentoAplicado > 0) {
+              console.log(`💰 Descuento aplicado: $${descuentoAplicado} para ${producto.producto_nombre}`)
+            }
+            
+            totalConDescuentosUnitarios += subtotal
+            
+            return {
+              nombre: producto.producto_nombre,
+              cantidad: producto.cantidad,
+              precio: precioBase,
+              subtotal: subtotal,
+              descuentoAplicado: descuentoAplicado,
+              promocionAplicada: producto.promocion_aplicada,
+              estado: producto.estado_producto
+            }
+          })
+        } else {
+          console.error('❌ Error calculando descuentos unitarios:', descuentosError)
+          
+          // Fallback: usar vista detalle sin descuentos unitarios
+          const { data: detalleData, error: detalleError } = await supabase
+            .from('vista_detalle_carrito_supermercado')
+            .select('*')
+            .eq('carrito_id', carrito.id)
+            .eq('supermercado_id', supermercado.id)
+
+          if (!detalleError && detalleData) {
+            productosPrecios = detalleData.map(producto => {
+              const subtotal = parseFloat(producto.subtotal) || 0
+              totalConDescuentosUnitarios += subtotal
+              
+              return {
+                nombre: producto.producto_nombre,
+                cantidad: producto.cantidad,
+                precio: parseFloat(producto.precio) || 0,
+                subtotal: subtotal,
+                descuentoAplicado: 0,
+                promocionAplicada: null,
+                estado: producto.estado_producto
+              }
+            })
+          }
         }
         
         console.log(`📦 Productos procesados: ${productosPrecios.length}`)
         
         console.log(`💰 Total base ${supermercado.nombre}: $${total}`)
+        console.log(`💰 Total con descuentos unitarios: $${totalConDescuentosUnitarios}`)
         
         // OPTIMIZACIÓN: Calcular promociones usando vista optimizada
         const opcionesPorDia = []
@@ -470,8 +547,11 @@ export default function Carritos() {
         }
 
         // Para cada día, calcular todas las opciones con medio de pago
+        // Usar el total con descuentos unitarios como base
+        const totalBaseParaPromociones = totalConDescuentosUnitarios > 0 ? totalConDescuentosUnitarios : total
+        
         for (const dia of diasSeleccionados) {
-          let mejorPrecioDelDia = total
+          let mejorPrecioDelDia = totalBaseParaPromociones
           let mejorMedioPagoDelDia = null
           let mejorPromocionDelDia = null
           
@@ -489,13 +569,13 @@ export default function Carritos() {
             if (promocionesValidas.length > 0) {
               const promocion = promocionesValidas[0]
               
-              // Calcular descuento
-              const descuentoMaximo = total * (promocion.descuento_porcentaje / 100)
+              // Calcular descuento sobre el total con descuentos unitarios
+              const descuentoMaximo = totalBaseParaPromociones * (promocion.descuento_porcentaje / 100)
               const descuentoAplicado = promocion.tope_descuento 
                 ? Math.min(descuentoMaximo, promocion.tope_descuento)
                 : descuentoMaximo
               
-              const totalConDescuento = total - descuentoAplicado
+              const totalConDescuento = totalBaseParaPromociones - descuentoAplicado
               
               if (totalConDescuento < mejorPrecioDelDia) {
                 mejorPrecioDelDia = totalConDescuento
