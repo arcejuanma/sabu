@@ -369,120 +369,64 @@ export default function Carritos() {
 
       console.log('💳 Medios de pago disponibles:', mediosPagoPref?.map(mp => mp.medios_de_pago.nombre))
 
-      // Calcular el precio para cada supermercado
+      // Calcular el precio para cada supermercado usando la VISTA optimizada
       const preciosCalculados = []
 
+      console.log(`📊 Obteniendo resumen del carrito desde la vista...`)
+      
+      // UNA SOLA QUERY para obtener todos los precios por supermercado
+      const { data: resumenCarrito, error: resumenError } = await supabase
+        .from('vista_resumen_carrito_supermercados')
+        .select('*')
+        .eq('carrito_id', carrito.id)
+
+      if (resumenError) {
+        console.error('❌ Error al obtener resumen:', resumenError)
+        throw resumenError
+      }
+
+      console.log('✅ Resumen obtenido:', resumenCarrito)
+
+      // Ahora obtener el detalle solo para los supermercados preferidos del usuario
       for (const pref of supermercadosPref) {
         const supermercado = pref.supermercados
         
         console.log(`\n🛒 Calculando precios para supermercado: ${supermercado.nombre}`)
 
-        let total = 0
-        const productosPrecios = []
+        // Filtrar el resumen para este supermercado
+        const resumenSuper = resumenCarrito?.find(r => r.supermercado_id === supermercado.id)
         
-        // Obtener los productos del carrito con sus precios en este supermercado
-        for (const productoCarrito of carrito.productos_x_carrito) {
-          console.log(`📦 ${productoCarrito.productos?.nombre} - Cantidad: ${productoCarrito.cantidad || 1}`)
-
-          const { data: precioData, error: precioError } = await supabase
-            .from('productos_x_supermercado')
-            .select('precio')
-            .eq('producto_id', productoCarrito.producto_id)
-            .eq('supermercado_id', supermercado.id)
-            .eq('activo', true)
-
-          if (precioError || !precioData || precioData.length === 0) {
-            console.error(`❌ No se encontró precio para ${productoCarrito.productos?.nombre} en ${supermercado.nombre}`)
-            continue
-          }
-
-          const precio = parseFloat(precioData[0].precio) || 0
-          const cantidad = productoCarrito.cantidad || 1
-          
-          console.log(`  → Precio unitario en ${supermercado.nombre}: $${precio}`)
-          
-          // Buscar promociones unitarias activas para este producto en este supermercado
-          console.log(`  → Buscando promociones para producto_id=${productoCarrito.producto_id}, supermercado_id=${supermercado.id}`)
-          
-          const hoy = new Date().toISOString().split('T')[0]
-          console.log(`  → Fecha actual: ${hoy}`)
-          
-          const { data: promocionesData, error: promocionesError } = await supabase
-            .from('promociones_unitarias')
-            .select('*')
-            .eq('producto_id', productoCarrito.producto_id)
-            .eq('supermercado_id', supermercado.id)
-            .eq('activo', true)
-            .lte('fecha_inicio', hoy)
-            .gte('fecha_fin', hoy)
-
-          console.log(`  → Promociones encontradas:`, promocionesData)
-          if (promocionesError) {
-            console.error(`  → Error en promociones:`, promocionesError)
-          }
-
-          let subtotal = precio * cantidad
-          let descuentoAplicado = 0
-          let promocionAplicada = null
-
-          // Si hay promociones, calcular el descuento
-          if (promocionesData && promocionesData.length > 0) {
-            const promocion = promocionesData[0] // Tomar la primera promoción válida
-            
-            console.log(`  → Promoción encontrada: unidad_descuento=${promocion.unidad_descuento}, descuento=${promocion.descuento_porcentaje}%`)
-            
-            // unidad_descuento = 1 significa que todas las unidades tienen descuento
-            // unidad_descuento = 2 significa que la 2da, 4ta, 6ta, 8va... tienen descuento
-            // unidad_descuento = 3 significa que la 3ra, 6ta, 9na... tienen descuento
-            
-            let unidadesConDescuento = 0
-            
-            for (let i = 1; i <= cantidad; i++) {
-              // Si el número de unidad es múltiplo de unidad_descuento, tiene descuento
-              if (i % promocion.unidad_descuento === 0) {
-                console.log(`    ✓ Unidad ${i} tiene descuento`)
-                unidadesConDescuento++
-              }
-            }
-            
-            // Si hay límite, respetarlo
-            if (promocion.limite_unidades !== null) {
-              unidadesConDescuento = Math.min(unidadesConDescuento, promocion.limite_unidades)
-            }
-            
-            // Calcular descuento: aplicar porcentaje de descuento solo a las unidades específicas
-            if (unidadesConDescuento > 0) {
-              // El descuento se aplica sobre el precio de las unidades elegibles
-              descuentoAplicado = precio * unidadesConDescuento * (promocion.descuento_porcentaje / 100)
-              subtotal = subtotal - descuentoAplicado
-              
-              console.log(`    → Unidades con descuento: ${unidadesConDescuento}`)
-              console.log(`    → Descuento aplicado: $${descuentoAplicado}`)
-              console.log(`    → Subtotal ANTES descuento: $${precio * cantidad}`)
-              console.log(`    → Subtotal DESPUÉS descuento: $${subtotal}`)
-              
-              promocionAplicada = {
-                descripcion: promocion.descripcion,
-                descuento: promocion.descuento_porcentaje,
-                unidades: unidadesConDescuento,
-                unidad_descuento: promocion.unidad_descuento
-              }
-            }
-          }
-          
-          total += subtotal
-
-          productosPrecios.push({
-            nombre: productoCarrito.productos.nombre,
-            cantidad,
-            precio,
-            subtotal,
-            descuentoAplicado,
-            promocionAplicada
-          })
-          
-          console.log(`  → Subtotal final: $${subtotal}`)
+        if (!resumenSuper) {
+          console.error(`❌ No se encontró resumen para ${supermercado.nombre}`)
+          continue
         }
+
+        const total = parseFloat(resumenSuper.precio_total) || 0
+        console.log(`💰 Total ${supermercado.nombre}: $${total}`)
+
+        // Obtener detalle solo si es necesario (bajo demanda)
+        let productosPrecios = []
+        
+        // UNA SOLA QUERY para obtener el detalle del supermercado
+        const { data: detalleData, error: detalleError } = await supabase
+          .from('vista_detalle_carrito_supermercado')
+          .select('*')
+          .eq('carrito_id', carrito.id)
+          .eq('supermercado_id', supermercado.id)
+
+        if (!detalleError && detalleData) {
+          productosPrecios = detalleData.map(producto => ({
+            nombre: producto.producto_nombre,
+            cantidad: producto.cantidad,
+            precio: parseFloat(producto.precio) || 0,
+            subtotal: parseFloat(producto.subtotal) || 0,
+            descuentoAplicado: 0, // Por ahora sin descuentos en la vista
+            promocionAplicada: null,
+            estado: producto.estado_producto
+          }))
+        }
+        
+        console.log(`📦 Productos procesados: ${productosPrecios.length}`)
         
         console.log(`💰 Total base ${supermercado.nombre}: $${total}`)
         
