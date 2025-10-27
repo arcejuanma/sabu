@@ -12,6 +12,7 @@ export default function Carritos() {
   const [productos, setProductos] = useState([])
   const [categorias, setCategorias] = useState([])
   const [loading, setLoading] = useState(true)
+  const [categoriasLoading, setCategoriasLoading] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingCarrito, setEditingCarrito] = useState(null)
   const [editForm, setEditForm] = useState({ nombre: '' })
@@ -36,7 +37,10 @@ export default function Carritos() {
   }, [user])
 
   const fetchCategorias = async () => {
+    if (categoriasLoading) return // Evitar llamadas duplicadas
+    
     try {
+      setCategoriasLoading(true)
       console.log('🔍 Fetching categorias...')
       console.log('🔗 Supabase URL:', supabase.supabaseUrl)
       
@@ -71,6 +75,8 @@ export default function Carritos() {
       }
     } catch (error) {
       console.error('💥 Error:', error)
+    } finally {
+      setCategoriasLoading(false)
     }
   }
 
@@ -430,9 +436,40 @@ export default function Carritos() {
         
         console.log(`💰 Total base ${supermercado.nombre}: $${total}`)
         
-        // Para cada día, calcular todas las opciones con medio de pago
+        // OPTIMIZACIÓN: Calcular promociones usando vista optimizada
         const opcionesPorDia = []
         
+        console.log(`💳 Calculando promociones para ${supermercado.nombre}...`)
+        
+        // UNA SOLA QUERY para obtener todas las promociones activas del supermercado
+        const { data: promocionesActivas, error: promocionesError } = await supabase
+          .from('vista_promociones_medios_pago_activas')
+          .select('*')
+          .eq('supermercado_id', supermercado.id)
+
+        if (promocionesError) {
+          console.error('❌ Error obteniendo promociones:', promocionesError)
+          console.log('🔄 Intentando con tabla original...')
+          
+          // Fallback a la tabla original si la vista no existe
+          const { data: promocionesFallback, error: fallbackError } = await supabase
+            .from('promociones_medios_pago')
+            .select('*')
+            .eq('supermercado_id', supermercado.id)
+            .eq('activo', true)
+            .lte('fecha_inicio', new Date().toISOString().split('T')[0])
+            .gte('fecha_fin', new Date().toISOString().split('T')[0])
+          
+          if (fallbackError) {
+            console.error('❌ Error en fallback:', fallbackError)
+          } else {
+            console.log(`✅ Promociones fallback encontradas: ${promocionesFallback?.length || 0}`)
+          }
+        } else {
+          console.log(`✅ Promociones encontradas: ${promocionesActivas?.length || 0}`)
+        }
+
+        // Para cada día, calcular todas las opciones con medio de pago
         for (const dia of diasSeleccionados) {
           let mejorPrecioDelDia = total
           let mejorMedioPagoDelDia = null
@@ -442,24 +479,11 @@ export default function Carritos() {
           for (const medioPagoUser of mediosPagoPref) {
             const medioPago = medioPagoUser.medios_de_pago
             
-            // Buscar promociones para este medio de pago, supermercado y día
-            const hoy = new Date().toISOString().split('T')[0]
-            const { data: promociones, error: promocionesError } = await supabase
-              .from('promociones_medios_pago')
-              .select('*')
-              .eq('medio_de_pago_id', medioPago.id)
-              .eq('supermercado_id', supermercado.id)
-              .eq('activo', true)
-              .lte('fecha_inicio', hoy)
-              .gte('fecha_fin', hoy)
-            
-            if (promocionesError) continue
-            
-            // Filtrar para el día específico
-            const promocionesValidas = promociones?.filter(p => {
-              if (!p.dias_semana || !Array.isArray(p.dias_semana)) return false
-              return p.dias_semana.includes(dia)
-            }) || []
+            // Filtrar promociones en memoria (ya las tenemos)
+            const promocionesValidas = promocionesActivas?.filter(promocion => 
+              promocion.medio_de_pago_id === medioPago.id &&
+              promocion.dias_semana.includes(dia)
+            ) || []
             
             // Si hay promociones válidas, calcular descuento
             if (promocionesValidas.length > 0) {
