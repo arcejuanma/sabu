@@ -351,6 +351,24 @@ export default function Carritos() {
       console.log('📦 Productos en el carrito:', carrito.productos_x_carrito.length)
       console.log('📅 Días seleccionados:', diasSeleccionados)
 
+      // Obtener los medios de pago del usuario
+      const { data: mediosPagoPref, error: mediosError } = await supabase
+        .from('medios_de_pago_x_usuario')
+        .select(`
+          medio_de_pago_id,
+          medios_de_pago (
+            id,
+            nombre,
+            banco
+          )
+        `)
+        .eq('usuario_id', user.id)
+        .eq('activo', true)
+
+      if (mediosError) throw mediosError
+
+      console.log('💳 Medios de pago disponibles:', mediosPagoPref?.map(mp => mp.medios_de_pago.nombre))
+
       // Calcular el precio para cada supermercado
       const preciosCalculados = []
 
@@ -466,25 +484,106 @@ export default function Carritos() {
           console.log(`  → Subtotal final: $${subtotal}`)
         }
         
-        console.log(`💰 Total ${supermercado.nombre}: $${total}`)
+        console.log(`💰 Total base ${supermercado.nombre}: $${total}`)
         
-        // Calcular el precio para cada día (por ahora todos tienen el mismo precio)
-        // En el futuro aquí se podría integrar lógica de promociones por día
-        let mejorPrecio = total
-        let mejoresDias = []
+        // Para cada día, calcular todas las opciones con medio de pago
+        const opcionesPorDia = []
         
         for (const dia of diasSeleccionados) {
-          // Por ahora todos los días tienen el mismo precio
-          // En el futuro aquí se podría ajustar según promociones del día
-          const precioDelDia = total
+          let mejorPrecioDelDia = total
+          let mejorMedioPagoDelDia = null
+          let mejorPromocionDelDia = null
           
-          if (precioDelDia < mejorPrecio) {
-            mejorPrecio = precioDelDia
-            mejoresDias = [dia]
-          } else if (precioDelDia === mejorPrecio) {
-            mejoresDias.push(dia)
+          // Evaluar cada medio de pago para este día
+          for (const medioPagoUser of mediosPagoPref) {
+            const medioPago = medioPagoUser.medios_de_pago
+            
+            // Buscar promociones para este medio de pago, supermercado y día
+            const hoy = new Date().toISOString().split('T')[0]
+            const { data: promociones, error: promocionesError } = await supabase
+              .from('promociones_medios_pago')
+              .select('*')
+              .eq('medio_de_pago_id', medioPago.id)
+              .eq('supermercado_id', supermercado.id)
+              .eq('activo', true)
+              .lte('fecha_inicio', hoy)
+              .gte('fecha_fin', hoy)
+            
+            if (promocionesError) continue
+            
+            // Filtrar para el día específico
+            const promocionesValidas = promociones?.filter(p => {
+              if (!p.dias_semana || !Array.isArray(p.dias_semana)) return false
+              return p.dias_semana.includes(dia)
+            }) || []
+            
+            // Si hay promociones válidas, calcular descuento
+            if (promocionesValidas.length > 0) {
+              const promocion = promocionesValidas[0]
+              
+              // Calcular descuento
+              const descuentoMaximo = total * (promocion.descuento_porcentaje / 100)
+              const descuentoAplicado = promocion.tope_descuento 
+                ? Math.min(descuentoMaximo, promocion.tope_descuento)
+                : descuentoMaximo
+              
+              const totalConDescuento = total - descuentoAplicado
+              
+              if (totalConDescuento < mejorPrecioDelDia) {
+                mejorPrecioDelDia = totalConDescuento
+                mejorMedioPagoDelDia = medioPago
+                mejorPromocionDelDia = promocion
+              }
+            }
           }
+          
+          opcionesPorDia.push({
+            dia,
+            precio: mejorPrecioDelDia,
+            medioPago: mejorMedioPagoDelDia,
+            promocion: mejorPromocionDelDia
+          })
         }
+        
+        // Encontrar el mejor precio
+        const mejorPrecio = Math.min(...opcionesPorDia.map(o => o.precio))
+        
+        // Agrupar días y medios de pago con el mejor precio
+        const mejoresOpciones = opcionesPorDia.filter(o => o.precio === mejorPrecio)
+        const mejoresDiasArray = [...new Set(mejoresOpciones.map(o => o.dia))]
+        
+        // Agrupar opciones por día con su medio de pago
+        const opcionesPorDiaYMedio = {}
+        mejoresOpciones.forEach(opcion => {
+          if (!opcionesPorDiaYMedio[opcion.dia]) {
+            opcionesPorDiaYMedio[opcion.dia] = {
+              dia: opcion.dia,
+              medioPago: opcion.medioPago,
+              promocion: opcion.promocion
+            }
+          }
+        })
+        
+        // Determinar cómo mostrar la información
+        const mediosDePagoUnicos = new Set()
+        mejoresOpciones.forEach(o => {
+          if (o.medioPago) {
+            mediosDePagoUnicos.add(o.medioPago.nombre)
+          }
+        })
+        
+        const tieneMultiplesMedios = mediosDePagoUnicos.size > 1
+        const medioPagoTexto = tieneMultiplesMedios 
+          ? 'Abonando con cualquier medio de pago' 
+          : mejoresOpciones[0]?.medioPago?.nombre || 'Abonando con cualquier medio de pago'
+        
+        // Seleccionar la primera promoción (si existe)
+        const mejorPromocion = mejoresOpciones.find(o => o.promocion)?.promocion || null
+        
+        // Guardar información detallada para cada día
+        const infoPorDia = Object.values(opcionesPorDiaYMedio)
+        
+        console.log(`📊 Mejor opción para ${supermercado.nombre}: $${mejorPrecio}`)
         
         // Guardar resultado para este supermercado
         preciosCalculados.push({
@@ -492,9 +591,13 @@ export default function Carritos() {
           supermercadoId: supermercado.id,
           total: mejorPrecio,
           productos: productosPrecios,
-          diasRecomendados: mejoresDias,
-          usarMejorDia: mejorDia, // Indica si se usó el botón "Mejor Día"
-          diasSeleccionadosUsuario: diasSeleccionados.length // Guarda cuántos días seleccionó el usuario
+          diasRecomendados: mejoresDiasArray,
+          usarMejorDia: mejorDia,
+          diasSeleccionadosUsuario: diasSeleccionados.length,
+          medioPago: tieneMultiplesMedios ? null : mejoresOpciones[0]?.medioPago || null,
+          medioPagoTexto,
+          promocion: mejorPromocion,
+          infoPorDia: tieneMultiplesMedios ? infoPorDia : null
         })
       }
 
@@ -1023,8 +1126,26 @@ export default function Carritos() {
                       <div className="flex justify-between items-center mb-3">
                         <div>
                           <h4 className="text-lg font-semibold">{item.supermercado}</h4>
-                          {item.diasRecomendados && item.diasRecomendados.length > 0 && (
+                          {item.infoPorDia && item.infoPorDia.length > 0 ? (
+                            <div className="text-sm text-gray-600 mt-1 space-y-1">
+                              {item.infoPorDia.map((info, idx) => (
+                                <div key={idx}>
+                                  💳 {nombresDias[info.dia]} con {info.medioPago?.nombre || 'cualquier medio de pago'}
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
                             <div className="text-sm text-gray-600 mt-1">
+                              💳 {item.medioPagoTexto}
+                            </div>
+                          )}
+                          {item.promocion && (
+                            <div className="text-xs text-green-700 mt-1">
+                              🎉 {item.promocion.descripcion || 'Promoción aplicada'}
+                            </div>
+                          )}
+                          {item.diasRecomendados && item.diasRecomendados.length > 0 && (
+                            <div className="text-sm text-gray-600">
                               📅 {item.usarMejorDia 
                                 ? (item.diasRecomendados.length === 7
                                   ? 'Cualquier día de la semana'
