@@ -3,6 +3,9 @@ import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
 import { formatPrice } from '../utils/formatters'
 
+// Nombres de los días de la semana
+const nombresDias = ['', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+
 export default function Carritos() {
   const { user } = useAuth()
   const [carritos, setCarritos] = useState([])
@@ -22,6 +25,7 @@ export default function Carritos() {
   const [preciosPorSupermercado, setPreciosPorSupermercado] = useState([])
   const [calculatingPrices, setCalculatingPrices] = useState(false)
   const [carritoSeleccionado, setCarritoSeleccionado] = useState(null)
+  const [mejorDia, setMejorDia] = useState(false) // Indica si se usó el botón "Mejor Día"
 
   useEffect(() => {
     if (user) {
@@ -296,6 +300,8 @@ export default function Carritos() {
     
     // Guardar carrito y mostrar modal de selección de días
     setCarritoSeleccionado(carrito)
+    setMejorDia(false)
+    setDiasSeleccionados([])
     setShowDiaSeleccionModal(true)
   }
 
@@ -459,15 +465,35 @@ export default function Carritos() {
           
           console.log(`  → Subtotal final: $${subtotal}`)
         }
-
+        
+        console.log(`💰 Total ${supermercado.nombre}: $${total}`)
+        
+        // Calcular el precio para cada día (por ahora todos tienen el mismo precio)
+        // En el futuro aquí se podría integrar lógica de promociones por día
+        let mejorPrecio = total
+        let mejoresDias = []
+        
+        for (const dia of diasSeleccionados) {
+          // Por ahora todos los días tienen el mismo precio
+          // En el futuro aquí se podría ajustar según promociones del día
+          const precioDelDia = total
+          
+          if (precioDelDia < mejorPrecio) {
+            mejorPrecio = precioDelDia
+            mejoresDias = [dia]
+          } else if (precioDelDia === mejorPrecio) {
+            mejoresDias.push(dia)
+          }
+        }
+        
+        // Guardar resultado para este supermercado
         preciosCalculados.push({
           supermercado: supermercado.nombre,
           supermercadoId: supermercado.id,
-          total: total,
-          productos: productosPrecios
+          total: mejorPrecio,
+          productos: productosPrecios,
+          diasRecomendados: mejoresDias
         })
-        
-        console.log(`💰 Total ${supermercado.nombre}: $${total}`)
       }
 
       // Ordenar por precio total (menor a mayor)
@@ -934,12 +960,11 @@ export default function Carritos() {
               {/* Botón "Mejor Día" */}
               <button
                 onClick={() => {
-                  // Por ahora, solo seleccionar todos los días
-                  // Más adelante implementaremos la lógica para calcular el mejor día basado en promociones
+                  // Seleccionar todos los días para que la app calcule cuál es el mejor
                   setDiasSeleccionados([1, 2, 3, 4, 5, 6, 7])
-                  alert('Se han seleccionado todos los días. Podrás ver el mejor día basado en promociones')
+                  setMejorDia(true)
                 }}
-                className="w-full py-3 rounded-lg border-2 border-dashed border-gray-300 hover:border-sabu-primary hover:bg-green-50 text-gray-700 hover:text-sabu-primary transition-colors"
+                className="w-full py-3 rounded-lg border-2 border-dashed border-sabu-primary bg-green-50 text-sabu-primary hover:bg-green-100 transition-colors font-semibold"
               >
                 📅 Mejor Día
               </button>
@@ -951,6 +976,7 @@ export default function Carritos() {
                   setShowDiaSeleccionModal(false)
                   setDiasSeleccionados([])
                   setCarritoSeleccionado(null)
+                  setMejorDia(false)
                 }}
                 className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
               >
@@ -995,6 +1021,16 @@ export default function Carritos() {
                       <div className="flex justify-between items-center mb-3">
                         <div>
                           <h4 className="text-lg font-semibold">{item.supermercado}</h4>
+                          {mejorDia && item.diasRecomendados && item.diasRecomendados.length > 0 && (
+                            <div className="text-sm text-gray-600 mt-1">
+                              📅 {item.diasRecomendados.length === 7
+                                ? 'Cualquier día de la semana'
+                                : item.diasRecomendados.length > 1 
+                                  ? `Mejor comprando: ${item.diasRecomendados.map(d => nombresDias[d]).join(' o ')}`
+                                  : `Mejor comprando: ${nombresDias[item.diasRecomendados[0]]}`
+                              }
+                            </div>
+                          )}
                         </div>
                         <div className="text-right">
                           <span className="text-2xl font-bold text-sabu-primary">
