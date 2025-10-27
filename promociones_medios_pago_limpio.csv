@@ -1,0 +1,17 @@
+medio_de_pago_id,supermercado_id,dias_semana,descuento_porcentaje,acumulable,tope_descuento,beneficios_extra,fecha_inicio,fecha_fin,descripcion,activo
+22e55ad5-e0de-460c-807b-8d2093bcf8bf,56e6220a-b87e-4f10-b88a-ea953036ec13,"{4}",25.00,FALSE,20000,,2025-10-27,2025-12-31,"Tope de 20000 por dia por cuenta",TRUE
+0c45dea2-aec0-427d-9f19-5d24c446b4b1,56e6220a-b87e-4f10-b88a-ea953036ec13,"{3}",25.00,FALSE,20000,,2025-10-27,2025-12-31,,TRUE
+0c45dea2-aec0-427d-9f19-5d24c446b4b1,173369c7-00d8-49b5-9497-8180f37e421f,"{2}",25.00,FALSE,20000,,2025-10-27,2025-12-31,"Tope de 20000 por cuenta",TRUE
+2fe9457f-f723-4d0b-8e1e-ceda0405f512,173369c7-00d8-49b5-9497-8180f37e421f,"{3}",30.00,FALSE,12000,,2025-10-27,2025-12-31,"Tope de 12000 por miercoles por cliente",TRUE
+fba22220-3391-4e38-9133-6af32143a9c6,173369c7-00d8-49b5-9497-8180f37e421f,"{3}",30.00,FALSE,12000,,2025-10-27,2025-12-31,"Tope de 12000 por miercoles por cliente",TRUE
+2fe9457f-f723-4d0b-8e1e-ceda0405f512,362216f2-0184-4f1b-98b0-62203b628b76,"{3}",30.00,FALSE,12000,,2025-10-27,2025-12-31,"Tope de 12000 por miercoles por cliente abonando con MODO",TRUE
+fba22220-3391-4e38-9133-6af32143a9c6,362216f2-0184-4f1b-98b0-62203b628b76,"{3}",30.00,FALSE,12000,,2025-10-27,2025-12-31,"Tope de 12000 por miercoles por cliente abonando con MODO",TRUE
+0c45dea2-aec0-427d-9f19-5d24c446b4b1,362216f2-0184-4f1b-98b0-62203b628b76,"{4}",25.00,FALSE,20000,,2025-10-27,2025-12-31,"Tope de 20000 por mes por cliente abonando con MODO",TRUE
+0c45dea2-aec0-427d-9f19-5d24c446b4b1,d5f63d1c-5e8c-4295-b141-b23b1d578e84,"{5}",25.00,FALSE,20000,,2025-10-27,2025-12-31,"Tope de 20000 por mes por cliente abonando con MODO",TRUE
+14b13cde-d729-4826-8955-4b12308e3796,d5f63d1c-5e8c-4295-b141-b23b1d578e84,"{4}",15.00,FALSE,,,2025-10-27,2025-12-31,"Exclusivo abonando con dinero en cuenta",TRUE
+2fe9457f-f723-4d0b-8e1e-ceda0405f512,d5f63d1c-5e8c-4295-b141-b23b1d578e84,"{4}",15.00,FALSE,10000,,2025-10-27,2025-12-31,"Tope de 10000 por semana por cliente",TRUE
+0c45dea2-aec0-427d-9f19-5d24c446b4b1,c2dcab06-23a0-4d17-8fdc-52983f011e29,"{3}",25.00,FALSE,20000,,2025-10-27,2025-12-31,"Tope de 20000 por mes por cliente",TRUE
+14b13cde-d729-4826-8955-4b12308e3796,c2dcab06-23a0-4d17-8fdc-52983f011e29,"{3}",15.00,FALSE,10000,,2025-10-27,2025-12-31,"Tope de 10000 por semana por cliente",TRUE
+14b13cde-d729-4826-8955-4b12308e3796,c2dcab06-23a0-4d17-8fdc-52983f011e29,"{3}",15.00,FALSE,,,2025-10-27,2025-12-31,"Exclusivo abonando con dinero en cuenta EXCLUSIVO EN TIENDA",TRUE
+2fe9457f-f723-4d0b-8e1e-ceda0405f512,c2dcab06-23a0-4d17-8fdc-52983f011e29,"{3}",30.00,FALSE,12000,,2025-10-27,2025-12-31,"Tope de 12000 por cliente por miercoles abonando con MODO",TRUE
+fba22220-3391-4e38-9133-6af32143a9c6,c2dcab06-23a0-4d17-8fdc-52983f011e29,"{3}",30.00,FALSE,12000,,2025-10-27,2025-12-31,"Tope de 12000 por cliente por miercoles abonando con MODO",TRUE

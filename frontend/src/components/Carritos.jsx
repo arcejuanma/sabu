@@ -17,8 +17,11 @@ export default function Carritos() {
   const [selectedCategoria, setSelectedCategoria] = useState(null)
   const [selectedProductos, setSelectedProductos] = useState([])
   const [showPreciosModal, setShowPreciosModal] = useState(false)
+  const [showDiaSeleccionModal, setShowDiaSeleccionModal] = useState(false)
+  const [diasSeleccionados, setDiasSeleccionados] = useState([])
   const [preciosPorSupermercado, setPreciosPorSupermercado] = useState([])
   const [calculatingPrices, setCalculatingPrices] = useState(false)
+  const [carritoSeleccionado, setCarritoSeleccionado] = useState(null)
 
   useEffect(() => {
     if (user) {
@@ -291,6 +294,18 @@ export default function Carritos() {
     console.log('\n🚀 Iniciando cálculo de precios para carrito:', carrito.nombre)
     console.log('📋 Productos en el carrito:', carrito.productos_x_carrito)
     
+    // Guardar carrito y mostrar modal de selección de días
+    setCarritoSeleccionado(carrito)
+    setShowDiaSeleccionModal(true)
+  }
+
+  const handleConfirmarDias = async () => {
+    if (diasSeleccionados.length === 0) {
+      alert('Debes seleccionar al menos un día')
+      return
+    }
+
+    setShowDiaSeleccionModal(false)
     setCalculatingPrices(true)
     setShowPreciosModal(true)
     
@@ -318,6 +333,8 @@ export default function Carritos() {
 
       console.log('🏪 Supermercados preferidos encontrados:', supermercadosPref)
 
+      const carrito = carritoSeleccionado
+      
       // Verificar si hay productos en el carrito
       if (!carrito.productos_x_carrito || carrito.productos_x_carrito.length === 0) {
         alert('El carrito no tiene productos')
@@ -326,23 +343,22 @@ export default function Carritos() {
       }
 
       console.log('📦 Productos en el carrito:', carrito.productos_x_carrito.length)
+      console.log('📅 Días seleccionados:', diasSeleccionados)
 
       // Calcular el precio para cada supermercado
       const preciosCalculados = []
 
       for (const pref of supermercadosPref) {
         const supermercado = pref.supermercados
-        let totalPrecio = 0
+        
+        console.log(`\n🛒 Calculando precios para supermercado: ${supermercado.nombre}`)
+
+        let total = 0
         const productosPrecios = []
-
-        console.log(`\n🛒 Calculando precios para supermercado: ${supermercado.nombre} (ID: ${supermercado.id})`)
-
+        
         // Obtener los productos del carrito con sus precios en este supermercado
         for (const productoCarrito of carrito.productos_x_carrito) {
-          console.log(`\n📦 Producto del carrito:`)
-          console.log(`  - ID: ${productoCarrito.producto_id}`)
-          console.log(`  - Nombre: ${productoCarrito.productos?.nombre}`)
-          console.log(`  - Cantidad: ${productoCarrito.cantidad || 1}`)
+          console.log(`📦 ${productoCarrito.productos?.nombre} - Cantidad: ${productoCarrito.cantidad || 1}`)
 
           const { data: precioData, error: precioError } = await supabase
             .from('productos_x_supermercado')
@@ -351,41 +367,107 @@ export default function Carritos() {
             .eq('supermercado_id', supermercado.id)
             .eq('activo', true)
 
-          console.log(`  - Precio encontrado:`, precioData)
-          console.log(`  - Error:`, precioError)
-
           if (precioError || !precioData || precioData.length === 0) {
-            console.error(`❌ No se encontró precio para el producto ${productoCarrito.producto_id} en ${supermercado.nombre}`)
-            console.error(`   Producto ID: ${productoCarrito.producto_id}`)
-            console.error(`   Supermercado ID: ${supermercado.id}`)
-            console.error(`   Supermercado Nombre: ${supermercado.nombre}`)
-            console.error(`   Error:`, precioError)
+            console.error(`❌ No se encontró precio para ${productoCarrito.productos?.nombre} en ${supermercado.nombre}`)
             continue
           }
 
           const precio = parseFloat(precioData[0].precio) || 0
-          const subtotal = precio * (productoCarrito.cantidad || 1)
-          totalPrecio += subtotal
+          const cantidad = productoCarrito.cantidad || 1
+          
+          console.log(`  → Precio unitario en ${supermercado.nombre}: $${precio}`)
+          
+          // Buscar promociones unitarias activas para este producto en este supermercado
+          console.log(`  → Buscando promociones para producto_id=${productoCarrito.producto_id}, supermercado_id=${supermercado.id}`)
+          
+          const hoy = new Date().toISOString().split('T')[0]
+          console.log(`  → Fecha actual: ${hoy}`)
+          
+          const { data: promocionesData, error: promocionesError } = await supabase
+            .from('promociones_unitarias')
+            .select('*')
+            .eq('producto_id', productoCarrito.producto_id)
+            .eq('supermercado_id', supermercado.id)
+            .eq('activo', true)
+            .lte('fecha_inicio', hoy)
+            .gte('fecha_fin', hoy)
 
-          console.log(`  - Precio: $${precio}`)
-          console.log(`  - Subtotal: $${subtotal}`)
+          console.log(`  → Promociones encontradas:`, promocionesData)
+          if (promocionesError) {
+            console.error(`  → Error en promociones:`, promocionesError)
+          }
+
+          let subtotal = precio * cantidad
+          let descuentoAplicado = 0
+          let promocionAplicada = null
+
+          // Si hay promociones, calcular el descuento
+          if (promocionesData && promocionesData.length > 0) {
+            const promocion = promocionesData[0] // Tomar la primera promoción válida
+            
+            console.log(`  → Promoción encontrada: unidad_descuento=${promocion.unidad_descuento}, descuento=${promocion.descuento_porcentaje}%`)
+            
+            // unidad_descuento = 1 significa que todas las unidades tienen descuento
+            // unidad_descuento = 2 significa que la 2da, 4ta, 6ta, 8va... tienen descuento
+            // unidad_descuento = 3 significa que la 3ra, 6ta, 9na... tienen descuento
+            
+            let unidadesConDescuento = 0
+            
+            for (let i = 1; i <= cantidad; i++) {
+              // Si el número de unidad es múltiplo de unidad_descuento, tiene descuento
+              if (i % promocion.unidad_descuento === 0) {
+                console.log(`    ✓ Unidad ${i} tiene descuento`)
+                unidadesConDescuento++
+              }
+            }
+            
+            // Si hay límite, respetarlo
+            if (promocion.limite_unidades !== null) {
+              unidadesConDescuento = Math.min(unidadesConDescuento, promocion.limite_unidades)
+            }
+            
+            // Calcular descuento: aplicar porcentaje de descuento solo a las unidades específicas
+            if (unidadesConDescuento > 0) {
+              // El descuento se aplica sobre el precio de las unidades elegibles
+              descuentoAplicado = precio * unidadesConDescuento * (promocion.descuento_porcentaje / 100)
+              subtotal = subtotal - descuentoAplicado
+              
+              console.log(`    → Unidades con descuento: ${unidadesConDescuento}`)
+              console.log(`    → Descuento aplicado: $${descuentoAplicado}`)
+              console.log(`    → Subtotal ANTES descuento: $${precio * cantidad}`)
+              console.log(`    → Subtotal DESPUÉS descuento: $${subtotal}`)
+              
+              promocionAplicada = {
+                descripcion: promocion.descripcion,
+                descuento: promocion.descuento_porcentaje,
+                unidades: unidadesConDescuento,
+                unidad_descuento: promocion.unidad_descuento
+              }
+            }
+          }
+          
+          total += subtotal
 
           productosPrecios.push({
             nombre: productoCarrito.productos.nombre,
-            cantidad: productoCarrito.cantidad || 1,
+            cantidad,
             precio,
-            subtotal
+            subtotal,
+            descuentoAplicado,
+            promocionAplicada
           })
+          
+          console.log(`  → Subtotal final: $${subtotal}`)
         }
-
-        console.log(`\n💰 Total para ${supermercado.nombre}: $${totalPrecio}`)
 
         preciosCalculados.push({
           supermercado: supermercado.nombre,
           supermercadoId: supermercado.id,
-          total: totalPrecio,
+          total: total,
           productos: productosPrecios
         })
+        
+        console.log(`💰 Total ${supermercado.nombre}: $${total}`)
       }
 
       // Ordenar por precio total (menor a mayor)
@@ -394,7 +476,6 @@ export default function Carritos() {
       setPreciosPorSupermercado(preciosCalculados)
     } catch (error) {
       console.error('❌ Error calculating prices:', error)
-      console.error('Error details:', JSON.stringify(error, null, 2))
       alert(`Error al calcular los precios: ${error.message || 'Error desconocido'}`)
       setShowPreciosModal(false)
     } finally {
@@ -805,6 +886,88 @@ export default function Carritos() {
         </div>
       )}
 
+      {/* Modal de Selección de Días */}
+      {showDiaSeleccionModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-2xl w-full">
+            <h3 className="text-xl font-bold mb-4">¿Cuándo vas a realizar la compra?</h3>
+            
+            <div className="space-y-4">
+              <p className="text-sm text-gray-600 mb-4">
+                Seleccioná uno o varios días de la semana para calcular los mejores precios
+              </p>
+              
+              {/* Días de la semana */}
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { num: 1, nombre: 'Lunes' },
+                  { num: 2, nombre: 'Martes' },
+                  { num: 3, nombre: 'Miércoles' },
+                  { num: 4, nombre: 'Jueves' },
+                  { num: 5, nombre: 'Viernes' },
+                  { num: 6, nombre: 'Sábado' },
+                  { num: 7, nombre: 'Domingo' }
+                ].map((dia) => {
+                  const isSelected = diasSeleccionados.includes(dia.num)
+                  return (
+                    <button
+                      key={dia.num}
+                      onClick={() => {
+                        if (isSelected) {
+                          setDiasSeleccionados(diasSeleccionados.filter(d => d !== dia.num))
+                        } else {
+                          setDiasSeleccionados([...diasSeleccionados, dia.num])
+                        }
+                      }}
+                      className={`p-4 rounded-lg border-2 transition-colors ${
+                        isSelected
+                          ? 'border-sabu-primary bg-green-50 text-sabu-primary font-semibold'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      {dia.nombre}
+                    </button>
+                  )
+                })}
+              </div>
+
+              {/* Botón "Mejor Día" */}
+              <button
+                onClick={() => {
+                  // Por ahora, solo seleccionar todos los días
+                  // Más adelante implementaremos la lógica para calcular el mejor día basado en promociones
+                  setDiasSeleccionados([1, 2, 3, 4, 5, 6, 7])
+                  alert('Se han seleccionado todos los días. Podrás ver el mejor día basado en promociones')
+                }}
+                className="w-full py-3 rounded-lg border-2 border-dashed border-gray-300 hover:border-sabu-primary hover:bg-green-50 text-gray-700 hover:text-sabu-primary transition-colors"
+              >
+                📅 Mejor Día
+              </button>
+            </div>
+
+            <div className="mt-6 pt-4 border-t flex gap-2">
+              <button
+                onClick={() => {
+                  setShowDiaSeleccionModal(false)
+                  setDiasSeleccionados([])
+                  setCarritoSeleccionado(null)
+                }}
+                className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleConfirmarDias}
+                disabled={diasSeleccionados.length === 0}
+                className="flex-1 bg-sabu-primary text-white px-4 py-2 rounded-md hover:bg-sabu-primary-dark disabled:bg-gray-300 disabled:cursor-not-allowed"
+              >
+                Continuar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Modal de Precios por Supermercado */}
       {showPreciosModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -830,7 +993,9 @@ export default function Carritos() {
                       }`}
                     >
                       <div className="flex justify-between items-center mb-3">
-                        <h4 className="text-lg font-semibold">{item.supermercado}</h4>
+                        <div>
+                          <h4 className="text-lg font-semibold">{item.supermercado}</h4>
+                        </div>
                         <div className="text-right">
                           <span className="text-2xl font-bold text-sabu-primary">
                             ${formatPrice(item.total)}
@@ -843,13 +1008,20 @@ export default function Carritos() {
                       
                       <div className="space-y-2">
                         {item.productos.map((prod, prodIndex) => (
-                          <div key={prodIndex} className="flex justify-between text-sm bg-white p-2 rounded">
-                            <span>
-                              {prod.nombre} x{prod.cantidad}
-                            </span>
-                            <span className="font-medium">
-                              ${formatPrice(prod.subtotal)}
-                            </span>
+                          <div key={prodIndex} className="bg-white p-2 rounded">
+                            <div className="flex justify-between text-sm">
+                              <span>
+                                {prod.nombre} x{prod.cantidad}
+                              </span>
+                              <span className="font-medium">
+                                ${formatPrice(prod.subtotal)}
+                              </span>
+                            </div>
+                            {prod.descuentoAplicado > 0 && prod.promocionAplicada && (
+                              <div className="text-xs text-green-600 mt-1">
+                                🎉 {prod.promocionAplicada.descripcion || 'Descuento aplicado'}: ${formatPrice(prod.descuentoAplicado)}
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
