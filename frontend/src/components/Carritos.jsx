@@ -492,7 +492,9 @@ export default function Carritos() {
           supermercadoId: supermercado.id,
           total: mejorPrecio,
           productos: productosPrecios,
-          diasRecomendados: mejoresDias
+          diasRecomendados: mejoresDias,
+          usarMejorDia: mejorDia, // Indica si se usó el botón "Mejor Día"
+          diasSeleccionadosUsuario: diasSeleccionados.length // Guarda cuántos días seleccionó el usuario
         })
       }
 
@@ -1021,13 +1023,19 @@ export default function Carritos() {
                       <div className="flex justify-between items-center mb-3">
                         <div>
                           <h4 className="text-lg font-semibold">{item.supermercado}</h4>
-                          {mejorDia && item.diasRecomendados && item.diasRecomendados.length > 0 && (
+                          {item.diasRecomendados && item.diasRecomendados.length > 0 && (
                             <div className="text-sm text-gray-600 mt-1">
-                              📅 {item.diasRecomendados.length === 7
-                                ? 'Cualquier día de la semana'
-                                : item.diasRecomendados.length > 1 
+                              📅 {item.usarMejorDia 
+                                ? (item.diasRecomendados.length === 7
+                                  ? 'Cualquier día de la semana'
+                                  : item.diasRecomendados.length > 1 
+                                    ? `Mejor comprando: ${item.diasRecomendados.map(d => nombresDias[d]).join(' o ')}`
+                                    : `Mejor comprando: ${nombresDias[item.diasRecomendados[0]]}`)
+                                : (item.diasRecomendados.length === item.diasSeleccionadosUsuario
                                   ? `Mejor comprando: ${item.diasRecomendados.map(d => nombresDias[d]).join(' o ')}`
-                                  : `Mejor comprando: ${nombresDias[item.diasRecomendados[0]]}`
+                                  : item.diasRecomendados.length > 1
+                                    ? `Mejor comprando: ${item.diasRecomendados.map(d => nombresDias[d]).join(' o ')}`
+                                    : `Mejor comprando: ${nombresDias[item.diasRecomendados[0]]}`)
                               }
                             </div>
                           )}
