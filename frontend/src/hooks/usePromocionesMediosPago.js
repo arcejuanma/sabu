@@ -247,3 +247,4 @@ export const getBancoColor = (banco) => {
       return 'text-gray-600 bg-gray-100';
   }
 };
+

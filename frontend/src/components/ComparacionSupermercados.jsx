@@ -24,7 +24,21 @@ const ComparacionSupermercados = ({ carritoId }) => {
     supermercadoSeleccionado
   );
 
+  // Debug: verificar si el componente se está renderizando
+  console.log('🔍 ComparacionSupermercados - Renderizando:', {
+    carritoId,
+    supermercadoSeleccionado,
+    resumen: resumen?.length || 0,
+    detalle: detalle?.length || 0
+  });
+
   const handleSupermercadoClick = async (supermercadoId) => {
+    console.log('🔍 handleSupermercadoClick - Click en supermercado:', {
+      supermercadoId,
+      supermercadoSeleccionado,
+      esMismo: supermercadoSeleccionado === supermercadoId
+    });
+    
     if (supermercadoSeleccionado === supermercadoId) {
       // Si ya está seleccionado, deseleccionar
       setSupermercadoSeleccionado(null);
@@ -231,6 +245,13 @@ const DetalleSupermercado = ({ detalle, loading, supermercado }) => {
     return acc;
   }, {});
 
+  // Debug: verificar datos del detalle
+  console.log('🔍 DetalleSupermercado - Datos recibidos:', {
+    detalle: detalle,
+    productosPorCategoria: productosPorCategoria,
+    cantidadProductos: detalle.length
+  });
+
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4 mt-4">
       <div className="flex items-center justify-between mb-4">
@@ -275,6 +296,14 @@ const ProductoDetalle = ({ producto }) => {
   const estadoColor = getProductoEstadoColor(producto.estado_producto);
   const estadoIcono = getProductoEstadoIcono(producto.estado_producto);
 
+  // Debug: verificar datos del producto
+  console.log('🔍 ProductoDetalle - Datos del producto:', {
+    nombre: producto.producto_nombre,
+    subtotal: producto.subtotal,
+    ahorro_producto: producto.ahorro_producto,
+    precio_final: producto.subtotal - (producto.ahorro_producto || 0)
+  });
+
   return (
     <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
       <div className="flex items-center space-x-3 flex-1">
@@ -312,7 +341,7 @@ const ProductoDetalle = ({ producto }) => {
 
       <div className="text-right">
         <div className="font-semibold text-[#0D146B]">
-          {formatearPrecio(producto.subtotal)}
+          {formatearPrecio(producto.subtotal - (producto.ahorro_producto || 0))}
         </div>
         {producto.precio && (
           <div className="text-xs text-gray-500">
@@ -321,7 +350,7 @@ const ProductoDetalle = ({ producto }) => {
         )}
         {producto.ahorro_producto > 0 && (
           <div className="text-xs text-green-600 font-medium">
-            💰 {formatearPrecio(producto.ahorro_producto)}
+            💰 Descuento unitario: {formatearPrecio(producto.ahorro_producto)}
           </div>
         )}
       </div>
@@ -330,3 +359,4 @@ const ProductoDetalle = ({ producto }) => {
 };
 
 export default ComparacionSupermercados;
+

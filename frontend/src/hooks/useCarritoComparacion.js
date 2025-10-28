@@ -79,6 +79,13 @@ export const useDetalleCarrito = (carritoId, supermercadoId) => {
 
       if (error) throw error;
 
+      // Debug: verificar datos recibidos
+      console.log('🔍 useDetalleCarrito - Datos de la vista:', {
+        data: data,
+        cantidad: data?.length || 0,
+        primerProducto: data?.[0]
+      });
+
       setDetalle(data || []);
     } catch (err) {
       console.error('Error fetching detalle carrito:', err);
