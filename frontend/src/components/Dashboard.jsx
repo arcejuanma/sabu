@@ -202,82 +202,65 @@ export default function Dashboard() {
       <main>
         <div className="max-w-7xl mx-auto py-4 sm:py-8 px-3 sm:px-6 lg:px-8">
           <div className="space-y-4 sm:space-y-6">
-            {/* Card de Supermercados */}
-            <div className="bg-white rounded-xl shadow-md border border-gray-100 p-4 sm:p-6 hover:shadow-lg transition-shadow duration-200">
-              <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
-                <div className="p-1.5 sm:p-2 bg-green-100 rounded-lg">
-                  <span className="text-xl sm:text-2xl">🏪</span>
+            {/* Sección compacta para Supermercados y Medios de Pago (Grid en desktop) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+              {/* Card de Supermercados - Compacta */}
+              <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-100 p-3 sm:p-4 hover:shadow-md transition-shadow duration-200">
+                <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                  <div className="p-1 sm:p-1.5 bg-green-100 rounded-lg">
+                    <span className="text-lg sm:text-xl">🏪</span>
+                  </div>
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900">
+                    Supermercados
+                  </h3>
                 </div>
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-                  Tus Supermercados Preferidos
-                </h2>
+                {userData?.supermercados_preferidos_usuario?.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                    {userData.supermercados_preferidos_usuario.map((pref, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center px-2 sm:px-3 py-1 rounded-lg text-xs font-semibold bg-gradient-to-r from-green-100 to-green-50 text-green-800 border border-green-200 shadow-sm"
+                      >
+                        {pref.supermercados.nombre}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-xs">Sin configurar</p>
+                )}
               </div>
-              {userData?.supermercados_preferidos_usuario?.length > 0 ? (
-                <div className="flex flex-wrap gap-2 sm:gap-3">
-                  {userData.supermercados_preferidos_usuario.map((pref, index) => (
-                    <span
-                      key={index}
-                      className="inline-flex items-center px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold bg-gradient-to-r from-green-100 to-green-50 text-green-800 border border-green-200 shadow-sm active:shadow-md transition-shadow duration-200"
-                    >
-                      {pref.supermercados.nombre}
-                    </span>
-                  ))}
+
+              {/* Card de Medios de Pago - Compacta */}
+              <div className="bg-white rounded-lg sm:rounded-xl shadow-sm border border-gray-100 p-3 sm:p-4 hover:shadow-md transition-shadow duration-200">
+                <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                  <div className="p-1 sm:p-1.5 bg-blue-100 rounded-lg">
+                    <span className="text-lg sm:text-xl">💳</span>
+                  </div>
+                  <h3 className="text-sm sm:text-base font-bold text-gray-900">
+                    Medios de Pago
+                  </h3>
                 </div>
-              ) : (
-                <div className="py-6 sm:py-8 text-center">
-                  <p className="text-gray-500 text-xs sm:text-sm">No hay supermercados configurados</p>
-                  <p className="text-gray-400 text-xs mt-2">Editalos en Mi Cuenta</p>
-                </div>
-              )}
+                {userData?.medios_de_pago_x_usuario?.length > 0 ? (
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
+                    {userData.medios_de_pago_x_usuario.map((mp, index) => (
+                      <span
+                        key={index}
+                        className="inline-flex items-center px-2 sm:px-3 py-1 rounded-lg text-xs font-semibold bg-gradient-to-r from-blue-100 to-blue-50 text-blue-800 border border-blue-200 shadow-sm"
+                      >
+                        {mp.medios_de_pago.nombre}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-xs">Sin configurar</p>
+                )}
+              </div>
             </div>
 
-            {/* Card de Medios de Pago */}
-            <div className="bg-white rounded-xl shadow-md border border-gray-100 p-4 sm:p-6 hover:shadow-lg transition-shadow duration-200">
-              <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
-                <div className="p-1.5 sm:p-2 bg-blue-100 rounded-lg">
-                  <span className="text-xl sm:text-2xl">💳</span>
-                </div>
-                <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-                  Tus Medios de Pago
-                </h2>
-              </div>
-              {userData?.medios_de_pago_x_usuario?.length > 0 ? (
-                <div className="space-y-3 sm:space-y-4">
-                  {Object.entries(
-                    userData.medios_de_pago_x_usuario.reduce((acc, mp) => {
-                      const banco = mp.medios_de_pago.banco
-                      if (!acc[banco]) acc[banco] = []
-                      acc[banco].push(mp.medios_de_pago)
-                      return acc
-                    }, {})
-                  ).map(([banco, medios]) => (
-                    <div key={banco} className="pb-3 sm:pb-4 border-b border-gray-100 last:border-b-0 last:pb-0">
-                      <p className="text-xs sm:text-sm font-bold text-gray-700 mb-2 sm:mb-3 flex items-center gap-2">
-                        <span className="w-1 h-3 sm:h-4 bg-sabu-primary rounded-full"></span>
-                        {banco}
-                      </p>
-                      <div className="flex flex-wrap gap-2">
-                        {medios.map((medio, idx) => (
-                          <span
-                            key={idx}
-                            className="inline-flex items-center px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-semibold bg-gradient-to-r from-blue-100 to-blue-50 text-blue-800 border border-blue-200 shadow-sm active:shadow-md transition-shadow duration-200"
-                          >
-                            {medio.nombre}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="py-6 sm:py-8 text-center">
-                  <p className="text-gray-500 text-xs sm:text-sm">No hay medios de pago configurados</p>
-                  <p className="text-gray-400 text-xs mt-2">Agregalos en Mi Cuenta</p>
-                </div>
-              )}
+            {/* Carritos - Sección protagonista */}
+            <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl sm:rounded-2xl shadow-xl border-2 border-sabu-primary/20 p-4 sm:p-6 sm:p-8 hover:shadow-2xl transition-all duration-300">
+              <Carritos />
             </div>
-
-            <Carritos />
           </div>
         </div>
       </main>

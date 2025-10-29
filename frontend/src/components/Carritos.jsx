@@ -848,9 +848,14 @@ export default function Carritos() {
   }
 
   return (
-    <div className="bg-white rounded-lg sm:rounded-xl shadow-md border border-gray-100 p-4 sm:p-6">
+    <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Mis Carritos de Compra</h2>
+        <div className="flex items-center gap-3">
+          <div className="p-2 sm:p-3 bg-gradient-to-br from-sabu-primary to-sabu-primary-dark rounded-xl shadow-lg">
+            <span className="text-2xl sm:text-3xl">🛒</span>
+          </div>
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Mis Carritos de Compra</h2>
+        </div>
         <button 
           onClick={() => setShowNewCarritoModal(true)}
           className="w-full sm:w-auto bg-sabu-primary text-white px-4 py-3 sm:py-2 rounded-lg hover:bg-sabu-primary-dark active:bg-sabu-primary-dark min-h-[48px] font-semibold transition-all duration-200 shadow-sm hover:shadow-md"
@@ -867,20 +872,26 @@ export default function Carritos() {
       ) : (
         <div className="space-y-3 sm:space-y-4">
           {carritos.map((carrito) => (
-            <div key={carrito.id} className="border-2 border-gray-200 rounded-lg sm:rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow duration-200">
+            <div key={carrito.id} className="bg-white border-2 border-gray-200 rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-md hover:shadow-xl transition-all duration-300 hover:border-sabu-primary/50">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
                 <div className="flex-1 w-full sm:w-auto">
-                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">{carrito.nombre}</h3>
-                  <p className="text-xs sm:text-sm text-gray-600">
-                    {carrito.productos_x_carrito?.length || 0} productos
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-xl">📋</span>
+                    <h3 className="text-lg sm:text-xl font-bold text-gray-900">{carrito.nombre}</h3>
+                  </div>
+                  <p className="text-sm sm:text-base text-gray-600 ml-7 sm:ml-0">
+                    {carrito.productos_x_carrito?.length || 0} {carrito.productos_x_carrito?.length === 1 ? 'producto' : 'productos'}
                   </p>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                   <button
                     onClick={() => handleRealizarCompra(carrito)}
-                    className="flex-1 sm:flex-none bg-sabu-primary text-white px-4 py-3 sm:py-2 rounded-lg hover:bg-sabu-primary-dark active:bg-sabu-primary-dark text-sm sm:text-sm font-semibold min-h-[48px] transition-all duration-200 shadow-sm hover:shadow-md"
+                    className="flex-1 sm:flex-none bg-gradient-to-r from-sabu-primary to-sabu-primary-dark text-white px-5 py-3 sm:py-2.5 rounded-xl hover:shadow-lg active:shadow-xl text-sm font-bold min-h-[48px] transition-all duration-200 shadow-md hover:scale-[1.02]"
                   >
-                    Calcular Compra Óptima
+                    <span className="flex items-center justify-center gap-2">
+                      <span>💰</span>
+                      <span>Calcular Compra Óptima</span>
+                    </span>
                   </button>
                   <div className="flex gap-2">
                     <button
