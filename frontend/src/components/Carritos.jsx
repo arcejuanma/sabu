@@ -645,10 +645,17 @@ export default function Carritos() {
             
             totalConDescuentosUnitarios += subtotalFinal
             
+            // Calcular precio unitario final (precio original - descuento unitario)
+            const precioUnitarioOriginal = parseFloat(producto.precio) || 0
+            const productoCantidad = parseFloat(producto.cantidad) || 0
+            const descuentoUnitario = productoCantidad > 0 ? descuentoInfo.descuento / productoCantidad : 0
+            const precioUnitarioFinal = precioUnitarioOriginal - descuentoUnitario
+            
             return {
               nombre: producto.producto_nombre,
               cantidad: producto.cantidad,
-              precio: parseFloat(producto.precio) || 0,
+              precio: precioUnitarioOriginal, // Precio original sin descuento
+              precioUnitarioFinal: precioUnitarioFinal, // Precio final por unidad con descuento aplicado
               subtotal: subtotalFinal,
               descuentoAplicado: descuentoInfo.descuento,
               promocionAplicada: descuentoInfo.promocion,
@@ -1730,9 +1737,9 @@ export default function Carritos() {
                                   <div className="font-medium text-gray-900">
                                     ${formatPrice(prod.subtotal)}
                                   </div>
-                                  {prod.precio && (
+                                  {prod.precioUnitarioFinal !== undefined && (
                                     <div className="text-xs text-gray-500">
-                                      ${formatPrice(prod.precio)} c/u
+                                      ${formatPrice(prod.precioUnitarioFinal)} c/u
                                     </div>
                                   )}
                                 </div>
