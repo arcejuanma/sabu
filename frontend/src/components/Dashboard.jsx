@@ -146,7 +146,7 @@ export default function Dashboard() {
                 className="flex-1 inline-flex items-center justify-center px-3 py-3 border-2 border-red-500 text-sm font-semibold rounded-lg shadow-sm text-white bg-red-500 active:bg-red-600 active:border-red-600 transition-all duration-200 min-h-[44px]"
               >
                 <span className="mr-1.5">🚪</span>
-                <span>Cerrar</span>
+                <span>Cerrar Sesión</span>
               </button>
             </div>
           </div>
