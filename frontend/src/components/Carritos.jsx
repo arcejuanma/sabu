@@ -28,6 +28,7 @@ export default function Carritos() {
   const [carritoSeleccionado, setCarritoSeleccionado] = useState(null)
   const [mejorDia, setMejorDia] = useState(false) // Indica si se usó el botón "Mejor Día"
   const [productosExpandidos, setProductosExpandidos] = useState(new Set()) // Índices de items expandidos
+  const [showSeleccionadosDrawer, setShowSeleccionadosDrawer] = useState(false) // Para mostrar drawer de productos seleccionados en móvil
 
   useEffect(() => {
     if (user) {
@@ -231,6 +232,7 @@ export default function Carritos() {
       setNewCarritoForm({ nombre: '' })
       setSelectedCategoria(null)
       setSelectedProductos([])
+      setShowSeleccionadosDrawer(false)
       fetchCarritos()
     } catch (error) {
       console.error('Error creating carrito:', error)
@@ -306,6 +308,7 @@ export default function Carritos() {
       setEditingCarrito(null)
       setSelectedCategoria(null)
       setSelectedProductos([])
+      setShowSeleccionadosDrawer(false)
       fetchCarritos()
     } catch (error) {
       console.error('Error updating carrito:', error)
@@ -815,6 +818,7 @@ export default function Carritos() {
                   setEditingCarrito(null)
                   setSelectedCategoria(null)
                   setSelectedProductos([])
+                  setShowSeleccionadosDrawer(false)
                 }}
                 className="p-2 text-gray-500 hover:text-gray-700 text-xl font-bold sm:hidden"
               >
@@ -832,7 +836,7 @@ export default function Carritos() {
                 required
                 value={editForm.nombre}
                 onChange={(e) => setEditForm({ ...editForm, nombre: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sabu-primary"
+                className="w-full px-3 py-3.5 sm:py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sabu-primary focus:border-sabu-primary min-h-[48px] text-base sm:text-sm"
                 placeholder="Ej: Compra Semanal"
               />
             </div>
@@ -894,8 +898,8 @@ export default function Carritos() {
                 )}
               </div>
 
-              {/* Panel de Productos Seleccionados */}
-              <div className="w-1/4 border-l pl-4 overflow-y-auto">
+              {/* Panel de Productos Seleccionados - Desktop */}
+              <div className="hidden sm:block w-1/4 border-l pl-4 overflow-y-auto">
                 <h4 className="font-semibold text-gray-900 mb-3">
                   Seleccionados ({selectedProductos.length})
                 </h4>
@@ -906,17 +910,17 @@ export default function Carritos() {
                     {selectedProductos.map((p) => (
                       <div
                         key={p.id}
-                        className="p-3 rounded-md bg-green-50 border-2 border-green-200"
+                        className="p-3 rounded-lg bg-green-50 border-2 border-green-200"
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1">
-                            <p className="font-medium text-gray-900 text-sm">{p.nombre}</p>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-gray-900 text-sm break-words">{p.nombre}</p>
                             <div className="flex items-center justify-center gap-1 mt-2">
-                              <div className="flex items-center gap-1 bg-white rounded-md border border-gray-300">
+                              <div className="flex items-center gap-1 bg-white rounded-lg border-2 border-gray-300">
                                 <button
                                   type="button"
                                   onClick={() => handleDecrementarCantidad(p.id)}
-                                  className="px-2 py-1 text-gray-700 hover:bg-gray-100 text-sm font-semibold"
+                                  className="px-3 py-1.5 text-gray-700 active:bg-gray-100 text-base font-bold min-w-[40px]"
                                 >
                                   −
                                 </button>
@@ -927,12 +931,12 @@ export default function Carritos() {
                                   step="1"
                                   value={p.cantidad || 1}
                                   onChange={(e) => handleChangeCantidad(p.id, parseFloat(e.target.value) || 0)}
-                                  className="w-14 px-2 py-1 text-center text-xs border-x border-gray-300 focus:outline-none focus:ring-2 focus:ring-sabu-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                  className="w-16 px-2 py-1.5 text-center text-sm border-x-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-sabu-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 />
                                 <button
                                   type="button"
                                   onClick={() => handleIncrementarCantidad(p.id)}
-                                  className="px-2 py-1 text-gray-700 hover:bg-gray-100 text-sm font-semibold"
+                                  className="px-3 py-1.5 text-gray-700 active:bg-gray-100 text-base font-bold min-w-[40px]"
                                 >
                                   +
                                 </button>
@@ -941,7 +945,7 @@ export default function Carritos() {
                           </div>
                           <button
                             onClick={() => handleToggleProducto(p)}
-                            className="text-red-600 hover:text-red-700 text-lg leading-none"
+                            className="text-red-600 active:text-red-700 text-xl leading-none p-1 min-w-[32px] min-h-[32px] flex items-center justify-center"
                             title="Eliminar"
                           >
                             ×
@@ -953,6 +957,101 @@ export default function Carritos() {
                 )}
               </div>
             </div>
+
+            {/* Botón flotante móvil para productos seleccionados */}
+            {selectedProductos.length > 0 && (
+              <button
+                onClick={() => setShowSeleccionadosDrawer(true)}
+                className="sm:hidden fixed bottom-20 left-4 right-4 bg-sabu-primary text-white px-6 py-4 rounded-xl shadow-2xl font-bold text-base flex items-center justify-center gap-3 z-40 min-h-[56px]"
+              >
+                <span className="bg-white/20 rounded-full px-3 py-1 text-sm">
+                  {selectedProductos.length}
+                </span>
+                <span>Ver Productos Seleccionados</span>
+              </button>
+            )}
+
+            {/* Drawer móvil de productos seleccionados */}
+            {showSeleccionadosDrawer && (
+              <div className="sm:hidden fixed inset-0 z-50">
+                {/* Overlay */}
+                <div 
+                  className="absolute inset-0 bg-black/50"
+                  onClick={() => setShowSeleccionadosDrawer(false)}
+                />
+                {/* Drawer */}
+                <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl max-h-[80vh] flex flex-col animate-slide-up">
+                  <div className="flex items-center justify-between p-4 border-b">
+                    <h4 className="text-lg font-bold text-gray-900">
+                      Productos Seleccionados ({selectedProductos.length})
+                    </h4>
+                    <button
+                      onClick={() => setShowSeleccionadosDrawer(false)}
+                      className="p-2 text-gray-500 active:text-gray-700 text-xl font-bold"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-4">
+                    {selectedProductos.length === 0 ? (
+                      <p className="text-sm text-gray-500 text-center py-8">No hay productos seleccionados</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {selectedProductos.map((p) => (
+                          <div
+                            key={p.id}
+                            className="p-4 rounded-xl bg-green-50 border-2 border-green-200"
+                          >
+                            <div className="flex items-start justify-between gap-3 mb-3">
+                              <p className="font-semibold text-gray-900 text-sm flex-1 break-words">{p.nombre}</p>
+                              <button
+                                onClick={() => {
+                                  handleToggleProducto(p)
+                                  if (selectedProductos.length === 1) {
+                                    setShowSeleccionadosDrawer(false)
+                                  }
+                                }}
+                                className="text-red-600 active:text-red-700 text-2xl leading-none p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                                title="Eliminar"
+                              >
+                                ×
+                              </button>
+                            </div>
+                            <div className="flex items-center justify-center">
+                              <div className="flex items-center gap-2 bg-white rounded-xl border-2 border-gray-300 shadow-sm">
+                                <button
+                                  type="button"
+                                  onClick={() => handleDecrementarCantidad(p.id)}
+                                  className="px-4 py-3 text-gray-700 active:bg-gray-100 text-xl font-bold min-w-[56px]"
+                                >
+                                  −
+                                </button>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max="99"
+                                  step="1"
+                                  value={p.cantidad || 1}
+                                  onChange={(e) => handleChangeCantidad(p.id, parseFloat(e.target.value) || 0)}
+                                  className="w-20 px-3 py-3 text-center text-base border-x-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-sabu-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleIncrementarCantidad(p.id)}
+                                  className="px-4 py-3 text-gray-700 active:bg-gray-100 text-xl font-bold min-w-[56px]"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Footer con botones */}
             <div className="mt-4 pt-4 border-t">
@@ -970,6 +1069,7 @@ export default function Carritos() {
                     setEditingCarrito(null)
                     setSelectedCategoria(null)
                     setSelectedProductos([])
+                    setShowSeleccionadosDrawer(false)
                   }}
                   className="flex-1 bg-gray-200 text-gray-700 px-4 py-3 sm:py-2 rounded-lg active:bg-gray-300 min-h-[48px] font-semibold transition-all duration-200"
                 >
@@ -993,6 +1093,7 @@ export default function Carritos() {
                   setNewCarritoForm({ nombre: '' })
                   setSelectedCategoria(null)
                   setSelectedProductos([])
+                  setShowSeleccionadosDrawer(false)
                 }}
                 className="p-2 text-gray-500 hover:text-gray-700 text-xl font-bold sm:hidden"
               >
@@ -1010,33 +1111,31 @@ export default function Carritos() {
                 required
                 value={newCarritoForm.nombre}
                 onChange={(e) => setNewCarritoForm({ ...newCarritoForm, nombre: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sabu-primary"
+                className="w-full px-3 py-3.5 sm:py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sabu-primary focus:border-sabu-primary min-h-[48px] text-base sm:text-sm"
                 placeholder="Ej: Compra Semanal"
               />
             </div>
 
             {/* Selección de productos */}
-            <div className="flex-1 overflow-hidden flex gap-4">
+            <div className="flex-1 overflow-hidden flex flex-col sm:flex-row gap-4">
               {/* Panel de Categorías */}
-              <div className="w-1/5 border-r pr-4 overflow-y-auto">
-                <h4 className="font-semibold text-gray-900 mb-3">
-                  Categorías
-                </h4>
-                <div className="space-y-2">
+              <div className="w-full sm:w-1/5 border-b sm:border-b-0 sm:border-r pb-4 sm:pb-0 sm:pr-4 overflow-y-auto max-h-40 sm:max-h-none">
+                <h4 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Categorías</h4>
+                <div className="flex sm:flex-col gap-2 sm:space-y-2 overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0">
                   {categorias.length === 0 ? (
-                    <p className="text-sm text-gray-500 p-2">No hay categorías disponibles</p>
+                    <p className="text-sm text-gray-500 p-2 flex-shrink-0">No hay categorías disponibles</p>
                   ) : (
                     categorias.map((categoria) => (
                       <button
                         key={categoria.id}
                         onClick={() => setSelectedCategoria(categoria.id)}
-                        className={`w-full text-left p-3 rounded-md transition-colors ${
+                        className={`flex-shrink-0 text-left p-2.5 sm:p-3 rounded-lg transition-colors min-h-[44px] ${
                           selectedCategoria === categoria.id
                             ? 'bg-sabu-primary text-white'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            : 'bg-gray-100 text-gray-700 active:bg-gray-200'
                         }`}
                       >
-                        <div className="font-medium">{categoria.nombre}</div>
+                        <div className="font-medium text-xs sm:text-sm">{categoria.nombre}</div>
                       </button>
                     ))
                   )}
@@ -1050,7 +1149,7 @@ export default function Carritos() {
                     <h4 className="font-semibold text-gray-900 mb-3">
                       {categorias.find(c => c.id === selectedCategoria)?.nombre}
                     </h4>
-                                        <div className="space-y-2">
+                    <div className="space-y-2">
                       {productos
                         .filter(p => p.categoria_id === selectedCategoria)
                         .map((producto) => {
@@ -1060,13 +1159,13 @@ export default function Carritos() {
                             <button
                               key={producto.id}
                               onClick={() => handleToggleProducto(producto)}
-                              className={`w-full text-left p-3 rounded-md border-2 transition-colors ${
+                              className={`w-full text-left p-3 sm:p-3 rounded-lg border-2 transition-colors min-h-[52px] ${
                                 isSelected
                                   ? 'border-sabu-primary bg-green-50'
-                                  : 'border-gray-200 hover:border-green-300'
+                                  : 'border-gray-200 active:border-green-300 active:bg-gray-50'
                               }`}
                             >
-                              {producto.nombre}
+                              <span className="text-sm sm:text-base">{producto.nombre}</span>
                             </button>
                           )
                         })}
@@ -1079,8 +1178,8 @@ export default function Carritos() {
                 )}
               </div>
 
-              {/* Panel de Productos Seleccionados */}
-              <div className="w-1/4 border-l pl-4 overflow-y-auto">
+              {/* Panel de Productos Seleccionados - Desktop */}
+              <div className="hidden sm:block w-1/4 border-l pl-4 overflow-y-auto">
                 <h4 className="font-semibold text-gray-900 mb-3">
                   Seleccionados ({selectedProductos.length})
                 </h4>
@@ -1091,17 +1190,17 @@ export default function Carritos() {
                     {selectedProductos.map((p) => (
                       <div
                         key={p.id}
-                        className="p-3 rounded-md bg-green-50 border-2 border-green-200"
+                        className="p-3 rounded-lg bg-green-50 border-2 border-green-200"
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1">
-                            <p className="font-medium text-gray-900 text-sm">{p.nombre}</p>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-gray-900 text-sm break-words">{p.nombre}</p>
                             <div className="flex items-center justify-center gap-1 mt-2">
-                              <div className="flex items-center gap-1 bg-white rounded-md border border-gray-300">
+                              <div className="flex items-center gap-1 bg-white rounded-lg border-2 border-gray-300">
                                 <button
                                   type="button"
                                   onClick={() => handleDecrementarCantidad(p.id)}
-                                  className="px-2 py-1 text-gray-700 hover:bg-gray-100 text-sm font-semibold"
+                                  className="px-3 py-1.5 text-gray-700 active:bg-gray-100 text-base font-bold min-w-[40px]"
                                 >
                                   −
                                 </button>
@@ -1112,12 +1211,12 @@ export default function Carritos() {
                                   step="1"
                                   value={p.cantidad || 1}
                                   onChange={(e) => handleChangeCantidad(p.id, parseFloat(e.target.value) || 0)}
-                                  className="w-14 px-2 py-1 text-center text-xs border-x border-gray-300 focus:outline-none focus:ring-2 focus:ring-sabu-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                  className="w-16 px-2 py-1.5 text-center text-sm border-x-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-sabu-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                                 />
                                 <button
                                   type="button"
                                   onClick={() => handleIncrementarCantidad(p.id)}
-                                  className="px-2 py-1 text-gray-700 hover:bg-gray-100 text-sm font-semibold"
+                                  className="px-3 py-1.5 text-gray-700 active:bg-gray-100 text-base font-bold min-w-[40px]"
                                 >
                                   +
                                 </button>
@@ -1126,7 +1225,7 @@ export default function Carritos() {
                           </div>
                           <button
                             onClick={() => handleToggleProducto(p)}
-                            className="text-red-600 hover:text-red-700 text-lg leading-none"
+                            className="text-red-600 active:text-red-700 text-xl leading-none p-1 min-w-[32px] min-h-[32px] flex items-center justify-center"
                             title="Eliminar"
                           >
                             ×
@@ -1138,6 +1237,101 @@ export default function Carritos() {
                 )}
               </div>
             </div>
+
+            {/* Botón flotante móvil para productos seleccionados */}
+            {selectedProductos.length > 0 && (
+              <button
+                onClick={() => setShowSeleccionadosDrawer(true)}
+                className="sm:hidden fixed bottom-20 left-4 right-4 bg-sabu-primary text-white px-6 py-4 rounded-xl shadow-2xl font-bold text-base flex items-center justify-center gap-3 z-40 min-h-[56px]"
+              >
+                <span className="bg-white/20 rounded-full px-3 py-1 text-sm">
+                  {selectedProductos.length}
+                </span>
+                <span>Ver Productos Seleccionados</span>
+              </button>
+            )}
+
+            {/* Drawer móvil de productos seleccionados */}
+            {showSeleccionadosDrawer && (
+              <div className="sm:hidden fixed inset-0 z-50">
+                {/* Overlay */}
+                <div 
+                  className="absolute inset-0 bg-black/50"
+                  onClick={() => setShowSeleccionadosDrawer(false)}
+                />
+                {/* Drawer */}
+                <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-3xl shadow-2xl max-h-[80vh] flex flex-col animate-slide-up">
+                  <div className="flex items-center justify-between p-4 border-b">
+                    <h4 className="text-lg font-bold text-gray-900">
+                      Productos Seleccionados ({selectedProductos.length})
+                    </h4>
+                    <button
+                      onClick={() => setShowSeleccionadosDrawer(false)}
+                      className="p-2 text-gray-500 active:text-gray-700 text-xl font-bold"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <div className="flex-1 overflow-y-auto p-4">
+                    {selectedProductos.length === 0 ? (
+                      <p className="text-sm text-gray-500 text-center py-8">No hay productos seleccionados</p>
+                    ) : (
+                      <div className="space-y-3">
+                        {selectedProductos.map((p) => (
+                          <div
+                            key={p.id}
+                            className="p-4 rounded-xl bg-green-50 border-2 border-green-200"
+                          >
+                            <div className="flex items-start justify-between gap-3 mb-3">
+                              <p className="font-semibold text-gray-900 text-sm flex-1 break-words">{p.nombre}</p>
+                              <button
+                                onClick={() => {
+                                  handleToggleProducto(p)
+                                  if (selectedProductos.length === 1) {
+                                    setShowSeleccionadosDrawer(false)
+                                  }
+                                }}
+                                className="text-red-600 active:text-red-700 text-2xl leading-none p-2 min-w-[44px] min-h-[44px] flex items-center justify-center"
+                                title="Eliminar"
+                              >
+                                ×
+                              </button>
+                            </div>
+                            <div className="flex items-center justify-center">
+                              <div className="flex items-center gap-2 bg-white rounded-xl border-2 border-gray-300 shadow-sm">
+                                <button
+                                  type="button"
+                                  onClick={() => handleDecrementarCantidad(p.id)}
+                                  className="px-4 py-3 text-gray-700 active:bg-gray-100 text-xl font-bold min-w-[56px]"
+                                >
+                                  −
+                                </button>
+                                <input
+                                  type="number"
+                                  min="0"
+                                  max="99"
+                                  step="1"
+                                  value={p.cantidad || 1}
+                                  onChange={(e) => handleChangeCantidad(p.id, parseFloat(e.target.value) || 0)}
+                                  className="w-20 px-3 py-3 text-center text-base border-x-2 border-gray-300 focus:outline-none focus:ring-2 focus:ring-sabu-primary [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleIncrementarCantidad(p.id)}
+                                  className="px-4 py-3 text-gray-700 active:bg-gray-100 text-xl font-bold min-w-[56px]"
+                                >
+                                  +
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Footer con botones */}
             <div className="mt-4 pt-4 border-t">
@@ -1155,6 +1349,7 @@ export default function Carritos() {
                     setNewCarritoForm({ nombre: '' })
                     setSelectedCategoria(null)
                     setSelectedProductos([])
+                    setShowSeleccionadosDrawer(false)
                   }}
                   className="flex-1 bg-gray-200 text-gray-700 px-4 py-3 sm:py-2 rounded-lg active:bg-gray-300 min-h-[48px] font-semibold transition-all duration-200"
                 >
