@@ -211,25 +211,70 @@ export default function Onboarding() {
     }
   }
 
+  // Indicador de progreso
+  const progressSteps = [
+    { num: 1, label: 'Datos', icon: '👤' },
+    { num: 2, label: 'Dirección', icon: '📍' },
+    { num: 3, label: 'Supermercados', icon: '🏪' },
+    { num: 4, label: 'Medios de Pago', icon: '💳' }
+  ]
+
+  const ProgressIndicator = () => (
+    <div className="mb-6 sm:mb-8">
+      <div className="flex items-center justify-between mb-2">
+        {progressSteps.map((s, idx) => (
+          <div key={s.num} className="flex-1 flex flex-col items-center">
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center font-bold text-sm sm:text-base transition-all duration-200 ${
+              step > s.num ? 'bg-sabu-primary text-white' :
+              step === s.num ? 'bg-sabu-primary text-white scale-110 shadow-lg' :
+              'bg-gray-200 text-gray-500'
+            }`}>
+              {step > s.num ? '✓' : s.icon}
+            </div>
+            <span className={`mt-1 text-xs sm:text-sm font-medium hidden sm:block ${
+              step >= s.num ? 'text-gray-900' : 'text-gray-400'
+            }`}>
+              {s.label}
+            </span>
+          </div>
+        ))}
+      </div>
+      <div className="flex items-center justify-between mt-2">
+        {progressSteps.map((s, idx) => (
+          <div key={s.num} className={`flex-1 h-1 rounded-full transition-all duration-200 ${
+            step > s.num ? 'bg-sabu-primary' :
+            step === s.num ? 'bg-sabu-primary' :
+            'bg-gray-200'
+          } ${idx < progressSteps.length - 1 ? 'mr-2' : ''}`} />
+        ))}
+      </div>
+      <div className="text-center mt-2">
+        <span className="text-xs sm:text-sm text-gray-600">Paso {step} de 4</span>
+      </div>
+    </div>
+  )
+
   if (step === 1) {
     return (
-      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-6 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md mx-auto">
-          <div className="text-center mb-8">
-            <div className="mx-auto flex items-center justify-center">
-              <Logo size={64} />
+          <div className="text-center mb-6 sm:mb-8">
+            <div className="mx-auto flex items-center justify-center p-3 bg-white rounded-2xl shadow-lg mb-4">
+              <Logo size={56} />
             </div>
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            <h2 className="mt-4 sm:mt-6 text-2xl sm:text-3xl font-extrabold text-gray-900">
               ¡Bienvenido a SABU!
             </h2>
-            <p className="mt-2 text-lg text-gray-600">
+            <p className="mt-2 text-base sm:text-lg text-gray-600">
               Contanos un poco sobre vos para personalizar tu experiencia
             </p>
           </div>
 
-          <form onSubmit={(e) => e.preventDefault()}>
-            <div className="space-y-6">
-              <div className="grid grid-cols-2 gap-4">
+          <ProgressIndicator />
+
+          <form onSubmit={(e) => e.preventDefault()} className="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+            <div className="space-y-5 sm:space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="nombre" className="block text-sm font-medium text-gray-700 mb-2">
                     Nombre
@@ -241,7 +286,7 @@ export default function Onboarding() {
                     required
                     value={formData.nombre}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sabu-primary focus:border-green-500"
+                    className="w-full px-3 py-3.5 sm:py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sabu-primary focus:border-sabu-primary min-h-[48px]"
                     placeholder="Tu nombre"
                   />
                 </div>
@@ -256,7 +301,7 @@ export default function Onboarding() {
                     required
                     value={formData.apellido}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sabu-primary focus:border-green-500"
+                    className="w-full px-3 py-3.5 sm:py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sabu-primary focus:border-sabu-primary min-h-[48px]"
                     placeholder="Tu apellido"
                   />
                 </div>
@@ -266,22 +311,22 @@ export default function Onboarding() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Teléfono
                 </label>
-                <div className="flex space-x-2">
-                  <div className="w-20">
+                <div className="flex gap-2">
+                  <div className="w-20 sm:w-20">
                     <input
                       type="text"
                       value={formData.codigoPais}
                       onChange={(e) => setFormData(prev => ({ ...prev, codigoPais: e.target.value }))}
-                      className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sabu-primary focus:border-green-500 text-center"
+                      className="w-full px-2 sm:px-3 py-3.5 sm:py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sabu-primary focus:border-sabu-primary text-center min-h-[48px] text-sm"
                       placeholder="+54"
                     />
                   </div>
-                  <div className="w-24">
+                  <div className="w-24 sm:w-24">
                     <input
                       type="text"
                       value={formData.codigoArea}
                       onChange={handleCodigoAreaChange}
-                      className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sabu-primary focus:border-green-500 text-center"
+                      className="w-full px-2 sm:px-3 py-3.5 sm:py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sabu-primary focus:border-sabu-primary text-center min-h-[48px] text-sm"
                       placeholder="11"
                     />
                   </div>
@@ -290,7 +335,7 @@ export default function Onboarding() {
                       type="text"
                       value={formData.numero}
                       onChange={handleNumeroChange}
-                      className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sabu-primary focus:border-green-500 text-center"
+                      className="w-full px-3 py-3.5 sm:py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sabu-primary focus:border-sabu-primary text-center min-h-[48px] text-sm"
                       placeholder="1234-5678"
                     />
                   </div>
@@ -301,14 +346,14 @@ export default function Onboarding() {
               </div>
             </div>
 
-            <div className="mt-8">
+            <div className="mt-6 sm:mt-8">
               <button
                 type="button"
                 onClick={handleNext}
                 disabled={!formData.nombre || !formData.apellido || !formData.codigoArea || !formData.numero}
-                className="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sabu-primary hover:bg-sabu-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex justify-center py-4 sm:py-3 px-4 border border-transparent rounded-lg shadow-lg text-base sm:text-sm font-bold text-white bg-gradient-to-r from-sabu-primary to-sabu-primary-dark hover:from-sabu-primary-dark hover:to-sabu-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary disabled:opacity-50 disabled:cursor-not-allowed min-h-[52px] transition-all duration-200"
               >
-                Continuar
+                Continuar →
               </button>
             </div>
           </form>
@@ -319,22 +364,24 @@ export default function Onboarding() {
 
   if (step === 2) {
     return (
-      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-6 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md mx-auto">
-          <div className="text-center mb-8">
-            <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-100">
-              <span className="text-3xl">📍</span>
+          <ProgressIndicator />
+          
+          <div className="text-center mb-6 sm:mb-8 bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+            <div className="mx-auto h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center rounded-full bg-green-100">
+              <span className="text-2xl sm:text-3xl">📍</span>
             </div>
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            <h2 className="mt-4 sm:mt-6 text-2xl sm:text-3xl font-extrabold text-gray-900">
               ¿Dónde vivís?
             </h2>
-            <p className="mt-2 text-lg text-gray-600">
+            <p className="mt-2 text-base sm:text-lg text-gray-600">
               Necesitamos tu dirección para encontrar supermercados cercanos
             </p>
           </div>
 
-          <form onSubmit={(e) => e.preventDefault()}>
-            <div className="space-y-6">
+          <form onSubmit={(e) => e.preventDefault()} className="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+            <div className="space-y-5 sm:space-y-6">
               <div>
                 <label htmlFor="direccion" className="block text-sm font-medium text-gray-700 mb-2">
                   Dirección
@@ -346,12 +393,12 @@ export default function Onboarding() {
                   required
                   value={formData.direccion}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sabu-primary focus:border-green-500"
+                  className="w-full px-3 py-3.5 sm:py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sabu-primary focus:border-sabu-primary min-h-[48px]"
                   placeholder="Ej: Av. Corrientes"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="altura" className="block text-sm font-medium text-gray-700 mb-2">
                     Altura
@@ -363,7 +410,7 @@ export default function Onboarding() {
                     required
                     value={formData.altura}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sabu-primary focus:border-green-500"
+                    className="w-full px-3 py-3.5 sm:py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sabu-primary focus:border-sabu-primary min-h-[48px]"
                     placeholder="1234"
                   />
                 </div>
@@ -378,7 +425,7 @@ export default function Onboarding() {
                     required
                     value={formData.codigoPostal}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-sabu-primary focus:border-green-500"
+                    className="w-full px-3 py-3.5 sm:py-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-sabu-primary focus:border-sabu-primary min-h-[48px]"
                     placeholder="C1043"
                   />
                 </div>
@@ -398,21 +445,21 @@ export default function Onboarding() {
               </div>
             </div>
 
-            <div className="mt-8 flex space-x-4">
+            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-2 sm:space-x-4">
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="flex-1 py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary"
+                className="flex-1 py-4 sm:py-3 px-4 border-2 border-gray-300 rounded-lg shadow-sm text-base sm:text-sm font-semibold text-gray-700 bg-white active:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary min-h-[52px] transition-all duration-200"
               >
-                Atrás
+                ← Atrás
               </button>
               <button
                 type="button"
                 onClick={handleNext}
                 disabled={!formData.direccion || !formData.altura || !formData.codigoPostal}
-                className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sabu-primary hover:bg-sabu-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 flex justify-center py-4 sm:py-3 px-4 border border-transparent rounded-lg shadow-lg text-base sm:text-sm font-bold text-white bg-gradient-to-r from-sabu-primary to-sabu-primary-dark hover:from-sabu-primary-dark hover:to-sabu-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary disabled:opacity-50 disabled:cursor-not-allowed min-h-[52px] transition-all duration-200"
               >
-                Continuar
+                Continuar →
               </button>
             </div>
           </form>
@@ -423,29 +470,30 @@ export default function Onboarding() {
 
   // Paso 3: Supermercados
   if (step === 3) {
-    return (
-      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md mx-auto">
-          <div className="text-center mb-8">
-            <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-100">
-              <span className="text-3xl">🏪</span>
-            </div>
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-              ¿Dónde comprás?
-            </h2>
-            <p className="mt-2 text-lg text-gray-600">
-              Seleccioná los supermercados donde querés que busquemos ofertas
-            </p>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-6 sm:py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md mx-auto">
+        <ProgressIndicator />
+        
+        <div className="text-center mb-6 sm:mb-8 bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+          <div className="mx-auto h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center rounded-full bg-green-100">
+            <span className="text-2xl sm:text-3xl">🏪</span>
           </div>
+          <h2 className="mt-4 sm:mt-6 text-2xl sm:text-3xl font-extrabold text-gray-900">
+            ¿Dónde comprás?
+          </h2>
+          <p className="mt-2 text-base sm:text-lg text-gray-600">
+            Seleccioná los supermercados donde querés que busquemos ofertas
+          </p>
+        </div>
 
-          <div>
           {loadingSupermercados ? (
-            <div className="flex items-center justify-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sabu-primary"></div>
+          <div className="flex items-center justify-center py-8 bg-white rounded-xl shadow-lg p-6">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sabu-primary"></div>
               <span className="ml-2 text-gray-600">Cargando supermercados...</span>
             </div>
           ) : supermercadosDisponibles.length === 0 ? (
-            <div className="text-center py-8">
+          <div className="text-center py-8 bg-white rounded-xl shadow-lg p-6">
               <div className="text-gray-500 mb-4">
                 <div className="text-4xl mb-2">⚠️</div>
                 <p>No se pudieron cargar los supermercados</p>
@@ -453,20 +501,22 @@ export default function Onboarding() {
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="px-4 py-2 bg-sabu-primary text-white rounded-md hover:bg-sabu-primary-dark"
+              className="px-4 py-2 bg-sabu-primary text-white rounded-md hover:bg-sabu-primary-dark min-h-[48px]"
               >
                 Reintentar
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
+          <>
+            <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+              <div className="space-y-3 sm:space-y-4">
               {supermercadosDisponibles.map((supermercado) => (
                 <div
                   key={supermercado.id}
-                  className={`relative flex items-center p-4 border rounded-lg cursor-pointer transition-colors ${
+                    className={`relative flex items-center p-4 sm:p-4 border-2 rounded-lg cursor-pointer transition-all duration-200 min-h-[64px] ${
                     formData.supermercados.includes(supermercado.id)
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-gray-300 hover:border-gray-400'
+                        ? 'border-sabu-primary bg-green-50 shadow-md'
+                        : 'border-gray-300 active:border-gray-400 active:bg-gray-50'
                   }`}
                   onClick={() => handleSupermercadoToggle(supermercado.id)}
                 >
@@ -483,40 +533,41 @@ export default function Onboarding() {
                       type="checkbox"
                       checked={formData.supermercados.includes(supermercado.id)}
                       onChange={() => handleSupermercadoToggle(supermercado.id)}
-                      className="h-4 w-4 text-sabu-primary focus:ring-sabu-primary border-gray-300 rounded"
+                        className="h-4 w-4 text-sabu-primary focus:ring-sabu-primary border-gray-300 rounded"
                     />
                   </div>
                 </div>
               ))}
+              </div>
             </div>
-          )}
 
-          {formData.supermercados.length === 0 && (
-            <div className="mt-4 text-center">
-              <p className="text-sm text-gray-500">
-                Seleccioná al menos un supermercado para continuar
-              </p>
+            {formData.supermercados.length === 0 && (
+              <div className="mt-4 text-center bg-white rounded-xl shadow-lg p-4">
+                <p className="text-sm text-gray-500">
+                  Seleccioná al menos un supermercado para continuar
+                </p>
+              </div>
+            )}
+
+            <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-2 sm:space-x-4">
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="flex-1 py-4 sm:py-3 px-4 border-2 border-gray-300 rounded-lg shadow-sm text-base sm:text-sm font-semibold text-gray-700 bg-white active:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary min-h-[52px] transition-all duration-200"
+              >
+                ← Atrás
+              </button>
+              <button
+                type="button"
+                onClick={handleNext}
+                disabled={formData.supermercados.length === 0}
+                className="flex-1 flex justify-center py-4 sm:py-3 px-4 border border-transparent rounded-lg shadow-lg text-base sm:text-sm font-bold text-white bg-gradient-to-r from-sabu-primary to-sabu-primary-dark hover:from-sabu-primary-dark hover:to-sabu-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary disabled:opacity-50 disabled:cursor-not-allowed min-h-[52px] transition-all duration-200"
+              >
+                Continuar →
+              </button>
             </div>
-          )}
-
-          <div className="mt-8 flex space-x-4">
-            <button
-              type="button"
-              onClick={() => setStep(2)}
-              className="flex-1 py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary"
-            >
-              Atrás
-            </button>
-            <button
-              type="button"
-              onClick={handleNext}
-              disabled={formData.supermercados.length === 0}
-              className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sabu-primary hover:bg-sabu-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Continuar
-            </button>
-          </div>
-          </div>
+          </>
+        )}
         </div>
       </div>
     )
@@ -524,16 +575,18 @@ export default function Onboarding() {
 
   // Paso 4: Medios de pago
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 py-6 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md mx-auto">
-        <div className="text-center mb-8">
-          <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-100">
-            <span className="text-3xl">💳</span>
+        <ProgressIndicator />
+        
+        <div className="text-center mb-6 sm:mb-8 bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+          <div className="mx-auto h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center rounded-full bg-green-100">
+            <span className="text-2xl sm:text-3xl">💳</span>
           </div>
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-4 sm:mt-6 text-2xl sm:text-3xl font-extrabold text-gray-900">
             Tus medios de pago
           </h2>
-          <p className="mt-2 text-lg text-gray-600">
+          <p className="mt-2 text-base sm:text-lg text-gray-600">
             Seleccioná los medios de pago que usás para optimizar tus compras
           </p>
         </div>
@@ -559,36 +612,38 @@ export default function Onboarding() {
               </button>
             </div>
           ) : (
-            <div className="space-y-6">
-              {bancosDisponibles.map((banco) => (
-                <div key={banco}>
-                  <h3 className="text-sm font-semibold text-gray-700 mb-3">{banco}</h3>
-                  <div className="space-y-2">
-                    {mediosPagoDisponibles
-                      .filter(medio => medio.banco === banco)
-                      .map((medio) => (
-                        <label
-                          key={medio.id}
-                          className={`flex items-center p-3 border rounded-lg cursor-pointer transition-colors ${
-                            formData.mediosPago.includes(medio.id)
-                              ? 'border-green-500 bg-green-50'
-                              : 'border-gray-300 hover:border-gray-400'
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={formData.mediosPago.includes(medio.id)}
-                            onChange={() => handleMedioPagoToggle(medio.id)}
-                            className="w-4 h-4 text-sabu-primary border-gray-300 rounded focus:ring-sabu-primary"
-                          />
-                          <span className="ml-3 text-sm font-medium text-gray-900">
-                            {medio.nombre}
-                          </span>
-                        </label>
-                      ))}
+            <div className="bg-white p-6 sm:p-8 rounded-xl shadow-lg">
+              <div className="space-y-4 sm:space-y-6">
+                {bancosDisponibles.map((banco) => (
+                  <div key={banco}>
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">{banco}</h3>
+                    <div className="space-y-2 sm:space-y-2">
+                      {mediosPagoDisponibles
+                        .filter(medio => medio.banco === banco)
+                        .map((medio) => (
+                          <label
+                            key={medio.id}
+                            className={`flex items-center p-4 sm:p-3 border-2 rounded-lg cursor-pointer transition-all duration-200 min-h-[56px] ${
+                              formData.mediosPago.includes(medio.id)
+                                ? 'border-sabu-primary bg-green-50 shadow-md'
+                                : 'border-gray-300 active:border-gray-400 active:bg-gray-50'
+                            }`}
+                          >
+                            <input
+                              type="checkbox"
+                              checked={formData.mediosPago.includes(medio.id)}
+                              onChange={() => handleMedioPagoToggle(medio.id)}
+                              className="w-5 h-5 sm:w-4 sm:h-4 text-sabu-primary border-gray-300 rounded focus:ring-sabu-primary flex-shrink-0"
+                            />
+                            <span className="ml-3 text-sm sm:text-sm font-medium text-gray-900 flex-1">
+                              {medio.nombre}
+                            </span>
+                          </label>
+                        ))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
 
@@ -600,26 +655,26 @@ export default function Onboarding() {
             </div>
           )}
 
-          <div className="mt-8 flex space-x-4">
+          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-2 sm:space-x-4">
             <button
               type="button"
               onClick={() => setStep(3)}
-              className="flex-1 py-3 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary"
+              className="flex-1 py-4 sm:py-3 px-4 border-2 border-gray-300 rounded-lg shadow-sm text-base sm:text-sm font-semibold text-gray-700 bg-white active:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary min-h-[52px] transition-all duration-200"
             >
-              Atrás
+              ← Atrás
             </button>
             <button
               type="submit"
               disabled={formData.mediosPago.length === 0 || isLoading}
-              className="flex-1 flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-sabu-primary hover:bg-sabu-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 flex justify-center items-center py-4 sm:py-3 px-4 border border-transparent rounded-lg shadow-lg text-base sm:text-sm font-bold text-white bg-gradient-to-r from-sabu-primary to-sabu-primary-dark hover:from-sabu-primary-dark hover:to-sabu-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary disabled:opacity-50 disabled:cursor-not-allowed min-h-[52px] transition-all duration-200"
             >
               {isLoading ? (
                 <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-2"></div>
                   Guardando...
                 </div>
               ) : (
-                'Finalizar'
+                '✓ Finalizar'
               )}
             </button>
           </div>

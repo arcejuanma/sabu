@@ -26,10 +26,10 @@ export default function Login() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sabu-primary mx-auto"></div>
-          <p className="mt-4 text-gray-600">Cargando...</p>
+          <div className="animate-spin rounded-full h-14 w-14 border-4 border-sabu-primary border-t-transparent mx-auto shadow-lg"></div>
+          <p className="mt-6 text-gray-600 font-medium">Cargando...</p>
         </div>
       </div>
     )
@@ -37,41 +37,44 @@ export default function Login() {
 
   if (linkSent) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-green-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8 animate-fade-in">
           <div className="text-center">
-            <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-full bg-green-100">
-              <span className="text-3xl">📧</span>
+            <div className="mx-auto h-20 w-20 flex items-center justify-center rounded-full bg-gradient-to-br from-green-100 to-green-200 shadow-lg animate-bounce-slow">
+              <span className="text-4xl">📧</span>
             </div>
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            <h2 className="mt-6 text-3xl font-extrabold text-gray-900 tracking-tight">
               ¡Revisá tu email!
             </h2>
-            <p className="mt-2 text-lg text-gray-600">
-              Te enviamos un link de acceso a <strong>{email}</strong>
+            <p className="mt-3 text-base text-gray-600">
+              Te enviamos un link de acceso a
+            </p>
+            <p className="mt-1 text-base font-semibold text-sabu-primary">
+              {email}
             </p>
           </div>
           
-          <div className="bg-white p-6 rounded-lg shadow-md">
+          <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-100">
             <div className="text-center">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">
+              <h3 className="text-lg font-bold text-gray-900 mb-6">
                 ¿Qué hacer ahora?
               </h3>
-              <div className="space-y-3 text-sm text-gray-600">
-                <div className="flex items-center">
-                  <span className="text-sabu-primary mr-2">1.</span>
-                  <span>Revisá tu bandeja de entrada</span>
+              <div className="space-y-4 text-sm text-gray-700">
+                <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-100">
+                  <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-sabu-primary text-white font-bold text-xs">1</span>
+                  <span className="flex-1 text-left">Revisá tu bandeja de entrada</span>
                 </div>
-                <div className="flex items-center">
-                  <span className="text-sabu-primary mr-2">2.</span>
-                  <span>Buscá el email de SABU</span>
+                <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-100">
+                  <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-sabu-primary text-white font-bold text-xs">2</span>
+                  <span className="flex-1 text-left">Buscá el email de SABU</span>
                 </div>
-                <div className="flex items-center">
-                  <span className="text-sabu-primary mr-2">3.</span>
-                  <span>Hacé clic en "Acceder a SABU"</span>
+                <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-100">
+                  <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-sabu-primary text-white font-bold text-xs">3</span>
+                  <span className="flex-1 text-left">Hacé clic en "Acceder a SABU"</span>
                 </div>
-                <div className="flex items-center">
-                  <span className="text-sabu-primary mr-2">4.</span>
-                  <span>¡Listo! Ya estás dentro</span>
+                <div className="flex items-start gap-3 p-3 bg-green-50 rounded-lg border border-green-100">
+                  <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-sabu-primary text-white font-bold text-xs">4</span>
+                  <span className="flex-1 text-left">¡Listo! Ya estás dentro</span>
                 </div>
               </div>
             </div>
@@ -84,9 +87,10 @@ export default function Login() {
                 setEmail('')
                 setMessage('')
               }}
-              className="text-sabu-primary hover:text-green-500 text-sm font-medium"
+              className="text-sabu-primary hover:text-sabu-primary-dark text-sm font-semibold transition-colors duration-200 flex items-center justify-center gap-2"
             >
-              ← Enviar a otro email
+              <span>←</span>
+              <span>Enviar a otro email</span>
             </button>
           </div>
         </div>
@@ -95,23 +99,23 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-green-50 to-gray-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        <div>
-          <div className="mx-auto flex items-center justify-center">
-            <Logo size={64} />
+        <div className="animate-fade-in">
+          <div className="mx-auto flex items-center justify-center p-4 bg-white rounded-2xl shadow-lg">
+            <Logo size={72} />
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-4xl font-extrabold text-gray-900 tracking-tight">
             Bienvenido a SABU
           </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
+          <p className="mt-3 text-center text-base text-gray-600 font-medium">
             Ahorrá tiempo y dinero en tus compras
           </p>
         </div>
         
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6 bg-white p-8 rounded-xl shadow-lg border border-gray-100" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="sr-only">
+            <label htmlFor="email" className="block text-sm font-semibold text-gray-700 mb-2">
               Email
             </label>
             <input
@@ -122,8 +126,8 @@ export default function Login() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="appearance-none rounded-md relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-sabu-primary focus:border-green-500 focus:z-10 sm:text-sm"
-              placeholder="Ingresá tu email"
+              className="appearance-none rounded-lg relative block w-full px-4 py-3.5 border-2 border-gray-300 placeholder-gray-400 text-gray-900 focus:outline-none focus:ring-2 focus:ring-sabu-primary focus:border-sabu-primary transition-all duration-200 sm:text-sm"
+              placeholder="tu@email.com"
             />
           </div>
 
@@ -131,32 +135,32 @@ export default function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-sabu-primary hover:bg-sabu-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="group relative w-full flex justify-center items-center py-4 px-4 border border-transparent text-base font-bold rounded-lg text-white bg-gradient-to-r from-sabu-primary to-sabu-primary-dark hover:from-sabu-primary-dark hover:to-sabu-primary focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
             >
               {isLoading ? (
                 <div className="flex items-center">
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                  Enviando...
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent mr-3"></div>
+                  <span>Enviando...</span>
                 </div>
               ) : (
                 <div className="flex items-center">
-                  <span className="mr-2">📧</span>
-                  Enviar Link de Acceso
+                  <span className="mr-2 text-xl">📧</span>
+                  <span>Enviar Link de Acceso</span>
                 </div>
               )}
             </button>
           </div>
 
           {message && (
-            <div className={`text-center text-sm ${
-              message.includes('Revisá') ? 'text-sabu-primary' : 'text-red-600'
+            <div className={`text-center text-sm font-medium p-3 rounded-lg ${
+              message.includes('Revisá') || message.includes('email') ? 'text-sabu-primary bg-green-50 border border-green-200' : 'text-red-700 bg-red-50 border border-red-200'
             }`}>
               {message}
             </div>
           )}
           
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
+          <div className="text-center pt-2">
+            <p className="text-xs text-gray-500">
               Te enviaremos un link por email para acceder sin contraseña
             </p>
           </div>

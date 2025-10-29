@@ -372,31 +372,39 @@ export default function MiCuenta({ onClose }) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 max-w-3xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-        <h2 className="text-2xl font-bold mb-4">Mi Cuenta</h2>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-0 sm:p-4">
+      <div className="bg-white rounded-none sm:rounded-xl p-4 sm:p-6 max-w-3xl w-full h-full sm:h-auto sm:max-h-[90vh] overflow-hidden flex flex-col">
+        <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <h2 className="text-xl sm:text-2xl font-bold">Mi Cuenta</h2>
+          <button
+            onClick={onClose}
+            className="p-2 text-gray-500 hover:text-gray-700 text-xl font-bold sm:hidden"
+          >
+            ×
+          </button>
+        </div>
 
         {/* Tabs */}
         <div className="border-b border-gray-200 mb-4">
-          <nav className="-mb-px flex space-x-8">
+          <nav className="-mb-px flex overflow-x-auto sm:overflow-x-visible gap-0 sm:space-x-8">
             <button
               type="button"
               onClick={() => setActiveTab('datos')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`flex-shrink-0 py-3 sm:py-4 px-3 sm:px-1 border-b-2 font-semibold text-xs sm:text-sm min-h-[48px] sm:min-h-auto ${
                 activeTab === 'datos'
-                  ? 'border-green-500 text-sabu-primary'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-sabu-primary text-sabu-primary'
+                  : 'border-transparent text-gray-500 active:text-gray-700 active:border-gray-300'
               }`}
             >
-              👤 Datos Personales
+              👤 <span className="sm:hidden">Datos</span><span className="hidden sm:inline">Datos Personales</span>
             </button>
             <button
               type="button"
               onClick={() => setActiveTab('supermercados')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`flex-shrink-0 py-3 sm:py-4 px-3 sm:px-1 border-b-2 font-semibold text-xs sm:text-sm min-h-[48px] sm:min-h-auto ${
                 activeTab === 'supermercados'
-                  ? 'border-green-500 text-sabu-primary'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-sabu-primary text-sabu-primary'
+                  : 'border-transparent text-gray-500 active:text-gray-700 active:border-gray-300'
               }`}
             >
               🏪 Supermercados
@@ -404,10 +412,10 @@ export default function MiCuenta({ onClose }) {
             <button
               type="button"
               onClick={() => setActiveTab('medios')}
-              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+              className={`flex-shrink-0 py-3 sm:py-4 px-3 sm:px-1 border-b-2 font-semibold text-xs sm:text-sm min-h-[48px] sm:min-h-auto ${
                 activeTab === 'medios'
-                  ? 'border-green-500 text-sabu-primary'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-sabu-primary text-sabu-primary'
+                  : 'border-transparent text-gray-500 active:text-gray-700 active:border-gray-300'
               }`}
             >
               💳 Medios de Pago
@@ -429,7 +437,7 @@ export default function MiCuenta({ onClose }) {
                   value={formData.telefono}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sabu-primary"
+                  className="w-full px-3 py-3 sm:py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sabu-primary focus:border-sabu-primary min-h-[48px]"
                   placeholder="+54 11 1234-5678"
                 />
               </div>
@@ -444,12 +452,12 @@ export default function MiCuenta({ onClose }) {
                   value={formData.direccion}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sabu-primary"
+                  className="w-full px-3 py-3 sm:py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sabu-primary focus:border-sabu-primary min-h-[48px]"
                   placeholder="Calle"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Altura
@@ -460,7 +468,7 @@ export default function MiCuenta({ onClose }) {
                     value={formData.altura}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sabu-primary"
+                    className="w-full px-3 py-3 sm:py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sabu-primary focus:border-sabu-primary min-h-[48px]"
                     placeholder="1234"
                   />
                 </div>
@@ -475,7 +483,7 @@ export default function MiCuenta({ onClose }) {
                     value={formData.codigoPostal}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sabu-primary"
+                    className="w-full px-3 py-3 sm:py-2 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sabu-primary focus:border-sabu-primary min-h-[48px]"
                     placeholder="C1234ABC"
                   />
                 </div>
@@ -491,14 +499,14 @@ export default function MiCuenta({ onClose }) {
               </p>
               <div className="space-y-2">
                 {supermercadosDisponibles.map((supermercado) => (
-                  <label key={supermercado.id} className="flex items-center space-x-2 cursor-pointer p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                  <label key={supermercado.id} className="flex items-center space-x-3 cursor-pointer p-4 sm:p-3 border-2 border-gray-200 rounded-lg active:bg-gray-50 active:border-sabu-primary min-h-[56px] transition-all duration-200">
                     <input
                       type="checkbox"
                       checked={formData.supermercados.includes(supermercado.id)}
                       onChange={() => handleSupermercadoToggle(supermercado.id)}
-                      className="w-4 h-4 text-sabu-primary border-gray-300 rounded focus:ring-sabu-primary"
+                      className="w-5 h-5 sm:w-4 sm:h-4 text-sabu-primary border-gray-300 rounded focus:ring-sabu-primary flex-shrink-0"
                     />
-                    <span className="text-sm text-gray-700">{supermercado.nombre}</span>
+                    <span className="text-sm sm:text-sm font-medium text-gray-700 flex-1">{supermercado.nombre}</span>
                   </label>
                 ))}
               </div>
@@ -527,14 +535,14 @@ export default function MiCuenta({ onClose }) {
                         {mediosPagoDisponibles
                           .filter(medio => medio.banco === banco)
                           .map((medio) => (
-                            <label key={medio.id} className="flex items-center space-x-2 cursor-pointer p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
+                            <label key={medio.id} className="flex items-center space-x-3 cursor-pointer p-4 sm:p-3 border-2 border-gray-200 rounded-lg active:bg-gray-50 active:border-sabu-primary min-h-[56px] transition-all duration-200">
                               <input
                                 type="checkbox"
                                 checked={formData.mediosPago.includes(medio.id)}
                                 onChange={() => handleMedioPagoToggle(medio.id)}
-                                className="w-4 h-4 text-sabu-primary border-gray-300 rounded focus:ring-sabu-primary"
+                                className="w-5 h-5 sm:w-4 sm:h-4 text-sabu-primary border-gray-300 rounded focus:ring-sabu-primary flex-shrink-0"
                               />
-                              <span className="text-sm text-gray-700">{medio.nombre}</span>
+                              <span className="text-sm sm:text-sm font-medium text-gray-700 flex-1">{medio.nombre}</span>
                             </label>
                           ))}
                       </div>
@@ -548,18 +556,18 @@ export default function MiCuenta({ onClose }) {
 
         {/* Botones */}
         <form onSubmit={handleSubmit} className="mt-6 pt-4 border-t">
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-2">
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-sabu-primary text-white px-4 py-2 rounded-md hover:bg-sabu-primary-dark disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className="flex-1 bg-sabu-primary text-white px-4 py-3 sm:py-2 rounded-lg hover:bg-sabu-primary-dark active:bg-sabu-primary-dark disabled:bg-gray-400 disabled:cursor-not-allowed min-h-[48px] font-semibold transition-all duration-200"
             >
               {loading ? 'Guardando...' : 'Guardar Cambios'}
             </button>
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
+              className="flex-1 bg-gray-200 text-gray-700 px-4 py-3 sm:py-2 rounded-lg active:bg-gray-300 min-h-[48px] font-semibold transition-all duration-200"
             >
               Cancelar
             </button>

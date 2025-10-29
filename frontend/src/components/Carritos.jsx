@@ -27,6 +27,7 @@ export default function Carritos() {
   const [calculatingPrices, setCalculatingPrices] = useState(false)
   const [carritoSeleccionado, setCarritoSeleccionado] = useState(null)
   const [mejorDia, setMejorDia] = useState(false) // Indica si se usó el botón "Mejor Día"
+  const [productosExpandidos, setProductosExpandidos] = useState(new Set()) // Índices de items expandidos
 
   useEffect(() => {
     if (user) {
@@ -743,12 +744,12 @@ export default function Carritos() {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Mis Carritos de Compra</h2>
+    <div className="bg-white rounded-lg sm:rounded-xl shadow-md border border-gray-100 p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Mis Carritos de Compra</h2>
         <button 
           onClick={() => setShowNewCarritoModal(true)}
-          className="bg-sabu-primary text-white px-4 py-2 rounded-md hover:bg-sabu-primary-dark"
+          className="w-full sm:w-auto bg-sabu-primary text-white px-4 py-3 sm:py-2 rounded-lg hover:bg-sabu-primary-dark active:bg-sabu-primary-dark min-h-[48px] font-semibold transition-all duration-200 shadow-sm hover:shadow-md"
         >
           ➕ Nuevo Carrito
         </button>
@@ -760,37 +761,39 @@ export default function Carritos() {
           <p className="text-sm text-gray-400">Crea tu primer carrito para comenzar</p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {carritos.map((carrito) => (
-            <div key={carrito.id} className="border border-gray-200 rounded-lg p-4">
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold">{carrito.nombre}</h3>
-                  <p className="text-sm text-gray-700">
+            <div key={carrito.id} className="border-2 border-gray-200 rounded-lg sm:rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow duration-200">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0">
+                <div className="flex-1 w-full sm:w-auto">
+                  <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-1">{carrito.nombre}</h3>
+                  <p className="text-xs sm:text-sm text-gray-600">
                     {carrito.productos_x_carrito?.length || 0} productos
                   </p>
                 </div>
-                <div className="flex flex-col gap-2 items-center">
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                   <button
                     onClick={() => handleRealizarCompra(carrito)}
-                    className="bg-sabu-primary text-white px-4 py-2 rounded-md hover:bg-sabu-primary-dark text-sm font-medium"
+                    className="flex-1 sm:flex-none bg-sabu-primary text-white px-4 py-3 sm:py-2 rounded-lg hover:bg-sabu-primary-dark active:bg-sabu-primary-dark text-sm sm:text-sm font-semibold min-h-[48px] transition-all duration-200 shadow-sm hover:shadow-md"
                   >
                     Calcular Compra Óptima
                   </button>
                   <div className="flex gap-2">
                     <button
                       onClick={() => handleEditCarrito(carrito)}
-                      className="text-blue-600 hover:text-blue-700 px-3 py-1 rounded-md hover:bg-blue-50"
+                      className="flex-1 sm:flex-none bg-blue-50 text-blue-600 active:bg-blue-100 px-4 py-3 sm:px-3 sm:py-2 rounded-lg min-h-[48px] sm:min-h-[36px] font-semibold transition-all duration-200 border border-blue-200"
                       title="Editar carrito"
                     >
-                      ✏️
+                      <span className="sm:hidden">✏️ Editar</span>
+                      <span className="hidden sm:inline">✏️</span>
                     </button>
                     <button
                       onClick={() => handleDeleteCarrito(carrito.id)}
-                      className="text-red-600 hover:text-red-700 px-3 py-1 rounded-md hover:bg-red-50"
+                      className="flex-1 sm:flex-none bg-red-50 text-red-600 active:bg-red-100 px-4 py-3 sm:px-3 sm:py-2 rounded-lg min-h-[48px] sm:min-h-[36px] font-semibold transition-all duration-200 border border-red-200"
                       title="Eliminar carrito"
                     >
-                      🗑️
+                      <span className="sm:hidden">🗑️ Eliminar</span>
+                      <span className="hidden sm:inline">🗑️</span>
                     </button>
                   </div>
                 </div>
@@ -802,9 +805,22 @@ export default function Carritos() {
 
       {/* Modal para editar carrito */}
       {showEditModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-            <h3 className="text-xl font-bold mb-4">Editar Carrito</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-0 sm:p-4">
+          <div className="bg-white rounded-none sm:rounded-xl p-4 sm:p-6 max-w-5xl w-full h-full sm:h-auto sm:max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h3 className="text-lg sm:text-xl font-bold">Editar Carrito</h3>
+              <button
+                onClick={() => {
+                  setShowEditModal(false)
+                  setEditingCarrito(null)
+                  setSelectedCategoria(null)
+                  setSelectedProductos([])
+                }}
+                className="p-2 text-gray-500 hover:text-gray-700 text-xl font-bold sm:hidden"
+              >
+                ×
+              </button>
+            </div>
             
             {/* Formulario básico */}
             <div className="mb-4">
@@ -822,22 +838,22 @@ export default function Carritos() {
             </div>
 
             {/* Selección de productos */}
-            <div className="flex-1 overflow-hidden flex gap-4">
+            <div className="flex-1 overflow-hidden flex flex-col sm:flex-row gap-4">
               {/* Panel de Categorías */}
-              <div className="w-1/5 border-r pr-4 overflow-y-auto">
-                <h4 className="font-semibold text-gray-900 mb-3">Categorías</h4>
-                <div className="space-y-2">
+              <div className="w-full sm:w-1/5 border-b sm:border-b-0 sm:border-r pb-4 sm:pb-0 sm:pr-4 overflow-y-auto max-h-40 sm:max-h-none">
+                <h4 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Categorías</h4>
+                <div className="flex sm:flex-col gap-2 sm:space-y-2 overflow-x-auto sm:overflow-x-visible pb-2 sm:pb-0">
                   {categorias.map((categoria) => (
                     <button
                       key={categoria.id}
                       onClick={() => setSelectedCategoria(categoria.id)}
-                      className={`w-full text-left p-3 rounded-md transition-colors ${
+                      className={`flex-shrink-0 text-left p-2.5 sm:p-3 rounded-lg transition-colors min-h-[44px] ${
                         selectedCategoria === categoria.id
                           ? 'bg-sabu-primary text-white'
-                          : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          : 'bg-gray-100 text-gray-700 active:bg-gray-200'
                       }`}
                     >
-                      <div className="font-medium">{categoria.nombre}</div>
+                      <div className="font-medium text-xs sm:text-sm">{categoria.nombre}</div>
                     </button>
                   ))}
                 </div>
@@ -859,13 +875,13 @@ export default function Carritos() {
                             <button
                               key={producto.id}
                               onClick={() => handleToggleProducto(producto)}
-                              className={`w-full text-left p-3 rounded-md border-2 transition-colors ${
+                              className={`w-full text-left p-3 sm:p-3 rounded-lg border-2 transition-colors min-h-[52px] ${
                                 isSelected
                                   ? 'border-sabu-primary bg-green-50'
-                                  : 'border-gray-200 hover:border-green-300'
+                                  : 'border-gray-200 active:border-green-300 active:bg-gray-50'
                               }`}
                             >
-                              {producto.nombre}
+                              <span className="text-sm sm:text-base">{producto.nombre}</span>
                             </button>
                           )
                         })}
@@ -940,11 +956,11 @@ export default function Carritos() {
 
             {/* Footer con botones */}
             <div className="mt-4 pt-4 border-t">
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-2">
                 <button
                   onClick={handleUpdateCarrito}
                   disabled={selectedProductos.length === 0}
-                  className="flex-1 bg-sabu-primary text-white px-4 py-2 rounded-md hover:bg-sabu-primary-dark disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  className="flex-1 bg-sabu-primary text-white px-4 py-3 sm:py-2 rounded-lg hover:bg-sabu-primary-dark active:bg-sabu-primary-dark disabled:bg-gray-300 disabled:cursor-not-allowed min-h-[48px] font-semibold transition-all duration-200"
                 >
                   Guardar Cambios
                 </button>
@@ -955,7 +971,7 @@ export default function Carritos() {
                     setSelectedCategoria(null)
                     setSelectedProductos([])
                   }}
-                  className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
+                  className="flex-1 bg-gray-200 text-gray-700 px-4 py-3 sm:py-2 rounded-lg active:bg-gray-300 min-h-[48px] font-semibold transition-all duration-200"
                 >
                   Cancelar
                 </button>
@@ -967,9 +983,22 @@ export default function Carritos() {
 
       {/* Modal para crear nuevo carrito */}
       {showNewCarritoModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-            <h3 className="text-xl font-bold mb-4">Nuevo Carrito de Compra</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-0 sm:p-4">
+          <div className="bg-white rounded-none sm:rounded-xl p-4 sm:p-6 max-w-5xl w-full h-full sm:h-auto sm:max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h3 className="text-lg sm:text-xl font-bold">Nuevo Carrito de Compra</h3>
+              <button
+                onClick={() => {
+                  setShowNewCarritoModal(false)
+                  setNewCarritoForm({ nombre: '' })
+                  setSelectedCategoria(null)
+                  setSelectedProductos([])
+                }}
+                className="p-2 text-gray-500 hover:text-gray-700 text-xl font-bold sm:hidden"
+              >
+                ×
+              </button>
+            </div>
             
             {/* Formulario básico */}
             <div className="mb-4">
@@ -1112,11 +1141,11 @@ export default function Carritos() {
 
             {/* Footer con botones */}
             <div className="mt-4 pt-4 border-t">
-              <div className="flex gap-2">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <button
                   onClick={handleCreateCarrito}
                   disabled={selectedProductos.length === 0}
-                  className="flex-1 bg-sabu-primary text-white px-4 py-2 rounded-md hover:bg-sabu-primary-dark disabled:bg-gray-300 disabled:cursor-not-allowed"
+                  className="flex-1 bg-sabu-primary text-white px-4 py-3 sm:py-2 rounded-lg hover:bg-sabu-primary-dark active:bg-sabu-primary-dark disabled:bg-gray-300 disabled:cursor-not-allowed min-h-[48px] font-semibold transition-all duration-200"
                 >
                   Crear Carrito
                 </button>
@@ -1127,7 +1156,7 @@ export default function Carritos() {
                     setSelectedCategoria(null)
                     setSelectedProductos([])
                   }}
-                  className="flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
+                  className="flex-1 bg-gray-200 text-gray-700 px-4 py-3 sm:py-2 rounded-lg active:bg-gray-300 min-h-[48px] font-semibold transition-all duration-200"
                 >
                   Cancelar
                 </button>
@@ -1139,9 +1168,22 @@ export default function Carritos() {
 
       {/* Modal de Selección de Días */}
       {showDiaSeleccionModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full">
-            <h3 className="text-xl font-bold mb-4">¿Cuándo vas a realizar la compra?</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-0 sm:p-4">
+          <div className="bg-white rounded-none sm:rounded-xl p-4 sm:p-6 max-w-2xl w-full h-full sm:h-auto">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h3 className="text-lg sm:text-xl font-bold">¿Cuándo vas a realizar la compra?</h3>
+              <button
+                onClick={() => {
+                  setShowDiaSeleccionModal(false)
+                  setDiasSeleccionados([])
+                  setCarritoSeleccionado(null)
+                  setMejorDia(false)
+                }}
+                className="p-2 text-gray-500 hover:text-gray-700 text-xl font-bold sm:hidden"
+              >
+                ×
+              </button>
+            </div>
             
             <div className="space-y-4">
               <p className="text-sm text-gray-600 mb-4">
@@ -1221,9 +1263,20 @@ export default function Carritos() {
 
       {/* Modal de Precios por Supermercado */}
       {showPreciosModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-            <h3 className="text-xl font-bold mb-4">Precios por Supermercado</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-0 sm:p-4">
+          <div className="bg-white rounded-none sm:rounded-xl p-4 sm:p-6 max-w-4xl w-full h-full sm:h-auto sm:max-h-[90vh] overflow-hidden flex flex-col">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h3 className="text-lg sm:text-xl font-bold">Precios por Supermercado</h3>
+              <button
+                onClick={() => {
+                  setShowPreciosModal(false)
+                  setPreciosPorSupermercado([])
+                }}
+                className="p-2 text-gray-500 hover:text-gray-700 text-xl font-bold sm:hidden"
+              >
+                ×
+              </button>
+            </div>
             
             {calculatingPrices ? (
               <div className="flex items-center justify-center py-12">
@@ -1291,25 +1344,69 @@ export default function Carritos() {
                         </div>
                       </div>
                       
-                      <div className="space-y-2">
-                        {item.productos.map((prod, prodIndex) => (
-                          <div key={prodIndex} className="bg-white p-2 rounded">
-                            <div className="flex justify-between text-sm">
-                              <span>
-                                {prod.nombre} x{prod.cantidad}
-                              </span>
-                              <span className="font-medium">
-                                ${formatPrice(prod.subtotal)}
-                              </span>
-                            </div>
-                            {prod.descuentoAplicado > 0 && (
-                              <div className="text-xs text-green-600 mt-1">
-                                💰 Descuento aplicado: ${formatPrice(prod.descuentoAplicado)}
+                      {/* Botón para expandir/colapsar */}
+                      <button
+                        onClick={() => {
+                          const newExpandidos = new Set(productosExpandidos)
+                          if (newExpandidos.has(index)) {
+                            newExpandidos.delete(index)
+                          } else {
+                            newExpandidos.add(index)
+                          }
+                          setProductosExpandidos(newExpandidos)
+                        }}
+                        className="w-full mt-3 py-2.5 px-4 bg-sabu-primary/10 hover:bg-sabu-primary/20 active:bg-sabu-primary/20 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2 text-sm font-semibold text-sabu-primary border border-sabu-primary/30"
+                      >
+                        <span>{productosExpandidos.has(index) ? 'Ocultar Detalles' : 'Más Detalles'}</span>
+                        <svg
+                          className={`w-5 h-5 transition-transform duration-200 ${productosExpandidos.has(index) ? 'rotate-180' : ''}`}
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </button>
+
+                      {/* Lista de productos expandible */}
+                      {productosExpandidos.has(index) && (
+                        <div className="mt-3 space-y-2 border-t pt-3">
+                          {item.productos.map((prod, prodIndex) => (
+                            <div key={prodIndex} className="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                              <div className="flex justify-between items-start text-sm">
+                                <div className="flex-1">
+                                  <span className="font-medium text-gray-900">
+                                    {prod.nombre}
+                                  </span>
+                                  <span className="text-gray-600 ml-2">
+                                    x{prod.cantidad}
+                                  </span>
+                                </div>
+                                <div className="text-right ml-4">
+                                  <div className="font-medium text-gray-900">
+                                    ${formatPrice(prod.subtotal)}
+                                  </div>
+                                  {prod.precio && (
+                                    <div className="text-xs text-gray-500">
+                                      ${formatPrice(prod.precio)} c/u
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
+                              {prod.descuentoAplicado > 0 && (
+                                <div className="text-xs text-green-700 mt-2 pt-2 border-t border-green-200">
+                                  💰 Descuento aplicado: ${formatPrice(prod.descuentoAplicado)}
+                                  {prod.promocionAplicada && (
+                                    <div className="text-green-600 mt-1">
+                                      {prod.promocionAplicada.descripcion || 'Promoción unitaria'}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -1321,8 +1418,9 @@ export default function Carritos() {
                 onClick={() => {
                   setShowPreciosModal(false)
                   setPreciosPorSupermercado([])
+                  setProductosExpandidos(new Set()) // Resetear estados expandidos
                 }}
-                className="w-full bg-gray-200 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-300"
+                className="w-full bg-gray-200 text-gray-700 px-4 py-3 sm:py-2 rounded-lg active:bg-gray-300 min-h-[48px] font-semibold transition-all duration-200"
               >
                 Cerrar
               </button>
