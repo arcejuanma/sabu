@@ -851,8 +851,19 @@ export default function Carritos() {
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
         <div className="flex items-center gap-3">
-          <div className="p-2 sm:p-3 bg-gradient-to-br from-sabu-primary to-sabu-primary-dark rounded-xl shadow-lg">
-            <span className="text-2xl sm:text-3xl">🛒</span>
+          <div className="p-3 sm:p-4 bg-white border-2 border-sabu-primary rounded-xl shadow-lg">
+            <svg 
+              width="32" 
+              height="32" 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path 
+                d="M7 18C5.9 18 5.01 18.9 5.01 20S5.9 22 7 22 8.99 21.1 8.99 20 8.1 18 7 18ZM1 2V4H3L6.6 11.59L5.25 14.04C5.09 14.32 5 14.65 5 15C5 16.1 5.9 17 7 17H19V15H7.42C7.28 15 7.17 14.89 7.17 14.75L7.2 14.63L8.1 13H15.55C16.3 13 16.96 12.59 17.3 11.97L20.88 5.5C20.96 5.34 21 5.17 21 5C21 4.45 20.55 4 20 4H5.21L4.27 2H1ZM17 18C15.9 18 15.01 18.9 15.01 20S15.9 22 17 22 18.99 21.1 18.99 20 18.1 18 17 18Z" 
+                fill="#0D146B"
+              />
+            </svg>
           </div>
           <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Mis Carritos de Compra</h2>
         </div>
