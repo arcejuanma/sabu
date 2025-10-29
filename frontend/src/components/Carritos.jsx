@@ -466,24 +466,102 @@ export default function Carritos() {
             p_supermercado_id: supermercado.id
           });
 
-          // Crear mapa de descuentos por producto
+          console.log(`\n🔍 === RESULTADOS DEL RPC PARA ${supermercado.nombre} ===`)
+          console.log(`📋 Total de descuentos retornados:`, descuentosData?.length || 0)
+          console.log(`📋 Datos completos del RPC:`, JSON.stringify(descuentosData, null, 2))
+          if (descuentosError) {
+            console.error(`❌ Error en RPC de descuentos:`, descuentosError)
+          }
+
+          // Crear mapa de descuentos por producto desde RPC
+          // Si hay duplicados, usar el que tenga el mayor descuento y precio más alto
           const descuentosMap = {}
           if (!descuentosError && descuentosData) {
             descuentosData.forEach(descuento => {
-              descuentosMap[descuento.producto_id] = {
-                descuento: parseFloat(descuento.descuento_total) || 0,
-                promocion: descuento.promocion_aplicada
+              const esLeche = descuento.producto_nombre?.toLowerCase().includes('leche')
+              const esCarrefour = supermercado.nombre.toLowerCase().includes('carrefour')
+              
+              console.log(`📊 Descuento para "${descuento.producto_nombre}":`)
+              console.log(`   - Producto ID: ${descuento.producto_id}`)
+              console.log(`   - Cantidad: ${descuento.cantidad}`)
+              console.log(`   - Precio base: $${descuento.precio_base}`)
+              console.log(`   - Subtotal base: $${descuento.subtotal_base}`)
+              console.log(`   - Unidades con descuento: ${descuento.unidades_con_descuento}`)
+              console.log(`   - Descuento total: $${descuento.descuento_total}`)
+              console.log(`   - Subtotal final: $${descuento.subtotal_final}`)
+              if (descuento.promocion_aplicada) {
+                console.log(`   - Promoción:`, descuento.promocion_aplicada)
+              }
+              
+              const descuentoTotal = parseFloat(descuento.descuento_total) || 0
+              const precioBase = parseFloat(descuento.precio_base) || 0
+              
+              // Si ya existe un descuento para este producto, comparar y quedarse con el mejor
+              if (descuentosMap[descuento.producto_id]) {
+                const existente = descuentosMap[descuento.producto_id]
+                // Preferir el que tenga mayor descuento total
+                if (descuentoTotal > existente.descuento) {
+                  descuentosMap[descuento.producto_id] = {
+                    descuento: descuentoTotal,
+                    promocion: descuento.promocion_aplicada
+                  }
+                  if (esLeche && esCarrefour) {
+                    console.log(`⚠️  DUPLICADO: Reemplazando descuento de $${existente.descuento} por $${descuentoTotal} (precio base: $${precioBase})`)
+                  }
+                } else if (esLeche && esCarrefour) {
+                  console.log(`⚠️  DUPLICADO: Manteniendo descuento mayor de $${existente.descuento} (descartando $${descuentoTotal})`)
+                }
+              } else {
+                descuentosMap[descuento.producto_id] = {
+                  descuento: descuentoTotal,
+                  promocion: descuento.promocion_aplicada
+                }
               }
             })
           }
+          console.log(`====================================\n`)
 
-          productosPrecios = detalleData.map(producto => {
+          // Eliminar duplicados por producto_id antes de procesar
+          const productosUnicos = {}
+          detalleData.forEach(producto => {
+            if (!productosUnicos[producto.producto_id]) {
+              productosUnicos[producto.producto_id] = producto
+            } else {
+              // Si ya existe, verificar si este tiene mejor precio o estado
+              const existente = productosUnicos[producto.producto_id]
+              if (producto.estado_producto === 'DISPONIBLE' && existente.estado_producto !== 'DISPONIBLE') {
+                productosUnicos[producto.producto_id] = producto
+              } else if (producto.estado_producto === existente.estado_producto && 
+                         parseFloat(producto.precio) > parseFloat(existente.precio)) {
+                productosUnicos[producto.producto_id] = producto
+              }
+            }
+          })
+          
+          console.log(`📦 Productos únicos después de filtrar duplicados: ${Object.keys(productosUnicos).length}`)
+
+          productosPrecios = Object.values(productosUnicos).map(producto => {
             const subtotal = parseFloat(producto.subtotal) || 0
             const descuentoInfo = descuentosMap[producto.producto_id] || { descuento: 0, promocion: null }
             const subtotalFinal = subtotal - descuentoInfo.descuento
             
-            if (descuentoInfo.descuento > 0) {
-              console.log(`💰 Descuento aplicado: $${descuentoInfo.descuento} para ${producto.producto_nombre}`)
+            // Log detallado para productos con descuento o específicamente para leche en Carrefour
+            const esLeche = producto.producto_nombre.toLowerCase().includes('leche')
+            const esCarrefour = supermercado.nombre.toLowerCase().includes('carrefour')
+            
+            if (descuentoInfo.descuento > 0 || (esLeche && esCarrefour)) {
+              console.log(`\n🔍 === DETALLE DE CALCULO: ${producto.producto_nombre} en ${supermercado.nombre} ===`)
+              console.log(`   📊 Cantidad: ${producto.cantidad}`)
+              console.log(`   💵 Precio unitario: $${producto.precio}`)
+              console.log(`   💰 Subtotal base (sin descuento): $${subtotal}`)
+              console.log(`   🎯 Descuento aplicado: $${descuentoInfo.descuento}`)
+              console.log(`   📉 Subtotal final (con descuento): $${subtotalFinal}`)
+              if (descuentoInfo.promocion) {
+                console.log(`   🎁 Promoción:`, descuentoInfo.promocion)
+              } else if (esLeche && esCarrefour) {
+                console.log(`   ⚠️  NO SE ENCONTRÓ PROMOCIÓN para este producto en ${supermercado.nombre}`)
+              }
+              console.log(`===========================================\n`)
             }
             
             totalConDescuentosUnitarios += subtotalFinal
