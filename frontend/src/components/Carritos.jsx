@@ -29,6 +29,7 @@ export default function Carritos() {
   const [mejorDia, setMejorDia] = useState(false) // Indica si se usó el botón "Mejor Día"
   const [productosExpandidos, setProductosExpandidos] = useState(new Set()) // Índices de items expandidos
   const [showSeleccionadosDrawer, setShowSeleccionadosDrawer] = useState(false) // Para mostrar drawer de productos seleccionados en móvil
+  const [productosTemporales, setProductosTemporales] = useState(null) // Para calcular compra óptima desde productos seleccionados
 
   useEffect(() => {
     if (user) {
@@ -344,8 +345,27 @@ export default function Carritos() {
     
     // Guardar carrito y mostrar modal de selección de días
     setCarritoSeleccionado(carrito)
+    setProductosTemporales(null) // Limpiar productos temporales
     setMejorDia(false)
     setDiasSeleccionados([])
+    setShowDiaSeleccionModal(true)
+  }
+
+  const handleCalcularCompraDesdeSeleccionados = () => {
+    if (selectedProductos.length === 0) {
+      alert('Debes seleccionar al menos un producto')
+      return
+    }
+    
+    console.log('\n🚀 Iniciando cálculo de precios desde productos seleccionados')
+    console.log('📋 Productos seleccionados:', selectedProductos)
+    
+    // Guardar productos temporales y mostrar modal de selección de días
+    setProductosTemporales(selectedProductos)
+    setCarritoSeleccionado(null) // Limpiar carrito seleccionado
+    setMejorDia(false)
+    setDiasSeleccionados([])
+    setShowSeleccionadosDrawer(false) // Cerrar drawer
     setShowDiaSeleccionModal(true)
   }
 
@@ -358,6 +378,8 @@ export default function Carritos() {
     setShowDiaSeleccionModal(false)
     setCalculatingPrices(true)
     setShowPreciosModal(true)
+    
+    let carritoTemporalId = null // Variable para rastrear carrito temporal
     
     try {
       // Obtener los supermercados preferidos del usuario
@@ -383,13 +405,66 @@ export default function Carritos() {
 
       console.log('🏪 Supermercados preferidos encontrados:', supermercadosPref)
 
-      const carrito = carritoSeleccionado
+      // Verificar si estamos usando productos temporales o un carrito guardado
+      let carrito = carritoSeleccionado
       
-      // Verificar si hay productos en el carrito
-      if (!carrito.productos_x_carrito || carrito.productos_x_carrito.length === 0) {
-        alert('El carrito no tiene productos')
-        setShowPreciosModal(false)
-        return
+      if (productosTemporales && productosTemporales.length > 0) {
+        // Crear carrito temporal para el cálculo
+        console.log('📦 Creando carrito temporal con productos seleccionados:', productosTemporales)
+        
+        try {
+          // Crear carrito temporal
+          const { data: carritoData, error: carritoError } = await supabase
+            .from('carritos_x_usuario')
+            .insert({
+              usuario_id: user.id,
+              nombre: 'Carrito Temporal - ' + Date.now() // Nombre único
+            })
+            .select()
+            .single()
+          
+          if (carritoError) throw carritoError
+          
+          carritoTemporalId = carritoData.id
+          
+          // Insertar productos
+          const productosInsert = productosTemporales.map(producto => ({
+            carrito_id: carritoTemporalId,
+            producto_id: producto.id,
+            cantidad: producto.cantidad || 1
+          }))
+          
+          const { error: productosError } = await supabase
+            .from('productos_x_carrito')
+            .insert(productosInsert)
+          
+          if (productosError) throw productosError
+          
+          // Crear objeto carrito con estructura similar
+          carrito = {
+            id: carritoTemporalId,
+            productos_x_carrito: productosTemporales.map(p => ({
+              productos: { id: p.id, nombre: p.nombre },
+              cantidad: p.cantidad || 1
+            }))
+          }
+          
+          console.log('✅ Carrito temporal creado:', carritoTemporalId)
+        } catch (error) {
+          console.error('❌ Error creando carrito temporal:', error)
+          alert('Error al calcular: no se pudo crear carrito temporal')
+          setShowPreciosModal(false)
+          setCalculatingPrices(false)
+          return
+        }
+      } else {
+        // Verificar si hay productos en el carrito guardado
+        if (!carrito || !carrito.productos_x_carrito || carrito.productos_x_carrito.length === 0) {
+          alert('El carrito no tiene productos')
+          setShowPreciosModal(false)
+          setCalculatingPrices(false)
+          return
+        }
       }
 
       console.log('📦 Productos en el carrito:', carrito.productos_x_carrito.length)
@@ -735,6 +810,32 @@ export default function Carritos() {
       setShowPreciosModal(false)
     } finally {
       setCalculatingPrices(false)
+      
+      // Limpiar carrito temporal si fue creado
+      if (carritoTemporalId) {
+        try {
+          console.log('🧹 Eliminando carrito temporal:', carritoTemporalId)
+          // Eliminar productos primero
+          await supabase
+            .from('productos_x_carrito')
+            .delete()
+            .eq('carrito_id', carritoTemporalId)
+          
+          // Eliminar carrito
+          await supabase
+            .from('carritos_x_usuario')
+            .delete()
+            .eq('id', carritoTemporalId)
+          
+          console.log('✅ Carrito temporal eliminado')
+        } catch (cleanupError) {
+          console.error('⚠️ Error eliminando carrito temporal:', cleanupError)
+          // No alertar al usuario, es solo limpieza
+        }
+      }
+      
+      // Limpiar productos temporales
+      setProductosTemporales(null)
     }
   }
 
@@ -1049,6 +1150,19 @@ export default function Carritos() {
                       </div>
                     )}
                   </div>
+                  
+                  {/* Botón Calcular Compra Óptima */}
+                  {selectedProductos.length > 0 && (
+                    <div className="pt-4 border-t mt-4">
+                      <button
+                        onClick={handleCalcularCompraDesdeSeleccionados}
+                        className="w-full bg-sabu-primary text-white px-6 py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2 min-h-[56px] shadow-lg active:bg-sabu-primary-dark transition-all"
+                      >
+                        <span>💰</span>
+                        <span>Calcular Compra Óptima</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -1329,6 +1443,19 @@ export default function Carritos() {
                       </div>
                     )}
                   </div>
+                  
+                  {/* Botón Calcular Compra Óptima */}
+                  {selectedProductos.length > 0 && (
+                    <div className="pt-4 border-t mt-4">
+                      <button
+                        onClick={handleCalcularCompraDesdeSeleccionados}
+                        className="w-full bg-sabu-primary text-white px-6 py-4 rounded-xl font-bold text-base flex items-center justify-center gap-2 min-h-[56px] shadow-lg active:bg-sabu-primary-dark transition-all"
+                      >
+                        <span>💰</span>
+                        <span>Calcular Compra Óptima</span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
