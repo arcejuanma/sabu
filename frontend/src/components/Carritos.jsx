@@ -1491,7 +1491,7 @@ export default function Carritos() {
 
             {/* Footer con botones */}
             <div className="mt-4 pt-4 border-t">
-              <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex flex-row gap-2">
                 <button
                   onClick={handleCreateCarrito}
                   disabled={selectedProductos.length === 0}
