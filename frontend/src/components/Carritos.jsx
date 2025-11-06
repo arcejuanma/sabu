@@ -811,6 +811,57 @@ export default function Carritos() {
       preciosCalculados.sort((a, b) => a.total - b.total)
 
       setPreciosPorSupermercado(preciosCalculados)
+      
+      // Registrar métricas y calcular KPIs si hay un carrito guardado (no temporal)
+      if (carritoSeleccionado && !carritoTemporalId && preciosCalculados.length > 0) {
+        try {
+          // Extraer precio mínimo y máximo
+          const precioMinimo = preciosCalculados[0].total
+          const precioMaximo = preciosCalculados[preciosCalculados.length - 1].total
+          const supermercadoPrecioMinimo = preciosCalculados[0].supermercadoId
+          const supermercadoPrecioMaximo = preciosCalculados[preciosCalculados.length - 1].supermercadoId
+          
+          console.log('📊 Registrando métricas de búsqueda para el carrito:', carritoSeleccionado.id)
+          console.log(`   Precio mínimo: $${precioMinimo} en ${preciosCalculados[0].supermercado}`)
+          console.log(`   Precio máximo: $${precioMaximo} en ${preciosCalculados[preciosCalculados.length - 1].supermercado}`)
+          
+          // Registrar métrica
+          const { data: metricaResult, error: metricaError } = await supabase
+            .rpc('registrar_metrica_busqueda_rpc', {
+              p_id_carrito: carritoSeleccionado.id,
+              p_precio_minimo: precioMinimo,
+              p_id_supermercado_precio_minimo: supermercadoPrecioMinimo,
+              p_precio_maximo: precioMaximo,
+              p_id_supermercado_precio_maximo: supermercadoPrecioMaximo
+            })
+          
+          if (metricaError) {
+            console.error('⚠️ Error registrando métrica:', metricaError)
+          } else if (metricaResult?.success) {
+            if (metricaResult.inserted) {
+              console.log('✅ Métrica registrada:', metricaResult.metrica_id)
+            } else {
+              console.log('ℹ️ Métrica ya existe para hoy con los mismos precios')
+            }
+          }
+          
+          // Calcular KPIs
+          console.log('📊 Calculando KPIs para el carrito:', carritoSeleccionado.id)
+          const { data: kpiResult, error: kpiError } = await supabase
+            .rpc('calcular_kpi_carrito_rpc', {
+              p_carrito_id: carritoSeleccionado.id
+            })
+          
+          if (kpiError) {
+            console.error('⚠️ Error calculando KPIs:', kpiError)
+          } else if (kpiResult?.success) {
+            console.log('✅ KPIs calculados:', kpiResult.kpis)
+          }
+        } catch (error) {
+          console.error('⚠️ Error al registrar métricas/KPIs:', error)
+          // No alertar al usuario, es proceso en segundo plano
+        }
+      }
     } catch (error) {
       console.error('❌ Error calculating prices:', error)
       alert(`Error al calcular los precios: ${error.message || 'Error desconocido'}`)
