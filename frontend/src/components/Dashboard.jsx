@@ -111,8 +111,8 @@ export default function Dashboard() {
           <div className="block sm:hidden">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 sm:p-2 bg-white border-2 border-sabu-primary rounded-lg shadow-md">
-                  <Logo size={40} />
+                <div className="p-1.5 sm:p-2 bg-white border-2 border-sabu-secondary rounded-lg shadow-md flex items-center justify-center">
+                  <Logo size={52} />
                 </div>
                 <h1 className="text-lg font-bold text-gray-900 tracking-tight">
                   ¡Hola, {userData?.nombre 
@@ -154,8 +154,8 @@ export default function Dashboard() {
           {/* Desktop Layout */}
           <div className="hidden sm:flex justify-between items-center">
             <div className="flex items-center gap-4">
-              <div className="p-2 bg-white border-2 border-sabu-primary rounded-xl shadow-md">
-                <Logo size={48} />
+              <div className="p-2 bg-white border-2 border-sabu-secondary rounded-xl shadow-md flex items-center justify-center">
+                <Logo size={64} />
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
