@@ -136,7 +136,7 @@ export default function Dashboard() {
             <div className="flex gap-2 mt-3">
               <button
                 onClick={() => setShowMiCuenta(true)}
-                className="flex-1 inline-flex items-center justify-center px-3 py-3 border-2 border-sabu-primary text-sm font-semibold rounded-lg shadow-sm text-sabu-secondary bg-white active:bg-sabu-primary active:text-white transition-all duration-200 min-h-[44px]"
+                className="flex-1 inline-flex items-center justify-center px-3 py-3 border-2 border-[#0D146B] text-sm font-semibold rounded-lg shadow-sm text-[#00BF63] bg-white active:bg-[#0D146B] active:text-white transition-all duration-200 min-h-[44px]"
               >
                 <span className="mr-1.5">⚙️</span>
                 <span>Mi Cuenta</span>
@@ -182,7 +182,7 @@ export default function Dashboard() {
             <div className="flex gap-3">
               <button
                 onClick={() => setShowMiCuenta(true)}
-                className="inline-flex items-center px-4 py-2.5 border-2 border-sabu-primary text-sm font-semibold rounded-lg shadow-sm text-sabu-secondary bg-white hover:bg-sabu-primary hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sabu-primary"
+                className="inline-flex items-center px-4 py-2.5 border-2 border-[#0D146B] text-sm font-semibold rounded-lg shadow-sm text-[#00BF63] bg-white hover:bg-[#0D146B] hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0D146B]"
               >
                 <span className="mr-2">⚙️</span>
                 Mi Cuenta
